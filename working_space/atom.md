@@ -1,5 +1,14 @@
 # Atom practice
 
+## Jupyter + atom + iterm
+```bash
+# install hydrogen, platformio_ide_terminal
+ctrl + ` # ignore \, just use ` to open terminal in atom
+cmd + return  # run cell in jupyter
+shift + return
+# better to have both jupyter and terminal in atom at same time
+```
+
 ## working environment
 ```bash
 # Focus on one: /Users/Natsume/Documents

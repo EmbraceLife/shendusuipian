@@ -53,8 +53,7 @@ dev_weight_flat = dev_weight_array.flatten()
 # train_weight_flat = train_weight_mimax_array.flatten() # minmaxScaler
 # dev_weight_flat = dev_weight_mimax_array.flatten()
 
-log_dir = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/logs"
-model_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
+
 
 # 选用哪一组处理过的特征值 ###########################
 # train_set_features = train_feature_group_norm_array  # features 不标准化，group 标准化
@@ -69,11 +68,13 @@ dev_set_target = dev_target_array
 ##################### load model and continue to train #########################
 
 model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/last.h5"
-
 model = load_model(model_path)
 
 model.summary()
 
+log_dir = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/logs"
+# model_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
+model_file="/Users/Natsume/Documents/AI-challenger-stocks/model_output/weights.{epoch:02d}-{val_loss:.2f}.hdf5"
 history = model.fit(train_set_features, # x: 训练特征值
             train_set_target, # y: 训练目标值
             batch_size=1024, # 一次性使用多少个样本一起计算

@@ -159,8 +159,8 @@ dev_weight_flat = None
 
 # 储存可视化文件， 最优模型参数文件 的地址
 log_dir = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/logs"
-model_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
-
+# model_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
+model_file="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.{epoch:02d}-{val_loss:.2f}.hdf5"
 # 选用不同处理方式的 特征值， 目标值
 # train_set_features = train_feature_array
 # train_set_features = train_feature_group_norm_array  # features 不标准化，group 标准化
@@ -176,7 +176,7 @@ dev_set_target = dev_target_array
 history = model.fit(train_set_features, # x: 训练特征值
             train_set_target, # y: 训练目标值
             batch_size=1024, # 一次性使用多少个样本一起计算
-            epochs=10, # 训练次数
+            epochs=100, # 训练次数
             verbose=1,  # 是否打印每次训练的损失值和准确度
 
             # validation_split=0.2, # 从训练数据集中取多少作为验证数据 0.2，就是取剩下的20%作为验证

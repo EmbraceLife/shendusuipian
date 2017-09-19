@@ -41,8 +41,8 @@ test_feature_stad_group_norm_array = npzfiles['test_sequence']
 
 
 # load model
-model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
-# model_path = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best_no_weight_so_far/best_no_weight1.h5"
+# model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/last.h5"
+model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.213-0.6875.hdf5"
 model = load_model(model_path)
 
 # model predict

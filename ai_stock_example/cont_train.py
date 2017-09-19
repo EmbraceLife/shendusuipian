@@ -37,17 +37,17 @@ dev_feature_stad_group_norm_array = npzfiles['dev_sequence']
 test_feature_stad_group_norm_array = npzfiles['test_sequence']
 
 train_dev_target_weight_path = "/Users/Natsume/Documents/AI-challenger-stocks/prepared_dataset/target_weight_norm_dir/"
-train_target_array, dev_target_array, train_weight_array, dev_weight_array, train_weight_stad_array, train_weight_mimax_array, dev_weight_stad_array, dev_weight_mimax_array = bcolz.open(train_dev_target_weight_path)
+train_target_array, dev_target_array, train_weight_array, dev_weight_array = bcolz.open(train_dev_target_weight_path)
 
 print("dataset loaded")
 #################################################################################
 
 
 # 处理样本权重 ###########################
-# train_weight_flat = None
-# dev_weight_flat = None
-train_weight_flat = train_weight_array.flatten() # 使用weight，但不做标准化
-dev_weight_flat = dev_weight_array.flatten()
+train_weight_flat = None
+dev_weight_flat = None
+# train_weight_flat = train_weight_array.flatten() # 使用weight，但不做标准化
+# dev_weight_flat = dev_weight_array.flatten()
 # train_weight_flat = train_weight_stad_array.flatten() # standardScaler
 # dev_weight_flat = dev_weight_stad_array.flatten()
 # train_weight_flat = train_weight_mimax_array.flatten() # minmaxScaler
@@ -74,7 +74,7 @@ model.summary()
 
 log_dir = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/logs"
 # model_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
-model_file="/Users/Natsume/Documents/AI-challenger-stocks/model_output/weights.{epoch:02d}-{val_loss:.2f}.hdf5"
+model_file="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.{epoch:02d}-{val_loss:.4f}.hdf5"
 history = model.fit(train_set_features, # x: 训练特征值
             train_set_target, # y: 训练目标值
             batch_size=1024, # 一次性使用多少个样本一起计算
@@ -112,7 +112,7 @@ import os.path
 if os.path.isfile(losses_file):
     losses_accss = np.load(losses_file).tolist() # 变成dict
 else:
-	losses = {}
+	losses_accss = {}
 
 loss_name = "my_loss" # loss_weight_orig, val_loss_orig, loss_weight_stad, val_loss_weight_stad
 val_loss_name = "val_loss"

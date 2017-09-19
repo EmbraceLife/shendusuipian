@@ -97,10 +97,15 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
         weight = train_dev_set.loc[window:, 'weight'] # 用与损失函数中的样本权重，时间位置应该与目标值对应上
         era = train_dev_set.loc[window:, 'era'] # 用于划分 dev set
 
+    weight = standardization(weight.values.reshape((-1,1)), scaler='mimax') # input array must be 2-d
+    weight = pd.DataFrame(weight)
+
     if window == 1:
-		# drop unwanted features or columns
+		# drop unwanted features or columns, remove group!!!!! or not !!!
         test_sequence = test_set.drop(['group'], axis=1)
         train_dev_sequence = train_dev_set.drop(['group','weight', 'era', 'label'], axis=1)
+        # test_sequence = test_set
+        # train_dev_sequence = train_dev_set.drop(['weight', 'era', 'label'], axis=1)
     else:
         n_test = test_set.shape[0]
         test_sequence = train_test_sequence[-n_test:, :,:]
@@ -122,22 +127,27 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
     else:
 		# select particular era to be train and dev sets
         if window == 1:
-            train_sequence = train_dev_sequence.loc[(era.values!=20) & (era.values!=10),:]
-            dev_sequence = train_dev_sequence.loc[(era.values==20) | (era.values==10),:]
+			# select by era number
+            train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:]
+            # train_sequence = train_dev_sequence.loc[(era.values>14),:]
+            dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:]
+
         else:
-            train_sequence = train_dev_sequence.loc[(era.values!=20) & (era.values!=10),:,:]
-            dev_sequence = train_dev_sequence.loc[(era.values==20) | (era.values==10),:,:]
-        train_target = target.values[(era.values!=20) & (era.values!=10)]
-        train_weight = weight.values[(era.values!=20) & (era.values!=10)]
-        dev_target = target.values[(era.values==20) | (era.values==10)]
-        dev_weight = weight.values[(era.values==20) | (era.values==10)]
+            train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:,:]
+            dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:,:]
+        train_target = target.values[(era.values!=2) & (era.values!=1)]
+        train_weight = weight.values[(era.values!=2) & (era.values!=1)]
+        # train_target = target.values[(era.values>14)]
+        # train_weight = weight.values[(era.values>14)]
+        dev_target = target.values[(era.values==2) | (era.values==1)]
+        dev_weight = weight.values[(era.values==2) | (era.values==1)]
 
-    train_weight_stad = standardization(train_weight.reshape((-1,1))) # input array must be 2-d
-    dev_weight_stad = standardization(dev_weight.reshape((-1,1)))
-    train_weight_mimax = standardization(train_weight.reshape((-1,1)), scaler='mimax')
-    dev_weight_mimax = standardization(dev_weight.reshape((-1,1)), scaler='mimax')
+    # train_weight_stad = standardization(train_weight.reshape((-1,1))) # input array must be 2-d
+    # dev_weight_stad = standardization(dev_weight.reshape((-1,1)))
+    # train_weight_mimax = standardization(train_weight.reshape((-1,1)), scaler='mimax')
+    # dev_weight_mimax = standardization(dev_weight.reshape((-1,1)), scaler='mimax')
 
-    return (train_sequence, train_target, train_weight, train_weight_stad, train_weight_mimax, dev_sequence, dev_target, dev_weight, dev_weight_stad, dev_weight_mimax, test_sequence) # only for train and dev combined
+    return (train_sequence, train_target, train_weight, dev_sequence, dev_target, dev_weight, test_sequence) # only for train and dev combined
 
 # save large np.arrays
 # list_arrays: can only be 1-d arrays, not for 2-d or 3-d arrays
@@ -168,8 +178,8 @@ def all_features_distribution(features_array, first=None, middle=None, last=None
 # 选择数据版本 20170910
 def tests():
 	# test get_train_test_sets()
-	train_file = "/Users/Natsume/Documents/AI-challenger-stocks/train_data/20170910/ai_challenger_stock_train_20170910/stock_train_data_20170910.csv"
-	test_file = "/Users/Natsume/Documents/AI-challenger-stocks/test_data/20170910/ai_challenger_stock_test_20170910/stock_test_data_20170910.csv"
+	train_file = "/Users/Natsume/Documents/AI-challenger-stocks/train_data/20170916/ai_challenger_stock_train_20170916/stock_train_data_20170916.csv"
+	test_file = "/Users/Natsume/Documents/AI-challenger-stocks/test_data/20170916/ai_challenger_stock_test_20170916/stock_test_data_20170916.csv"
 	train_dev_set, test_set, test_id = get_train_test_sets(train_file=train_file, test_file=test_file)
 
 	# display features distributions: first, middle, last few features if too many
@@ -180,13 +190,16 @@ def tests():
 
 	# test standardization() and combine_train_test()
 	train_test_combine = combine_train_test(train_dev_set=train_dev_set, test_set=test_set)
-	train_test_combine.shape
+	m = train_test_combine.shape[0]
+
+	# only use the later half of dataset to train, validate, test
+	# train_test_combine = train_test_combine[np.floor(m/2):,:]
 
 	# test make_steps()
 	train_test_sequence = make_steps(train_test_combine=train_test_combine)
 
 	# test split_train_dev()
-	train_sequence, train_target, train_weight, train_weight_stad, train_weight_mimax, dev_sequence, dev_target, dev_weight, dev_weight_stad, dev_weight_mimax, test_sequence = split_train_dev(train_dev_set=train_dev_set, test_set=test_set, train_test_sequence=train_test_sequence)
+	train_sequence, train_target, train_weight, dev_sequence, dev_target, dev_weight, test_sequence = split_train_dev(train_dev_set=train_dev_set, test_set=test_set, train_test_sequence=train_test_sequence)
 
 
 	# test for save_large_arrays()
@@ -204,10 +217,10 @@ def tests():
 	train_dev_target_weight_sequence_npz = "/Users/Natsume/Documents/AI-challenger-stocks/prepared_dataset/target_weight_norm.npz"
 	train_dev_target_weight_sequence_path = "/Users/Natsume/Documents/AI-challenger-stocks/prepared_dataset/target_weight_norm_dir/"
 
-	list_arrays = [train_target, dev_target, train_weight, dev_weight, train_weight_stad, train_weight_mimax, dev_weight_stad, dev_weight_mimax]
+	list_arrays = [train_target, dev_target, train_weight, dev_weight]
 	save_large_arrays(train_dev_target_weight_sequence_path, list_arrays)
 
-	np.savez(train_dev_target_weight_sequence_npz, train_target=train_target, dev_target=dev_target, train_weight=train_weight, dev_weight=dev_weight, train_weight_stad=train_weight_stad, train_weight_mimax=train_weight_mimax, dev_weight_stad=dev_weight_stad, dev_weight_mimax=dev_weight_mimax)
+	np.savez(train_dev_target_weight_sequence_npz, train_target=train_target, dev_target=dev_target, train_weight=train_weight, dev_weight=dev_weight)
 
 	np.savez(train_dev_test_sequence_npz, train_sequence=train_sequence,dev_sequence=dev_sequence,test_sequence=test_sequence)
 

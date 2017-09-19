@@ -33,7 +33,7 @@ dev_feature_stad_group_norm_array = npzfiles['dev_sequence']
 test_feature_stad_group_norm_array = npzfiles['test_sequence']
 
 train_dev_target_weight_path = "/Users/Natsume/Documents/AI-challenger-stocks/prepared_dataset/target_weight_norm_dir/"
-train_target_array, dev_target_array, train_weight_array, dev_weight_array, train_weight_stad_array, train_weight_mimax_array, dev_weight_stad_array, dev_weight_mimax_array = bcolz.open(train_dev_target_weight_path)
+train_target_array, dev_target_array, train_weight_array, dev_weight_array = bcolz.open(train_dev_target_weight_path)
 
 print("dataset loaded")
 ############################################################################################################
@@ -60,11 +60,12 @@ print("dataset loaded")
 
 ############## 调超参数 ###########
 ##################################
-n_neurons = 2
-# n_neurons2 = 4
-# n_neurons3 = 3
-lr = 0.001 # 0.01 # 0.1
-# rate_dropout = 0.7
+n_neurons=10
+n_neurons1 = 8
+n_neurons2 = 6
+n_neurons3 = 4
+lr = 0.00001# 0.001 # 0.01 # 0.1
+rate_dropout = 0.5
 ##################################
 
 
@@ -75,7 +76,7 @@ lr = 0.001 # 0.01 # 0.1
 model = Sequential()
 
 # 在输入层后增加抛弃层 dropout
-# model.add(Dropout(rate=rate_dropout, input_shape=(89,)))
+model.add(Dropout(rate=rate_dropout, input_shape=(88,)))
 
 # 增加一个简单的RNN层
 # model.add(SimpleRNN(    # simple RNN
@@ -88,12 +89,12 @@ model = Sequential()
 
 # 在输入层后增加简单的 dense 层
 # 需要对 输入层 做说明 input_shape = (88,), 如果训练数据维度是（样本数，88特征值）, 88 是因为没有加上‘group’
-model.add(Dense(n_neurons, input_shape=(88,))) # 89
+model.add(Dense(n_neurons))#, input_shape=(88,))) # 88, 89
 
 # 为该 dense层 选用不同的 激励函数
-# model.add(Activation('relu'))
+model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
-model.add(Activation('tanh'))
+# model.add(Activation('tanh'))
 
 # 对输入层做 抛弃层 处理，针对训练数据 维度 （样本，5， 89）， 时间周期 5， 特征数 89
 # model.add(Dropout(rate=rate_dropout, input_shape=(5, 89)))
@@ -112,15 +113,18 @@ model.add(Activation('tanh'))
 # 				)) # 上述都只有字面理解，真正里面发生了什么，至少需要上完吴恩达RNN课程（类似功课）
 # 对每一个训练值模块进行标准化
 
+model.add(Dense(n_neurons1))
+model.add(Activation('relu'))
+
 # 增加第二隐藏层，以及激励函数
-# model.add(Dense(n_neurons2))
-# model.add(Activation('relu'))
+model.add(Dense(n_neurons2))
+model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
 
 # 增加第三隐藏层
-# model.add(Dense(n_neurons3))
-# model.add(Activation('relu'))
+model.add(Dense(n_neurons3))
+model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
 
@@ -150,17 +154,16 @@ model.summary()
 # 选用不同处理的 样本权重
 train_weight_flat = None
 dev_weight_flat = None
-# train_weight_flat = train_weight_array.flatten() # 使用weight，但不做标准化
-# dev_weight_flat = dev_weight_array.flatten()
-# train_weight_flat = train_weight_stad_array.flatten() # standardScaler
-# dev_weight_flat = dev_weight_stad_array.flatten()
-# train_weight_flat = train_weight_mimax_array.flatten() # minmaxScaler
-# dev_weight_flat = dev_weight_mimax_array.flatten()
+# train_weight_flat = train_weight_array.flatten() # 使用weight，mimax
+# dev_weight_flat = dev_weight_array.flatten() # stad 有负数，计算损失函数时会出问题
+
 
 # 储存可视化文件， 最优模型参数文件 的地址
 log_dir = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/logs"
 # model_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.h5"
-model_file="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.{epoch:02d}-{val_loss:.2f}.hdf5"
+model_file="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.{epoch:02d}-{val_loss:.4f}.hdf5" # 记录依次产生的最优损失值的模型，以及产生于在哪一次训练
+
+
 # 选用不同处理方式的 特征值， 目标值
 # train_set_features = train_feature_array
 # train_set_features = train_feature_group_norm_array  # features 不标准化，group 标准化
@@ -176,7 +179,7 @@ dev_set_target = dev_target_array
 history = model.fit(train_set_features, # x: 训练特征值
             train_set_target, # y: 训练目标值
             batch_size=1024, # 一次性使用多少个样本一起计算
-            epochs=100, # 训练次数
+            epochs=300, # 训练次数
             verbose=1,  # 是否打印每次训练的损失值和准确度
 
             # validation_split=0.2, # 从训练数据集中取多少作为验证数据 0.2，就是取剩下的20%作为验证
@@ -207,10 +210,11 @@ val_acc = history.history['val_binary_accuracy']
 losses_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/losses.npy"
 import os.path
 
+
+losses_access = {}
 if os.path.isfile(losses_file):
     losses_accss = np.load(losses_file).tolist() # 变成dict
-else:
-	losses = {}
+
 
 loss_name = "my_loss" # loss_weight_orig, val_loss_orig, loss_weight_stad, val_loss_weight_stad
 val_loss_name = "val_loss"

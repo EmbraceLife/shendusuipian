@@ -1,3 +1,4 @@
+import keras
 from keras.layers import Dense, LSTM, Activation, BatchNormalization, Dropout, SimpleRNN, Input
 # from renormalization import BatchRenormalization
 from keras.layers.advanced_activations import LeakyReLU
@@ -60,12 +61,13 @@ print("dataset loaded")
 
 ############## 调超参数 ###########
 ##################################
-n_neurons=10
+n_neurons = 15
+n_neurons0=10
 n_neurons1 = 8
 n_neurons2 = 6
 n_neurons3 = 4
 lr = 0.00001# 0.001 # 0.01 # 0.1
-rate_dropout = 0.5
+rate_dropout = 0.4 # 0.3 # 0.4 # 0.7 # 0.5, 0.3
 ##################################
 
 
@@ -89,12 +91,14 @@ model.add(Dropout(rate=rate_dropout, input_shape=(88,)))
 
 # 在输入层后增加简单的 dense 层
 # 需要对 输入层 做说明 input_shape = (88,), 如果训练数据维度是（样本数，88特征值）, 88 是因为没有加上‘group’
-model.add(Dense(n_neurons))#, input_shape=(88,))) # 88, 89
+# model.add(Dense(n_neurons))#, input_shape=(88,))) # 88, 89
+model.add(Dense(n_neurons))
 
 # 为该 dense层 选用不同的 激励函数
 model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
+model.add(Dropout(rate=rate_dropout))
 
 # 对输入层做 抛弃层 处理，针对训练数据 维度 （样本，5， 89）， 时间周期 5， 特征数 89
 # model.add(Dropout(rate=rate_dropout, input_shape=(5, 89)))
@@ -112,6 +116,8 @@ model.add(Activation('relu'))
 #             recurrent_dropout=rate_dropout # 针对recurrent 扔掉循环层神经元个数
 # 				)) # 上述都只有字面理解，真正里面发生了什么，至少需要上完吴恩达RNN课程（类似功课）
 # 对每一个训练值模块进行标准化
+model.add(Dense(n_neurons0))
+model.add(Activation('relu'))
 
 model.add(Dense(n_neurons1))
 model.add(Activation('relu'))
@@ -129,8 +135,8 @@ model.add(Activation('relu'))
 # model.add(Activation('tanh'))
 
 # 增加输出层，和激励函数
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
+model.add(Dense(1)) # 多分类问题，神经元 3 或更多
+model.add(Activation('sigmoid')) # ‘softmax’
 ##################################################################
 
 
@@ -140,8 +146,8 @@ model.add(Activation('sigmoid'))
 opt = Adam(lr=lr)
 # metrics 这里选用 accuracy 或者 binary_accuracy
 model.compile(optimizer=opt,
-              loss='binary_crossentropy',
-              metrics=['binary_accuracy'])
+              loss='binary_crossentropy', # categorical_crossentropy
+              metrics=['binary_accuracy']) # categorical_accuracy
 
 # 打印模型结构
 model.summary()
@@ -211,7 +217,7 @@ losses_file = "/Users/Natsume/Documents/AI-challenger-stocks/model_output/losses
 import os.path
 
 
-losses_access = {}
+losses_accss = {}
 if os.path.isfile(losses_file):
     losses_accss = np.load(losses_file).tolist() # 变成dict
 

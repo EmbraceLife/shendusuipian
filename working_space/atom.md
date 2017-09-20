@@ -1,9 +1,25 @@
 # Atom practice
 
-## Jupyter + atom + iterm
+## often used
+```bash
+cmd + \ # toggle tree
+cmd + shift + o # open directory 
+```
+
+## python tools package in atom
+```bash
+ctrl + option + g # go to function of any source file for details
+
+```
+## platformio_ide_terminal package: terminal in atom
+```bash
+ctrl + ` # open terminal at current folder`
++ button # create new terminal (rename, close, switch)
+```
+
+## Hydrogen Jupyter + atom + iterm
 ```bash
 # install hydrogen, platformio_ide_terminal
-ctrl + ` # ignore \, just use ` to open terminal in atom
 cmd + return  # run cell in jupyter
 shift + return
 # better to have both jupyter and terminal in atom at same time

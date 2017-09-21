@@ -57,7 +57,7 @@ def combine_train_test(train_dev_set, test_set):
 	# pd.concat to merge dataframes
     train_test_combine = pd.concat([train_dev_features, test_set], axis=0).values
 	# use a custom function called standarization(...)
-    train_test_combine = standardization(train_test_combine, scaler='stad') # standarization
+    # train_test_combine = standardization(train_test_combine, scaler='stad') # standarization
 
     return train_test_combine
 
@@ -97,8 +97,8 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
         weight = train_dev_set.loc[window:, 'weight'] # 用与损失函数中的样本权重，时间位置应该与目标值对应上
         era = train_dev_set.loc[window:, 'era'] # 用于划分 dev set
 
-    weight = standardization(weight.values.reshape((-1,1)), scaler='mimax') # input array must be 2-d
-    weight = pd.DataFrame(weight)
+    # weight = standardization(weight.values.reshape((-1,1)), scaler='mimax') # input array must be 2-d
+    # weight = pd.DataFrame(weight)
 
     if window == 1:
 		# drop unwanted features or columns, remove group!!!!! or not !!!
@@ -128,20 +128,22 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
 		# select particular era to be train and dev sets
         if window == 1:
 			# select by era number
-            train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:]
-            # train_sequence = train_dev_sequence.loc[(era.values>14),:]
-            dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:]
+            # train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:]
+            train_sequence = train_dev_sequence.loc[(era.values<20),:]
+            # dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:]
+            dev_sequence = train_dev_sequence.loc[(era.values==20),:]
 
         else:
             train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:,:]
             dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:,:]
-        train_target = target.values[(era.values!=2) & (era.values!=1)]
-        train_weight = weight.values[(era.values!=2) & (era.values!=1)]
-        # train_target = target.values[(era.values>14)]
-        # train_weight = weight.values[(era.values>14)]
-        dev_target = target.values[(era.values==2) | (era.values==1)]
-        dev_weight = weight.values[(era.values==2) | (era.values==1)]
-
+        # train_target = target.values[(era.values!=2) & (era.values!=1)]
+        # train_weight = weight.values[(era.values!=2) & (era.values!=1)]
+        train_target = target.values[(era.values<20)]
+        train_weight = weight.values[(era.values<20)]
+        # dev_target = target.values[(era.values==2) | (era.values==1)]
+        # dev_weight = weight.values[(era.values==2) | (era.values==1)]
+        dev_target = target.values[(era.values==20)]
+        dev_weight = weight.values[(era.values==20)]
     # train_weight_stad = standardization(train_weight.reshape((-1,1))) # input array must be 2-d
     # dev_weight_stad = standardization(dev_weight.reshape((-1,1)))
     # train_weight_mimax = standardization(train_weight.reshape((-1,1)), scaler='mimax')

@@ -61,13 +61,20 @@ print("dataset loaded")
 
 ############## 调超参数 ###########
 ##################################
-n_neurons = 15
-n_neurons0=10
+# no standardization to training set (no need, 0, 1)
+n_neurons = 10
+# n_neurons0=10
 n_neurons1 = 8
 n_neurons2 = 6
 n_neurons3 = 4
-lr = 0.00001# 0.001 # 0.01 # 0.1
-rate_dropout = 0.4 # 0.3 # 0.4 # 0.7 # 0.5, 0.3
+lr = 0.00001 # 0.001 # 0.01 # 0.1
+rate_dropout = 0.4 # 0.5 # 0.3 # 0.4 # 0.7 # 0.5, 0.3
+# 选用不同处理的 样本权重
+train_weight_flat = None
+dev_weight_flat = None
+# train_weight_flat = train_weight_array.flatten() # 使用weight，mimax
+# dev_weight_flat = dev_weight_array.flatten() # stad 有负数，计算损失函数时会出问题
+
 ##################################
 
 
@@ -98,7 +105,7 @@ model.add(Dense(n_neurons))
 model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
-model.add(Dropout(rate=rate_dropout))
+
 
 # 对输入层做 抛弃层 处理，针对训练数据 维度 （样本，5， 89）， 时间周期 5， 特征数 89
 # model.add(Dropout(rate=rate_dropout, input_shape=(5, 89)))
@@ -116,8 +123,8 @@ model.add(Dropout(rate=rate_dropout))
 #             recurrent_dropout=rate_dropout # 针对recurrent 扔掉循环层神经元个数
 # 				)) # 上述都只有字面理解，真正里面发生了什么，至少需要上完吴恩达RNN课程（类似功课）
 # 对每一个训练值模块进行标准化
-model.add(Dense(n_neurons0))
-model.add(Activation('relu'))
+# model.add(Dense(n_neurons0))
+# model.add(Activation('relu'))
 
 model.add(Dense(n_neurons1))
 model.add(Activation('relu'))
@@ -143,6 +150,7 @@ model.add(Activation('sigmoid')) # ‘softmax’
 ###################### 设置优化算法，损失函数，metric######################
 #######################################################################
 # learning_rate, lr, 首选 0.001 默认值
+# try learning rate decay: 0.1, default 0.0
 opt = Adam(lr=lr)
 # metrics 这里选用 accuracy 或者 binary_accuracy
 model.compile(optimizer=opt,
@@ -157,11 +165,6 @@ model.summary()
 ####################### 模型训练 以及重要数据保存 ##############################
 ############################################################################
 
-# 选用不同处理的 样本权重
-train_weight_flat = None
-dev_weight_flat = None
-# train_weight_flat = train_weight_array.flatten() # 使用weight，mimax
-# dev_weight_flat = dev_weight_array.flatten() # stad 有负数，计算损失函数时会出问题
 
 
 # 储存可视化文件， 最优模型参数文件 的地址

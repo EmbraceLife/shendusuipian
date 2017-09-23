@@ -68,7 +68,7 @@ n_neurons1 = 8
 n_neurons2 = 6
 n_neurons3 = 4
 lr = 0.00001 # 0.001 # 0.01 # 0.1
-rate_dropout = 0.4 # 0.5 # 0.3 # 0.4 # 0.7 # 0.5, 0.3
+rate_dropout = 0. # 0.5 # 0.3 # 0.4 # 0.7 # 0.5, 0.3
 # 选用不同处理的 样本权重
 train_weight_flat = None
 dev_weight_flat = None
@@ -86,7 +86,7 @@ model = Sequential()
 
 # 在输入层后增加抛弃层 dropout
 model.add(Dropout(rate=rate_dropout, input_shape=(88,)))
-
+model.add(BatchNormalization())
 # 增加一个简单的RNN层
 # model.add(SimpleRNN(    # simple RNN
 #     # for batch_input_shape, if using tensorflow as the backend, we have to put None for the batch_size.
@@ -100,7 +100,7 @@ model.add(Dropout(rate=rate_dropout, input_shape=(88,)))
 # 需要对 输入层 做说明 input_shape = (88,), 如果训练数据维度是（样本数，88特征值）, 88 是因为没有加上‘group’
 # model.add(Dense(n_neurons))#, input_shape=(88,))) # 88, 89
 model.add(Dense(n_neurons))
-
+model.add(BatchNormalization())
 # 为该 dense层 选用不同的 激励函数
 model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
@@ -127,19 +127,25 @@ model.add(Activation('relu'))
 # model.add(Activation('relu'))
 
 model.add(Dense(n_neurons1))
+model.add(BatchNormalization())
 model.add(Activation('relu'))
 
 # 增加第二隐藏层，以及激励函数
 model.add(Dense(n_neurons2))
+model.add(BatchNormalization())
 model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
 
+
 # 增加第三隐藏层
 model.add(Dense(n_neurons3))
+model.add(BatchNormalization())
 model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
+model.add(BatchNormalization())
+
 
 # 增加输出层，和激励函数
 model.add(Dense(1)) # 多分类问题，神经元 3 或更多

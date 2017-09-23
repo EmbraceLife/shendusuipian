@@ -129,21 +129,21 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
         if window == 1:
 			# select by era number
             # train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:]
-            train_sequence = train_dev_sequence.loc[(era.values<20),:]
+            train_sequence = train_dev_sequence.loc[(era.values>2),:]
             # dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:]
-            dev_sequence = train_dev_sequence.loc[(era.values==20),:]
+            dev_sequence = train_dev_sequence.loc[(era.values<=2),:]
 
         else:
             train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:,:]
             dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:,:]
         # train_target = target.values[(era.values!=2) & (era.values!=1)]
         # train_weight = weight.values[(era.values!=2) & (era.values!=1)]
-        train_target = target.values[(era.values<20)]
-        train_weight = weight.values[(era.values<20)]
+        train_target = target.values[(era.values>2)]
+        train_weight = weight.values[(era.values>2)]
         # dev_target = target.values[(era.values==2) | (era.values==1)]
         # dev_weight = weight.values[(era.values==2) | (era.values==1)]
-        dev_target = target.values[(era.values==20)]
-        dev_weight = weight.values[(era.values==20)]
+        dev_target = target.values[(era.values<=2)]
+        dev_weight = weight.values[(era.values<=2)]
     # train_weight_stad = standardization(train_weight.reshape((-1,1))) # input array must be 2-d
     # dev_weight_stad = standardization(dev_weight.reshape((-1,1)))
     # train_weight_mimax = standardization(train_weight.reshape((-1,1)), scaler='mimax')

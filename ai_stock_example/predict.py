@@ -42,7 +42,7 @@ test_feature_stad_group_norm_array = npzfiles['test_sequence']
 
 # load model
 # model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/last.h5"
-model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.60-0.6880.hdf5"
+model_path="/Users/Natsume/Documents/AI-challenger-stocks/model_output/best.73-0.7021.hdf5"
 model = load_model(model_path)
 
 # model predict

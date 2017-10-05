@@ -70,10 +70,10 @@ n_neurons3 = 4
 lr = 0.00001 # 0.001 # 0.01 # 0.1
 rate_dropout = 0. # 0.5 # 0.3 # 0.4 # 0.7 # 0.5, 0.3
 # 选用不同处理的 样本权重
-train_weight_flat = None
-dev_weight_flat = None
-# train_weight_flat = train_weight_array.flatten() # 使用weight，mimax
-# dev_weight_flat = dev_weight_array.flatten() # stad 有负数，计算损失函数时会出问题
+# train_weight_flat = None
+# dev_weight_flat = None
+train_weight_flat = train_weight_array.flatten() # 使用weight，mimax
+dev_weight_flat = dev_weight_array.flatten() # stad 有负数，计算损失函数时会出问题
 
 ##################################
 
@@ -86,7 +86,7 @@ model = Sequential()
 
 # 在输入层后增加抛弃层 dropout
 model.add(Dropout(rate=rate_dropout, input_shape=(88,)))
-model.add(BatchNormalization())
+# model.add(BatchNormalization())
 # 增加一个简单的RNN层
 # model.add(SimpleRNN(    # simple RNN
 #     # for batch_input_shape, if using tensorflow as the backend, we have to put None for the batch_size.
@@ -144,7 +144,7 @@ model.add(BatchNormalization())
 model.add(Activation('relu'))
 # model.add(LeakyReLU(alpha=0.3))
 # model.add(Activation('tanh'))
-model.add(BatchNormalization())
+
 
 
 # 增加输出层，和激励函数

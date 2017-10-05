@@ -86,7 +86,7 @@ def make_steps(train_test_combine, window=1):
 
 # split into train_sequence, train_target, train_weight,
 # dev_sequence, dev_target, dev_weight, test_sequence
-def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None, odd_even=False, window=1):
+def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None, odd_even=True, window=1):
     # train_dev_set: 包含training and validation sets, pd.DataFrame,
     if window == 1:
         target = train_dev_set.loc[:, 'label'] # label[30] 开始
@@ -115,8 +115,8 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
     if odd_even:
 		# all odd era to be train_set, all even era to be dev set
         if window == 1:
-            train_sequence = train_dev_sequence[era.values % 2 == 1, :] # training set
-            dev_sequence = train_dev_sequence[era.values % 2 == 0, :] # training set
+            train_sequence = train_dev_sequence[era.values % 2 == 1] # training set
+            dev_sequence = train_dev_sequence[era.values % 2 == 0] # training set
         else:
             train_sequence = train_dev_sequence[era.values % 2 == 1, :, :] # training set
             dev_sequence = train_dev_sequence[era.values % 2 == 0, :, :] # training set
@@ -136,14 +136,14 @@ def split_train_dev(train_dev_set=None, test_set=None, train_test_sequence=None,
         else:
             train_sequence = train_dev_sequence.loc[(era.values!=2) & (era.values!=1),:,:]
             dev_sequence = train_dev_sequence.loc[(era.values==2) | (era.values==1),:,:]
-        # train_target = target.values[(era.values!=2) & (era.values!=1)]
-        # train_weight = weight.values[(era.values!=2) & (era.values!=1)]
-        train_target = target.values[(era.values>2)]
-        train_weight = weight.values[(era.values>2)]
-        # dev_target = target.values[(era.values==2) | (era.values==1)]
-        # dev_weight = weight.values[(era.values==2) | (era.values==1)]
-        dev_target = target.values[(era.values<=2)]
-        dev_weight = weight.values[(era.values<=2)]
+    train_target = target.values[(era.values!=2) & (era.values!=1)]
+    train_weight = weight.values[(era.values!=2) & (era.values!=1)]
+    # train_target = target.values[(era.values>2)]
+    # train_weight = weight.values[(era.values>2)]
+    dev_target = target.values[(era.values==2) | (era.values==1)]
+    dev_weight = weight.values[(era.values==2) | (era.values==1)]
+    # dev_target = target.values[(era.values<=2)]
+    # dev_weight = weight.values[(era.values<=2)]
     # train_weight_stad = standardization(train_weight.reshape((-1,1))) # input array must be 2-d
     # dev_weight_stad = standardization(dev_weight.reshape((-1,1)))
     # train_weight_mimax = standardization(train_weight.reshape((-1,1)), scaler='mimax')
@@ -180,8 +180,8 @@ def all_features_distribution(features_array, first=None, middle=None, last=None
 # 选择数据版本 20170910
 def tests():
 	# test get_train_test_sets()
-	train_file = "/Users/Natsume/Documents/AI-challenger-stocks/train_data/20170916/ai_challenger_stock_train_20170916/stock_train_data_20170916.csv"
-	test_file = "/Users/Natsume/Documents/AI-challenger-stocks/test_data/20170916/ai_challenger_stock_test_20170916/stock_test_data_20170916.csv"
+	train_file = "/Users/Natsume/Documents/AI-challenger-stocks/train_data/20170929/ai_challenger_stock_train_20170929/stock_train_data_20170929.csv"
+	test_file = "/Users/Natsume/Documents/AI-challenger-stocks/test_data/20170929/ai_challenger_stock_test_20170929/stock_test_data_20170929.csv"
 	train_dev_set, test_set, test_id = get_train_test_sets(train_file=train_file, test_file=test_file)
 
 	# display features distributions: first, middle, last few features if too many

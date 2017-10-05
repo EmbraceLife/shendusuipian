@@ -63,11 +63,11 @@ plt.ion()   # interactive mode
 # is the number of landmarks.
 #
 
-landmarks_frame = pd.read_csv('faces/face_landmarks.csv')
+landmarks_frame = pd.read_csv('/Users/Natsume/Desktop/data/faces/face_landmarks.csv')
 
-n = 65
-img_name = landmarks_frame.ix[n, 0]
-landmarks = landmarks_frame.ix[n, 1:].as_matrix().astype('float')
+i = 65
+img_name = landmarks_frame.ix[i, 0]
+landmarks = landmarks_frame.ix[i, 1:].as_matrix().astype('float')
 landmarks = landmarks.reshape(-1, 2)
 
 print('Image name: {}'.format(img_name))
@@ -87,7 +87,7 @@ def show_landmarks(image, landmarks):
     plt.pause(0.001)  # pause a bit so that plots are updated
 
 plt.figure()
-show_landmarks(io.imread(os.path.join('faces/', img_name)),
+show_landmarks(io.imread(os.path.join('/Users/Natsume/Desktop/data/faces/', img_name)),
                landmarks)
 plt.show()
 
@@ -153,8 +153,8 @@ class FaceLandmarksDataset(Dataset):
 # will print the sizes of first 4 samples and show their landmarks.
 #
 
-face_dataset = FaceLandmarksDataset(csv_file='faces/face_landmarks.csv',
-                                    root_dir='faces/')
+face_dataset = FaceLandmarksDataset(csv_file='/Users/Natsume/Desktop/data/faces/face_landmarks.csv',
+                                    root_dir='/Users/Natsume/Desktop/data/faces/')
 
 fig = plt.figure()
 
@@ -178,7 +178,7 @@ for i in range(len(face_dataset)):
 # Transforms
 # ----------
 #
-# One issue we can see from the above is that the samples are not of the 
+# One issue we can see from the above is that the samples are not of the
 # same size. Most neural networks expect the images of a fixed size.
 # Therefore, we will need to write some prepocessing code.
 # Let's create three transforms:
@@ -191,7 +191,7 @@ for i in range(len(face_dataset)):
 #
 # We will write them as callable classes instead of simple functions so
 # that parameters of the transform need not be passed everytime it's
-# called. For this, we just need to implement ``__call__`` method and 
+# called. For this, we just need to implement ``__call__`` method and
 # if required, ``__init__`` method. We can then use a transform like this:
 #
 # ::
@@ -277,7 +277,7 @@ class ToTensor(object):
 
     def __call__(self, sample):
         image, landmarks = sample['image'], sample['landmarks']
- 
+
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
@@ -323,7 +323,7 @@ plt.show()
 # -----------------------------
 #
 # Let's put this all together to create a dataset with composed
-# transforms. 
+# transforms.
 # To summarize, every time this dataset is sampled:
 #
 # -  An image is read from the file on the fly
@@ -335,8 +335,8 @@ plt.show()
 # loop as before.
 #
 
-transformed_dataset = FaceLandmarksDataset(csv_file='faces/face_landmarks.csv',
-                                           root_dir='faces/',
+transformed_dataset = FaceLandmarksDataset(csv_file='/Users/Natsume/Desktop/data/faces/face_landmarks.csv',
+                                           root_dir='/Users/Natsume/Desktop/data/faces/',
                                            transform=transforms.Compose([
                                                Rescale(256),
                                                RandomCrop(224),

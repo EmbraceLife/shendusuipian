@@ -1,5 +1,3 @@
-# shendusuipian
+# 深度碎片
 
-## 常用代码
-1. 记录整理常用代码, 记性太差
-2. 构建自己的deep learning library，增进理解
+这里会更新所有视频中的代码

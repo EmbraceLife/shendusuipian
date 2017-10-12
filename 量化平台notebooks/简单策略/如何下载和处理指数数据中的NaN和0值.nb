@@ -1,0 +1,201 @@
+{
+ "metadata": {
+  "signature": "sha256:ab3a46dc6dabf6da72e148d311f51ebd8e51b4fefa8d32237dfb9bea665aacfb"
+ },
+ "nbformat": 3,
+ "nbformat_minor": 0,
+ "worksheets": [
+  {
+   "cells": [
+    {
+     "cell_type": "markdown",
+     "id": "6C11723018BF4ECC881249B51AE2B407",
+     "metadata": {},
+     "source": [
+      "# \u5982\u4f55\u5904\u7406\u6570\u636e\u4e2d\u7684NaN\u548c0\u503c"
+     ]
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "91EE39C6854F4F7285CD80E9446E23C7",
+     "input": [
+      "import pandas as pd\n",
+      "import numpy as np\n",
+      "# indices = [u\"000001\", u\"000002\", u\"000003\", u\"000008\", u\"000009\",u\"000010\",u\"000011\",u\"000012\", u\"000016\", u\"000017\", u\"000300\", u\"000905\", u\"399001\", u\"399002\", u\"399003\", u\"399004\", u\"399005\", u\"399006\", u\"399008\", u\"399100\", u\"399100\", u\"399101\", u\"399106\", u\"399107\", u\"399108\", u\"399333\", u\"399606\"]\n",
+      "indices = [u\"000016\", u\"000300\", u\"399005\", u\"399006\", u\"399330\", u\"399905\"]\n",
+      "# print(len(indices))\n",
+      "\n",
+      "for idx in indices:\n",
+      "    data = DataAPI.MktIdxdGet(tradeDate=u\"\",indexID=u\"\",ticker=idx,beginDate=u\"\",endDate=u\"\",exchangeCD=u\"XSHE,XSHG\",field=[u\"ticker\",u\"tradeDate\", u\"openIndex\", u\"highestIndex\", u\"lowestIndex\", u\"closeIndex\", u\"turnoverVol\"],pandas=\"1\")\n",
+      "\n",
+      "    # check 0s for each column\n",
+      "    # print((data == 0.0).sum())\n",
+      "    if idx == u\"399005\":\n",
+      "        # print(data[data.turnoverVol == 0])\n",
+      "        # print(data.ix[333:338,])\n",
+      "        data.turnoverVol[data.turnoverVol == 0] = np.NAN\n",
+      "        # print(data.ix[333:338,])\n",
+      "    # print(data.head())\n",
+      "\n",
+      "    # check nulls\n",
+      "    # for colName in [\"openIndex\", \"highestIndex\", \"lowestIndex\", \"closeIndex\", \"turnoverVol\"]:\n",
+      "    #     if data[colName].hasnans:# open, turnoverVol, high, low, close\n",
+      "    #         print(data.ticker[0], colName)\n",
+      "            \n",
+      "\n",
+      "    # \u5fc5\u987b\u5148\u5c060.0\u5316\u6210Nan\u540e\u624d\u80fd\u7528bfill or ffill\n",
+      "    data.fillna(method='bfill', inplace=True)\n",
+      "    \n",
+      "    for colName in [\"openIndex\", \"highestIndex\", \"lowestIndex\", \"closeIndex\", \"turnoverVol\"]:\n",
+      "        if data[colName].hasnans:# open, turnoverVol, high, low, close\n",
+      "            print(data.ticker[0], colName)\n",
+      "            \n",
+      "    print(data.head())\n",
+      "    data.to_csv(\"Index_datasets_new/\"+idx+\".csv\")"
+     ],
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "   ticker   tradeDate  openIndex  highestIndex  lowestIndex  closeIndex  \\\n",
+        "0  000016  2004-01-02    996.996      1021.568      993.892    1011.347   \n",
+        "1  000016  2004-01-05   1008.279      1060.898     1008.279    1060.801   \n",
+        "2  000016  2004-01-06   1059.141      1086.694     1059.095    1075.656   \n",
+        "3  000016  2004-01-07   1075.562      1095.841     1070.980    1086.303   \n",
+        "4  000016  2004-01-08   1087.680      1108.291     1082.509    1102.662   \n",
+        "\n",
+        "   turnoverVol  \n",
+        "0    806465200  \n",
+        "1   1446818000  \n",
+        "2   1699133400  \n",
+        "3   1372941900  \n",
+        "4   1078042700  "
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "   ticker   tradeDate  openIndex  highestIndex  lowestIndex  closeIndex  \\\n",
+        "0  000300  2002-01-04    1316.46       1316.46      1316.46     1316.46   \n",
+        "1  000300  2002-01-07    1302.08       1302.08      1302.08     1302.08   \n",
+        "2  000300  2002-01-08    1292.71       1292.71      1292.71     1292.71   \n",
+        "3  000300  2002-01-09    1272.65       1272.65      1272.65     1272.65   \n",
+        "4  000300  2002-01-10    1281.26       1281.26      1281.26     1281.26   \n",
+        "\n",
+        "   turnoverVol  \n",
+        "0  741286900.0  \n",
+        "1  741286900.0  \n",
+        "2  741286900.0  \n",
+        "3  741286900.0  \n",
+        "4  741286900.0  "
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "   ticker   tradeDate  openIndex  highestIndex  lowestIndex  closeIndex  \\\n",
+        "0  399005  2006-01-24    1457.22       1471.20      1446.44     1459.20   \n",
+        "1  399005  2006-01-25    1456.09       1463.72      1414.45     1430.02   \n",
+        "2  399005  2006-02-06    1433.44       1482.33      1433.44     1482.33   \n",
+        "3  399005  2006-02-07    1483.45       1485.69      1450.15     1463.92   \n",
+        "4  399005  2006-02-08    1459.67       1469.49      1446.54     1469.49   \n",
+        "\n",
+        "   turnoverVol  \n",
+        "0   90654900.0  \n",
+        "1  115678000.0  \n",
+        "2   81289200.0  \n",
+        "3  102623200.0  \n",
+        "4   60955300.0  "
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "   ticker   tradeDate  openIndex  highestIndex  lowestIndex  closeIndex  \\\n",
+        "0  399006  2010-06-01    986.015       994.793      948.118     973.233   \n",
+        "1  399006  2010-06-02    967.609       997.119      952.611     997.119   \n",
+        "2  399006  2010-06-03   1002.355      1026.702      997.775     998.394   \n",
+        "3  399006  2010-06-04    989.681      1027.681      986.504    1027.681   \n",
+        "4  399006  2010-06-07   1005.028      1075.225     1001.702    1069.468   \n",
+        "\n",
+        "   turnoverVol  \n",
+        "0    135628510  \n",
+        "1    107462758  \n",
+        "2    161680539  \n",
+        "3    150029501  \n",
+        "4    265527537  "
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "   ticker   tradeDate  openIndex  highestIndex  lowestIndex  closeIndex  \\\n",
+        "0  399330  2006-01-24    942.434       957.678      941.732     950.269   \n",
+        "1  399330  2006-01-25    950.427       961.500      949.530     961.500   \n",
+        "2  399330  2006-02-06    960.869       989.470      960.869     988.890   \n",
+        "3  399330  2006-02-07    990.591       995.895      976.094     985.376   \n",
+        "4  399330  2006-02-08    983.287       983.720      971.703     981.598   \n",
+        "\n",
+        "   turnoverVol  \n",
+        "0    814505410  \n",
+        "1    686026805  \n",
+        "2    800590590  \n",
+        "3   1011874594  \n",
+        "4    668818668  "
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "   ticker   tradeDate  openIndex  highestIndex  lowestIndex  closeIndex  \\\n",
+        "0  399905  2005-01-04   1881.467      1986.539     1881.467      986.93   \n",
+        "1  399905  2005-01-05   1881.467      1986.539     1881.467     1003.63   \n",
+        "2  399905  2005-01-06   1881.467      1986.539     1881.467      994.60   \n",
+        "3  399905  2005-01-07   1881.467      1986.539     1881.467      997.61   \n",
+        "4  399905  2005-01-10   1881.467      1986.539     1881.467     1006.34   \n",
+        "\n",
+        "   turnoverVol  \n",
+        "0        150.0  \n",
+        "1        150.0  \n",
+        "2        150.0  \n",
+        "3        150.0  \n",
+        "4        150.0  "
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n"
+       ]
+      }
+     ]
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "D4E525F38C1F419FB810353731A58E60",
+     "input": [],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    }
+   ],
+   "metadata": {}
+  }
+ ]
+}

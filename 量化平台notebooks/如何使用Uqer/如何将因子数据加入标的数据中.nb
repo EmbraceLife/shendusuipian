@@ -1,0 +1,90 @@
+{
+ "metadata": {
+  "signature": "sha256:7603d9fee8e27b362a97a9e2ed16efbd0dd97b536fa300538031c8fa4a825ee5"
+ },
+ "nbformat": 3,
+ "nbformat_minor": 0,
+ "worksheets": [
+  {
+   "cells": [
+    {
+     "cell_type": "strategy",
+     "collapsed": false,
+     "has_detail": true,
+     "id": "CB075C612C2847148C3B18BAD24D9491",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\nuniverse = ['600000.XSHG']\n\ndef initialize(context):                \n    # PE\u662f\u4f18\u77ff\u56e0\u5b50\u5e93\u4e2d\u7684\u4e00\u4e2a\u56e0\u5b50\uff0c\u53ef\u4ee5\u76f4\u63a5\u5728\u7b56\u7565\u8fd0\u884c\u73af\u5883\u4e2d\u6ce8\u518c\uff0c\u8868\u660e\u9700\u8981\u76f8\u5173\u6570\u636e\u3002\n    # \u9009\u56e0\u5b50 https://uqer.datayes.com/help/appendixFactors\n    a = Signal('PE')\n    b = Signal('PB')\n    context.signal_generator = SignalGenerator(a, b)\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    PE_VALUE_df = context.history(symbol='600000.XSHG', attribute=\"PE\", time_range=10) \n    # attributes\u7684\u9009\u9879\uff1a openPrice: \u524d\u590d\u6743\u5f00\u76d8\u4ef7 highPrice: \u524d\u590d\u6743\u6700\u9ad8\u4ef7 lowPrice: \u524d\u590d\u6743\u6700\u4f4e\u4ef7 closePrice: \u524d\u590d\u6743\u6536\u76d8\u4ef7 preClosePrice: \u524d\u590d\u6743\u524d\u6536\u76d8\u4ef7 turnoverVol: \u524d\u590d\u6743\u6210\u4ea4\u91cf turnoverValue: \u524d\u590d\u6743\u6210\u4ea4\u989d PE/PB\u7b49: \u4f18\u77ff\u56e0\u5b50\u5e93\u4e2d\u7684\u56e0\u5b50\n\n    yesterday = context.previous_date.strftime('%Y-%m-%d')\n    print PE_VALUE_df['600000.XSHG']['PE'][yesterday]",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "6.6264"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "6.6144\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 7,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": "",
+     "trusted": true
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": false,
+     "has_detail": true,
+     "id": "72BE357DD66E4FD299D578FBB2EA2E53",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\nuniverse = ['600000.XSHG', '000001.XSHE', '000004.XSHE']\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef initialize(context):                 \n    a = Signal('PE')\n    b = Signal('PB')\n    context.signal_generator = SignalGenerator(a, b)\n\ndef handle_data(context):\n    # \u5728\u7b56\u7565\u8fd0\u884c\u73af\u5883\u6ce8\u518c\u540e\uff0c\u5c31\u53ef\u83b7\u53d6\u6bcf\u65e5\u6a2a\u622a\u9762\u6570\u636e\u3002\n    PB_VALUE_df = context.signal_result['PB']\n    PE_VALUE_df = context.signal_result['PE']\n\n    print PE_VALUE_df\n    print PB_VALUE_df",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "000001.XSHE      7.1255\n000004.XSHE    241.3667\n600000.XSHG      6.6264\nName: 2017-02-28, dtype: float64"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n000001.XSHE     0.9131\n000004.XSHE    34.0369\n600000.XSHG     1.0872\nName: 2017-02-28, dtype: float64\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "000001.XSHE      7.1330\n000004.XSHE    244.1517\n600000.XSHG      6.6144\nName: 2017-03-01, dtype: float64\n000001.XSHE     0.9140\n000004.XSHE    34.4297\n600000.XSHG     1.0852\nName: 2017-03-01, dtype: float64\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 6,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "F7193626B55243D68301075F1B720978",
+     "input": [],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    }
+   ],
+   "metadata": {}
+  }
+ ]
+}

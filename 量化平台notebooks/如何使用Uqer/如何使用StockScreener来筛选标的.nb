@@ -1,0 +1,168 @@
+{
+ "metadata": {
+  "signature": "sha256:125025d312fc93ea9c409bcc21563c8fb289eb2488357b4b9ee4677b9bee8a06"
+ },
+ "nbformat": 3,
+ "nbformat_minor": 0,
+ "worksheets": [
+  {
+   "cells": [
+    {
+     "cell_type": "strategy",
+     "collapsed": false,
+     "has_detail": true,
+     "id": "A067D143BB1A44719EAE3585EC08B213",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n# \u8bbe\u7f6e\u8bc1\u5238\u6c60\u4e3aPE\u503c\u6700\u5927\u768410\u4e2a\u80a1\u7968\uff0c\u5e76\u52a0\u4e0a\u5e73\u5b89\u94f6\u884c\u548c\u6d66\u53d1\u94f6\u884c\nuniverse = StockScreener(Factor.PE.nlarge(10)) + ['000001.XSHE', '600000.XSHG']\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef initialize(context):                 \n    pass\n\ndef handle_data(context):\n    # \u5728\u7b56\u7565\u8fd0\u884c\u73af\u5883\u6ce8\u518c\u540e\uff0c\u5c31\u53ef\u83b7\u53d6\u6bcf\u65e5\u6a2a\u622a\u9762\u6570\u636e\u3002\n    stocks = context.get_universe()\n    print(stocks)\n    print(len(stocks))\n    ",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '000525.XSHE', '000713.XSHE', '000881.XSHE', '000933.XSHE', '002288.XSHE', '002352.XSHE', '002451.XSHE', '002468.XSHE', '002755.XSHE', '300096.XSHE', '600000.XSHG']"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n12\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '000525.XSHE', '000713.XSHE', '000881.XSHE', '000933.XSHE', '002288.XSHE', '002352.XSHE', '002451.XSHE', '002468.XSHE', '002755.XSHE', '300096.XSHE', '600000.XSHG']\n12\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 2,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": "",
+     "trusted": true
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "5570F756FF2A4D65976B7AEDFCB95260",
+     "input": [
+      "# \u4ee3\u7801\u6a21\u5f0f\u5c31\u53ef\u4ee5\n",
+      "universe = StockScreener(Factor.PE.nlarge(10))\n",
+      "universe.preview('2015-12-17')"
+     ],
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 3,
+       "text": [
+        "['600764.XSHG',\n",
+        " '002288.XSHE',\n",
+        " '002193.XSHE',\n",
+        " '002468.XSHE',\n",
+        " '600536.XSHG',\n",
+        " '000736.XSHE',\n",
+        " '002151.XSHE',\n",
+        " '600556.XSHG',\n",
+        " '600107.XSHG',\n",
+        " '002474.XSHE']"
+       ]
+      }
+     ]
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "852C9245CC07408B8151D3D7825D4C01",
+     "input": [
+      "universe = StockScreener((Factor.PE.nlarge(100) | Factor.PB.pct_range(0.95, 1)) & Factor.RSI.value_range(70, 100))\n",
+      "print(universe.preview('2015-12-17'))\n",
+      "print(universe.apply_filter(Factor.PE.nlarge(100) & Factor.PB.pct_range(0.95, 1), skip_halt=True).preview('2017-10-11'))\n",
+      "print(DynamicUniverse('HS300').apply_filter(Factor.PE.nlarge(100) & Factor.PB.pct_range(0.95, 1), skip_halt=True).preview('2017-10-11'))"
+     ],
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "['300368.XSHE', '002188.XSHE', '600247.XSHG', '002596.XSHE', '000691.XSHE', '600091.XSHG', '600829.XSHG', '600769.XSHG', '600712.XSHG', '600228.XSHG', '000705.XSHE', '300354.XSHE', '002558.XSHE', '600338.XSHG', '600821.XSHG', '600576.XSHG', '603026.XSHG', '000638.XSHE', '000034.XSHE', '000158.XSHE', '000548.XSHE', '600242.XSHG', '002411.XSHE', '600053.XSHG', '000892.XSHE', '300352.XSHE', '002058.XSHE', '000710.XSHE', '300097.XSHE', '600678.XSHG', '300089.XSHE', '000613.XSHE', '002070.XSHE', '000695.XSHE', '000835.XSHE', '600139.XSHG', '600766.XSHG', '002010.XSHE', '600589.XSHG', '000048.XSHE', '600421.XSHG', '300093.XSHE']"
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "['600083.XSHG', '600228.XSHG']"
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "['600276.XSHG', '603160.XSHG', '002466.XSHE', '002841.XSHE', '002415.XSHE', '300124.XSHE', '002558.XSHE', '600446.XSHG', '002044.XSHE', '600570.XSHG', '002230.XSHE', '002352.XSHE']"
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n"
+       ]
+      }
+     ]
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "5518D4313A9E46B49EFE0EFAF8AC35E9",
+     "input": [
+      "# StockScreener() \u72ec\u7acb\u8fd0\u4f5c\uff0c DynamicUniverse(\"\u6307\u6570\").apply_filter(), \u81ea\u5df1\u7684List universe\u4e0d\u80fd\u7528\n",
+      "# \u7528pd.Series.isin\u5e2e\u5fd9\n",
+      "universe = StockScreener(Factor.PE.nsmall(400))\n",
+      "print universe.preview('2016-10-11')\n",
+      "import pandas as pd\n",
+      "my_uni = pd.Series(['000922.XSHE', '600112.XSHG'])\n",
+      "print(my_uni[my_uni.isin(universe.preview('2016-10-11'))])\n"
+     ],
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "['000922.XSHE', '600375.XSHG', '600689.XSHG', '600112.XSHG', '600550.XSHG', '600146.XSHG', '600387.XSHG', '000630.XSHE', '000918.XSHE', '000721.XSHE', '600595.XSHG', '600794.XSHG', '600067.XSHG', '600724.XSHG', '002205.XSHE', '000913.XSHE', '002647.XSHE', '600358.XSHG', '300228.XSHE', '300161.XSHE', '000017.XSHE', '000755.XSHE', '600107.XSHG', '600745.XSHG', '000504.XSHE', '601166.XSHG', '600682.XSHG', '600961.XSHG', '000955.XSHE', '600282.XSHG', '000020.XSHE', '600152.XSHG', '300344.XSHE', '000953.XSHE', '000731.XSHE', '000782.XSHE', '002109.XSHE', '300391.XSHE', '600805.XSHG', '002070.XSHE', '600800.XSHG', '002432.XSHE', '002378.XSHE', '002199.XSHE', '000960.XSHE', '000518.XSHE', '000617.XSHE', '000813.XSHE', '000972.XSHE', '600421.XSHG', '000428.XSHE', '000680.XSHE', '002568.XSHE', '300076.XSHE', '000897.XSHE', '002566.XSHE', '603333.XSHG', '601001.XSHG', '600501.XSHG', '000852.XSHE', '002021.XSHE', '601939.XSHG', '600423.XSHG', '601288.XSHG', '002149.XSHE', '002577.XSHE', '002110.XSHE', '002147.XSHE', '600478.XSHG', '002369.XSHE', '600896.XSHG', '000800.XSHE', '603800.XSHG', '002480.XSHE', '000856.XSHE', '000612.XSHE', '002336.XSHE', '600609.XSHG', '600653.XSHG', '300082.XSHE', '600307.XSHG', '002068.XSHE', '000785.XSHE', '600175.XSHG', '300191.XSHE', '600403.XSHG', '000558.XSHE', '600963.XSHG', '002535.XSHE', '600847.XSHG', '300405.XSHE', '000835.XSHE', '002552.XSHE', '600596.XSHG', '601398.XSHG', '002570.XSHE', '002442.XSHE', '300106.XSHE', '000573.XSHE', '600603.XSHG', '000657.XSHE', '600584.XSHG', '000820.XSHE', '600230.XSHG', '600549.XSHG', '600747.XSHG', '600696.XSHG', '300092.XSHE', '600333.XSHG', '601015.XSHG', '600573.XSHG', '600455.XSHG', '002168.XSHE', '600490.XSHG', '000629.XSHE', '600096.XSHG', '300486.XSHE', '600808.XSHG', '600198.XSHG', '600365.XSHG', '002181.XSHE', '000727.XSHE', '000931.XSHE', '300337.XSHE', '300029.XSHE', '600569.XSHG', '300260.XSHE', '000959.XSHE', '300322.XSHE', '600866.XSHG', '600187.XSHG', '600844.XSHG', '002145.XSHE', '600311.XSHG', '002012.XSHE', '000410.XSHE', '002015.XSHE', '600815.XSHG', '000613.XSHE', '600127.XSHG', '300083.XSHE', '002260.XSHE', '300051.XSHE', '000157.XSHE', '603799.XSHG', '000837.XSHE', '600793.XSHG', '000655.XSHE', '300093.XSHE', '002488.XSHE', '002234.XSHE', '000753.XSHE', '002524.XSHE', '002037.XSHE', '601177.XSHG', '002263.XSHE', '601808.XSHG', '002337.XSHE', '600462.XSHG', '000791.XSHE', '600538.XSHG', '000679.XSHE', '600822.XSHG', '600368.XSHG', '000520.XSHE', '600881.XSHG', '600875.XSHG', '000962.XSHE', '300402.XSHE', '000526.XSHE', '002134.XSHE', '002702.XSHE', '600235.XSHG', '002106.XSHE', '000767.XSHE', '600839.XSHG', '002667.XSHE', '000911.XSHE', '000795.XSHE', '002265.XSHE', '300312.XSHE', '000798.XSHE', '600228.XSHG', '000877.XSHE', '002582.XSHE', '600792.XSHG', '600476.XSHG', '601969.XSHG', '600097.XSHG', '601225.XSHG', '002058.XSHE', '000886.XSHE', '600052.XSHG', '300397.XSHE', '600539.XSHG', '000723.XSHE', '000606.XSHE', '000930.XSHE', '002069.XSHE', '002648.XSHE', '300013.XSHE', '600556.XSHG', '600126.XSHG', '000687.XSHE', '600691.XSHG', '600546.XSHG', '600291.XSHG', '300164.XSHE', '600339.XSHG', '601919.XSHG', '300102.XSHE', '000595.XSHE', '600767.XSHG', '601118.XSHG', '600882.XSHG', '601558.XSHG', '002052.XSHE', '600156.XSHG', '601608.XSHG', '002163.XSHE', '600817.XSHG', '601666.XSHG', '002231.XSHE', '000557.XSHE', '300282.XSHE', '600432.XSHG', '600123.XSHG', '000007.XSHE', '601898.XSHG', '002483.XSHE', '603616.XSHG', '600361.XSHG', '600819.XSHG', '300313.XSHE', '000702.XSHE', '002269.XSHE', '600010.XSHG', '002569.XSHE', '600532.XSHG', '600698.XSHG', '000898.XSHE', '601003.XSHG', '002264.XSHE', '600259.XSHG', '600139.XSHG', '600680.XSHG', '000759.XSHE', '300268.XSHE', '002428.XSHE', '600148.XSHG', '000159.XSHE', '002341.XSHE', '600392.XSHG', '600971.XSHG', '600256.XSHG', '000737.XSHE', '300330.XSHE', '600293.XSHG', '600721.XSHG', '002755.XSHE', '002420.XSHE', '300220.XSHE', '002272.XSHE', '300105.XSHE', '600117.XSHG', '002046.XSHE', '002490.XSHE', '600997.XSHG', '600802.XSHG', '600520.XSHG', '601818.XSHG', '600322.XSHG', '600265.XSHG', '000760.XSHE', '000608.XSHE', '002312.XSHE', '600243.XSHG', '601519.XSHG', '000597.XSHE', '600758.XSHG', '600610.XSHG', '600883.XSHG', '000678.XSHE', '600389.XSHG', '002423.XSHE', '002097.XSHE', '600806.XSHG', '603003.XSHG', '600678.XSHG', '600714.XSHG', '000779.XSHE', '000809.XSHE', '600238.XSHG', '002392.XSHE', '600355.XSHG', '601988.XSHG', '600645.XSHG', '000426.XSHE', '002115.XSHE', '600150.XSHG', '300340.XSHE', '600132.XSHG', '600321.XSHG', '002313.XSHE', '000585.XSHE', '000401.XSHE', '600249.XSHG', '002154.XSHE', '600740.XSHG', '002136.XSHE', '300226.XSHE', '600860.XSHG', '600397.XSHG', '000019.XSHE', '002379.XSHE', '601106.XSHG', '601328.XSHG', '002431.XSHE', '002240.XSHE', '000968.XSHE', '000528.XSHE', '002248.XSHE', '600005.XSHG', '002387.XSHE', '002167.XSHE', '002715.XSHE', '600169.XSHG', '000502.XSHE', '000638.XSHE', '600894.XSHG', '002549.XSHE', '300126.XSHE', '000950.XSHE', '600275.XSHG', '600225.XSHG', '600082.XSHG', '002064.XSHE', '600425.XSHG', '600359.XSHG', '000825.XSHE', '002459.XSHE', '000589.XSHE', '600346.XSHG', '000016.XSHE', '300275.XSHE', '000790.XSHE', '600058.XSHG', '000979.XSHE', '600348.XSHG', '000929.XSHE', '600367.XSHG', '600730.XSHG', '000982.XSHE', '601918.XSHG', '600103.XSHG', '000995.XSHE', '600237.XSHG', '601388.XSHG', '600186.XSHG', '600262.XSHG', '600088.XSHG', '000831.XSHE', '002072.XSHE', '600137.XSHG', '600581.XSHG', '600540.XSHG', '600149.XSHG', '600770.XSHG', '002105.XSHE', '000521.XSHE', '600871.XSHG', '600456.XSHG', '603399.XSHG', '000933.XSHE', '000932.XSHE', '600778.XSHG', '000885.XSHE', '000717.XSHE', '000725.XSHE', '600428.XSHG', '000862.XSHE', '600015.XSHG', '600877.XSHG', '002229.XSHE', '600765.XSHG', '600121.XSHG', '002209.XSHE', '601989.XSHG', '002066.XSHE', '000761.XSHE', '601958.XSHG', '600744.XSHG', '300128.XSHE', '002211.XSHE', '000622.XSHE', '000780.XSHE', '600967.XSHG', '600179.XSHG', '601616.XSHG', '600202.XSHG']"
+       ]
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": [
+        "\n",
+        "0    000922.XSHE\n",
+        "1    600112.XSHG\n",
+        "dtype: object\n"
+       ]
+      }
+     ]
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "A8594FD7DA6443878ABEF8127F9F65AB",
+     "input": [],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    }
+   ],
+   "metadata": {}
+  }
+ ]
+}

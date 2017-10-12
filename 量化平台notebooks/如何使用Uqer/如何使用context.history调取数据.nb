@@ -1,0 +1,57 @@
+{
+ "metadata": {
+  "signature": "sha256:6c4b44fddf8772f6fad5879553e87e59207f9e1fd2680a232293191b92f57014"
+ },
+ "nbformat": 3,
+ "nbformat_minor": 0,
+ "worksheets": [
+  {
+   "cells": [
+    {
+     "cell_type": "strategy",
+     "collapsed": false,
+     "has_detail": true,
+     "id": "17F1958662334E90BABB91688A69F918",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\nuniverse = ['600000.XSHG']\n\ndef handle_data(context):\n    yesterday = context.previous_date.strftime('%Y-%m-%d') # datetime object to string\n    print yesterday\n\n    # freq = '1m', '5m', '15m', '30m', '60m', '1d'\n    # style = 'sat' \n    # rtype = 'frame' as pd.DataFrame; 'array' for np.array for talib\n    # symbol = str, list, 'all'\n    # attribute = str or list: preclose, OHLCV, cash, adjFactor, ta-indicators if initialised\n    # time_range = 1 default \u56de\u6eaf\u65f6\u95f4\u5468\u671f\n    # sat \u987a\u5e8f\uff0c\u662f\u9ed8\u8ba4\u987a\u5e8f\n    CLOSE_PRICE_df = context.history(symbol='600000.XSHG', attribute=\"closePrice\", time_range=10, freq='1d', style='sat')\n    print CLOSE_PRICE_df['600000.XSHG']['closePrice'][yesterday] # \u6807\u7684\u540d-\u4ef7\u683c\u540d-\u65e5\u671f\n    # CLOSE_PRICE_df['600000.XSHG']['closePrice'][0].round(3)\n    # CLOSE_PRICE_df['600000.XSHG']['closePrice'][-1].round(3)\n    print CLOSE_PRICE_df\n\n#     # ast \u987a\u5e8f\uff0c\u662f\u9ed8\u8ba4\u987a\u5e8f\n#     CLOSE_PRICE_df = context.history(symbol='600000.XSHG', attribute=\"closePrice\", time_range=10, freq='1d', style='ast')\n#     print CLOSE_PRICE_df['closePrice']['600000.XSHG'][yesterday]    \n\n#     # tas \u987a\u5e8f\uff0c\u662f\u9ed8\u8ba4\u987a\u5e8f\n#     CLOSE_PRICE_df = context.history(symbol='600000.XSHG', attribute=\"closePrice\", time_range=10, freq='1d', style='tas')\n#     print CLOSE_PRICE_df[yesterday]['closePrice']['600000.XSHG']",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "2017-02-28"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n12.601\n{'600000.XSHG':             closePrice\n2017-02-15      12.791\n2017-02-16      12.745\n2017-02-17      12.639\n2017-02-20      12.844\n2017-02-21      12.821\n2017-02-22      12.722\n2017-02-23      12.677\n2017-02-24      12.692\n2017-02-27      12.601\n2017-02-28      12.601}\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "2017-03-01\n12.578\n{'600000.XSHG':             closePrice\n2017-02-16      12.745\n2017-02-17      12.639\n2017-02-20      12.844\n2017-02-21      12.821\n2017-02-22      12.722\n2017-02-23      12.677\n2017-02-24      12.692\n2017-02-27      12.601\n2017-02-28      12.601\n2017-03-01      12.578}\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 11,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": "",
+     "trusted": true
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "23135D4CF1D84456BA34A72303A1E9CA",
+     "input": [],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    }
+   ],
+   "metadata": {}
+  }
+ ]
+}

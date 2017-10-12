@@ -1,0 +1,303 @@
+{
+ "metadata": {
+  "signature": "sha256:5a0a5dcc5b039d243454eb7d331afcdbcd257c960e04cb6cca805b1996e6ab0e"
+ },
+ "nbformat": 3,
+ "nbformat_minor": 0,
+ "worksheets": [
+  {
+   "cells": [
+    {
+     "cell_type": "markdown",
+     "id": "10B21C62ACB74371BADCCB87FA6DB0BA",
+     "metadata": {},
+     "source": [
+      "# [Universe](https://uqer.datayes.com/help/strategyManualV3/#\u7b56\u7565\u8d44\u4ea7\u6c60)"
+     ]
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": true,
+     "has_detail": true,
+     "id": "85E0588453134751932A479165C8A95A",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\nuniverse = DynamicUniverse('HS300')  \naccounts = {\n    'fantasy_account': AccountConfig(account_type='security', capital_base=10000000)\n}\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    print context.get_universe() # \u8f93\u51fa2\u4e2alist, list of 300 stocks\uff0c\u6700\u65b0\u66f4\u65b0\u7684\u6807\u7684\u6c60\n    print context.history() # \u4ef7\u683c\u4fe1\u606f\n    account = context.get_account(\"fantasy_account\") # \u8c03\u53d6account \u4fe1\u606f\n    print(account.order) # \u5f00\u59cb\u4ea4\u6613",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '000002.XSHE', '000008.XSHE', '000009.XSHE', '000027.XSHE', '000039.XSHE', '000060.XSHE', '000061.XSHE', '000063.XSHE', '000069.XSHE', '000100.XSHE', '000156.XSHE', '000157.XSHE', '000166.XSHE', '000333.XSHE', '000338.XSHE', '000402.XSHE', '000413.XSHE', '000415.XSHE', '000423.XSHE', '000425.XSHE', '000503.XSHE', '000538.XSHE', '000540.XSHE', '000555.XSHE', '000559.XSHE', '000568.XSHE', '000623.XSHE', '000625.XSHE', '000627.XSHE', '000630.XSHE', '000651.XSHE', '000671.XSHE', '000686.XSHE', '000709.XSHE', '000712.XSHE', '000718.XSHE', '000725.XSHE', '000728.XSHE', '000738.XSHE', '000750.XSHE', '000768.XSHE', '000776.XSHE', '000778.XSHE', '000783.XSHE', '000792.XSHE', '000793.XSHE', '000800.XSHE', '000826.XSHE', '000839.XSHE', '000858.XSHE', '000876.XSHE', '000895.XSHE', '000917.XSHE', '000938.XSHE', '000963.XSHE', '000977.XSHE', '000983.XSHE', '001979.XSHE', '002007.XSHE', '002008.XSHE', '002024.XSHE', '002027.XSHE', '002049.XSHE', '002065.XSHE', '002074.XSHE', '002081.XSHE', '002085.XSHE', '002129.XSHE', '002131.XSHE', '002142.XSHE', '002146.XSHE', '002152.XSHE', '002153.XSHE', '002174.XSHE', '002183.XSHE', '002195.XSHE', '002202.XSHE', '002230.XSHE', '002236.XSHE', '002241.XSHE', '002252.XSHE', '002292.XSHE', '002299.XSHE', '002304.XSHE', '002310.XSHE', '002385.XSHE', '002415.XSHE', '002424.XSHE', '002426.XSHE', '002450.XSHE', '002456.XSHE', '002465.XSHE', '002466.XSHE', '002470.XSHE', '002475.XSHE', '002500.XSHE', '002568.XSHE', '002594.XSHE', '002673.XSHE', '002714.XSHE', '002736.XSHE', '002739.XSHE', '002797.XSHE', '300002.XSHE', '300015.XSHE', '300017.XSHE', '300024.XSHE', '300027.XSHE', '300033.XSHE', '300058.XSHE', '300059.XSHE', '300070.XSHE', '300072.XSHE', '300085.XSHE', '300104.XSHE', '300124.XSHE', '300133.XSHE', '300144.XSHE', '300146.XSHE', '300168.XSHE', '300182.XSHE', '300251.XSHE', '300315.XSHE', '600000.XSHG', '600008.XSHG', '600009.XSHG', '600010.XSHG', '600015.XSHG', '600016.XSHG', '600018.XSHG', '600019.XSHG', '600021.XSHG', '600023.XSHG', '600028.XSHG', '600029.XSHG', '600030.XSHG', '600031.XSHG', '600036.XSHG', '600037.XSHG', '600038.XSHG', '600048.XSHG', '600050.XSHG', '600060.XSHG', '600061.XSHG', '600066.XSHG', '600068.XSHG', '600074.XSHG', '600085.XSHG', '600089.XSHG', '600100.XSHG', '600104.XSHG', '600109.XSHG', '600111.XSHG', '600115.XSHG', '600118.XSHG', '600150.XSHG', '600153.XSHG', '600157.XSHG', '600170.XSHG', '600177.XSHG', '600188.XSHG', '600196.XSHG', '600208.XSHG', '600221.XSHG', '600252.XSHG', '600256.XSHG', '600271.XSHG', '600276.XSHG', '600297.XSHG', '600309.XSHG', '600332.XSHG', '600340.XSHG', '600352.XSHG', '600362.XSHG', '600369.XSHG', '600372.XSHG', '600373.XSHG', '600376.XSHG', '600383.XSHG', '600406.XSHG', '600415.XSHG', '600446.XSHG', '600482.XSHG', '600485.XSHG', '600489.XSHG', '600498.XSHG', '600518.XSHG', '600519.XSHG', '600535.XSHG', '600547.XSHG', '600549.XSHG', '600570.XSHG', '600582.XSHG', '600583.XSHG', '600585.XSHG', '600588.XSHG', '600606.XSHG', '600637.XSHG', '600648.XSHG', '600649.XSHG', '600654.XSHG', '600660.XSHG', '600663.XSHG', '600666.XSHG', '600674.XSHG', '600685.XSHG', '600688.XSHG', '600690.XSHG', '600703.XSHG', '600704.XSHG', '600705.XSHG', '600718.XSHG', '600737.XSHG', '600739.XSHG', '600741.XSHG', '600754.XSHG', '600783.XSHG', '600795.XSHG', '600804.XSHG', '600816.XSHG', '600820.XSHG', '600827.XSHG', '600837.XSHG', '600839.XSHG', '600867.XSHG', '600871.XSHG', '600873.XSHG', '600875.XSHG', '600886.XSHG', '600887.XSHG', '600893.XSHG', '600895.XSHG', '600900.XSHG', '600958.XSHG', '600959.XSHG', '600999.XSHG', '601006.XSHG', '601009.XSHG', '601018.XSHG', '601021.XSHG', '601088.XSHG', '601099.XSHG', '601111.XSHG', '601118.XSHG', '601127.XSHG', '601155.XSHG', '601166.XSHG', '601169.XSHG', '601186.XSHG', '601198.XSHG', '601211.XSHG', '601216.XSHG', '601225.XSHG', '601258.XSHG', '601288.XSHG', '601318.XSHG', '601328.XSHG', '601333.XSHG', '601336.XSHG', '601377.XSHG', '601390.XSHG', '601398.XSHG', '601555.XSHG', '601600.XSHG', '601601.XSHG', '601607.XSHG', '601608.XSHG', '601611.XSHG', '601618.XSHG', '601628.XSHG', '601633.XSHG', '601668.XSHG', '601669.XSHG', '601688.XSHG', '601718.XSHG', '601727.XSHG', '601766.XSHG', '601788.XSHG', '601800.XSHG', '601818.XSHG', '601857.XSHG', '601866.XSHG', '601872.XSHG', '601877.XSHG', '601888.XSHG', '601899.XSHG', '601901.XSHG', '601919.XSHG', '601928.XSHG', '601933.XSHG', '601939.XSHG', '601958.XSHG', '601985.XSHG', '601988.XSHG', '601989.XSHG', '601998.XSHG', '603000.XSHG', '603885.XSHG', '603993.XSHG']"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n<bound method StockAccount.order of <quartz.account.stock_account.StockAccount object at 0x9846dd0>>\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '000002.XSHE', '000008.XSHE', '000009.XSHE', '000027.XSHE', '000039.XSHE', '000060.XSHE', '000061.XSHE', '000063.XSHE', '000069.XSHE', '000100.XSHE', '000156.XSHE', '000157.XSHE', '000166.XSHE', '000333.XSHE', '000338.XSHE', '000402.XSHE', '000413.XSHE', '000415.XSHE', '000423.XSHE', '000425.XSHE', '000503.XSHE', '000538.XSHE', '000540.XSHE', '000555.XSHE', '000559.XSHE', '000568.XSHE', '000623.XSHE', '000625.XSHE', '000627.XSHE', '000630.XSHE', '000651.XSHE', '000671.XSHE', '000686.XSHE', '000709.XSHE', '000712.XSHE', '000718.XSHE', '000725.XSHE', '000728.XSHE', '000738.XSHE', '000750.XSHE', '000768.XSHE', '000776.XSHE', '000778.XSHE', '000783.XSHE', '000792.XSHE', '000793.XSHE', '000800.XSHE', '000826.XSHE', '000839.XSHE', '000858.XSHE', '000876.XSHE', '000895.XSHE', '000917.XSHE', '000938.XSHE', '000963.XSHE', '000977.XSHE', '000983.XSHE', '001979.XSHE', '002007.XSHE', '002008.XSHE', '002024.XSHE', '002027.XSHE', '002049.XSHE', '002065.XSHE', '002074.XSHE', '002081.XSHE', '002085.XSHE', '002129.XSHE', '002131.XSHE', '002142.XSHE', '002146.XSHE', '002152.XSHE', '002153.XSHE', '002174.XSHE', '002183.XSHE', '002195.XSHE', '002202.XSHE', '002230.XSHE', '002236.XSHE', '002241.XSHE', '002252.XSHE', '002292.XSHE', '002299.XSHE', '002304.XSHE', '002310.XSHE', '002385.XSHE', '002415.XSHE', '002424.XSHE', '002426.XSHE', '002450.XSHE', '002456.XSHE', '002465.XSHE', '002466.XSHE', '002470.XSHE', '002475.XSHE', '002500.XSHE', '002568.XSHE', '002594.XSHE', '002673.XSHE', '002714.XSHE', '002736.XSHE', '002739.XSHE', '002797.XSHE', '300002.XSHE', '300015.XSHE', '300017.XSHE', '300024.XSHE', '300027.XSHE', '300033.XSHE', '300058.XSHE', '300059.XSHE', '300070.XSHE', '300072.XSHE', '300085.XSHE', '300104.XSHE', '300124.XSHE', '300133.XSHE', '300144.XSHE', '300146.XSHE', '300168.XSHE', '300182.XSHE', '300251.XSHE', '300315.XSHE', '600000.XSHG', '600008.XSHG', '600009.XSHG', '600010.XSHG', '600015.XSHG', '600016.XSHG', '600018.XSHG', '600019.XSHG', '600021.XSHG', '600023.XSHG', '600028.XSHG', '600029.XSHG', '600030.XSHG', '600031.XSHG', '600036.XSHG', '600037.XSHG', '600038.XSHG', '600048.XSHG', '600050.XSHG', '600060.XSHG', '600061.XSHG', '600066.XSHG', '600068.XSHG', '600074.XSHG', '600085.XSHG', '600089.XSHG', '600100.XSHG', '600104.XSHG', '600109.XSHG', '600111.XSHG', '600115.XSHG', '600118.XSHG', '600150.XSHG', '600153.XSHG', '600157.XSHG', '600170.XSHG', '600177.XSHG', '600188.XSHG', '600196.XSHG', '600208.XSHG', '600221.XSHG', '600252.XSHG', '600256.XSHG', '600271.XSHG', '600276.XSHG', '600297.XSHG', '600309.XSHG', '600332.XSHG', '600340.XSHG', '600352.XSHG', '600362.XSHG', '600369.XSHG', '600372.XSHG', '600373.XSHG', '600376.XSHG', '600383.XSHG', '600406.XSHG', '600415.XSHG', '600446.XSHG', '600482.XSHG', '600485.XSHG', '600489.XSHG', '600498.XSHG', '600518.XSHG', '600519.XSHG', '600535.XSHG', '600547.XSHG', '600549.XSHG', '600570.XSHG', '600582.XSHG', '600583.XSHG', '600585.XSHG', '600588.XSHG', '600606.XSHG', '600637.XSHG', '600648.XSHG', '600649.XSHG', '600654.XSHG', '600660.XSHG', '600663.XSHG', '600666.XSHG', '600674.XSHG', '600685.XSHG', '600688.XSHG', '600690.XSHG', '600703.XSHG', '600704.XSHG', '600705.XSHG', '600718.XSHG', '600737.XSHG', '600739.XSHG', '600741.XSHG', '600754.XSHG', '600783.XSHG', '600795.XSHG', '600804.XSHG', '600816.XSHG', '600820.XSHG', '600827.XSHG', '600837.XSHG', '600839.XSHG', '600867.XSHG', '600871.XSHG', '600873.XSHG', '600875.XSHG', '600886.XSHG', '600887.XSHG', '600893.XSHG', '600895.XSHG', '600900.XSHG', '600958.XSHG', '600959.XSHG', '600999.XSHG', '601006.XSHG', '601009.XSHG', '601018.XSHG', '601021.XSHG', '601088.XSHG', '601099.XSHG', '601111.XSHG', '601118.XSHG', '601127.XSHG', '601155.XSHG', '601166.XSHG', '601169.XSHG', '601186.XSHG', '601198.XSHG', '601211.XSHG', '601216.XSHG', '601225.XSHG', '601258.XSHG', '601288.XSHG', '601318.XSHG', '601328.XSHG', '601333.XSHG', '601336.XSHG', '601377.XSHG', '601390.XSHG', '601398.XSHG', '601555.XSHG', '601600.XSHG', '601601.XSHG', '601607.XSHG', '601608.XSHG', '601611.XSHG', '601618.XSHG', '601628.XSHG', '601633.XSHG', '601668.XSHG', '601669.XSHG', '601688.XSHG', '601718.XSHG', '601727.XSHG', '601766.XSHG', '601788.XSHG', '601800.XSHG', '601818.XSHG', '601857.XSHG', '601866.XSHG', '601872.XSHG', '601877.XSHG', '601888.XSHG', '601899.XSHG', '601901.XSHG', '601919.XSHG', '601928.XSHG', '601933.XSHG', '601939.XSHG', '601958.XSHG', '601985.XSHG', '601988.XSHG', '601989.XSHG', '601998.XSHG', '603000.XSHG', '603885.XSHG', '603993.XSHG']\n<bound method StockAccount.order of <quartz.account.stock_account.StockAccount object at 0x9846dd0>>\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 6,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": true,
+     "has_detail": true,
+     "id": "85286D575EBF4AF8866C8AEBD98FA2BD",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n# \u8bbe\u5b9a\u8d44\u4ea7\u8303\u56f4\u4e3a\u5e73\u5b89\u94f6\u884c\u548c\u6d66\u53d1\u94f6\u884c\nuniverse = ['000001.XSHE', '600000.XSHG'] # \u9759\u6001\u6807\u7684\u6c60\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    # \u83b7\u5f97\u7684\u5217\u8868\uff0c\u5305\u542b\u5e73\u5b89\u94f6\u884c\u548c\u6d66\u53d1\u94f6\u884c\n    print context.get_universe()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '600000.XSHG']"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '600000.XSHG']\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 8,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": true,
+     "has_detail": true,
+     "id": "C5A73255CE58419FA495C299B2F251AA",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n# \u8bbe\u5b9a\u8d44\u4ea7\u8303\u56f4\u4e3a\u6caa\u6df1300\u677f\u5757\u6210\u5206\u80a1\nuniverse = DynamicUniverse('HS300')  # \u52a8\u6001\u6807\u7684\u6c60\uff0c\u4e14\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    # \u4ec5\u5305\u542b\u5f53\u5929\u53ef\u4ea4\u6613\u7684\u8d44\u4ea7\u5217\u8868\n    allstocks = context.get_universe(exclude_halt=True) # \u4e0d\u8003\u8651\u505c\u724c\u7684\u80a1\u7968\u6216\u5f53\u5929\u4e0d\u53ef\u4ea4\u6613\u7684\u80a1\u7968\n    print len(allstocks)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "283"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "283\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 7,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": "",
+     "trusted": true
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": true,
+     "has_detail": true,
+     "id": "AC739E08BC9045E88CAA2BD9319A158B",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n# \u8bbe\u5b9a\u8d44\u4ea7\u8303\u56f4\u4e3a\u884c\u4e1a\u6210\u5206\u80a1\uff08\u767d\u9152\u884c\u4e1a\uff09\nuniverse = DynamicUniverse(IndSW.BaiJiuL3)  # \u67e5\u8be2\u884c\u4e1a\u6307\u6570 https://uqer.datayes.com/help/appendixIndustry                                             \n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    # \u83b7\u5f97\u7684\u5217\u8868\uff0c\u5305\u542b\u5b9e\u65f6\u8c03\u6574\u7684\u767d\u9152\u884c\u4e1a\u7684\u6210\u5206\u80a1\n    all_stocks = context.get_universe()\n    print len(all_stocks)\n    print context.get_universe()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "18"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n['000568.XSHE', '000596.XSHE', '000799.XSHE', '000858.XSHE', '000860.XSHE', '000995.XSHE', '002304.XSHE', '600197.XSHG', '600199.XSHG', '600519.XSHG', '600559.XSHG', '600702.XSHG', '600779.XSHG', '600809.XSHG', '603198.XSHG', '603369.XSHG', '603589.XSHG', '603919.XSHG']\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "18\n['000568.XSHE', '000596.XSHE', '000799.XSHE', '000858.XSHE', '000860.XSHE', '000995.XSHE', '002304.XSHE', '600197.XSHG', '600199.XSHG', '600519.XSHG', '600559.XSHG', '600702.XSHG', '600779.XSHG', '600809.XSHG', '603198.XSHG', '603369.XSHG', '603589.XSHG', '603919.XSHG']\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 5,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "36600BDB0C554EDD8FC85A8F8BEB10FE",
+     "input": [
+      "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\n",
+      "start = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\n",
+      "end = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n",
+      "# \u8bbe\u5b9a\u8d44\u4ea7\u8303\u56f4\u4e3a 399102.ZICN \u6307\u6570\u6210\u5206\u80a1\n",
+      "universe = DynamicUniverse('399102.ZICN')\n",
+      "\n",
+      "############################ \u7b56\u7565\u903b\u8f91 ############################\n",
+      "def handle_data(context):\n",
+      "    # \u83b7\u5f97\u7684\u5217\u8868\uff0c\u5305\u542b\u5b9e\u65f6\u8c03\u6574\u7684 399102.ZICN \u6307\u6570\u6210\u5206\u80a1\n",
+      "    print context.get_universe()"
+     ],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": true,
+     "has_detail": true,
+     "id": "8166A4BFD41B47DCBC7E5E34A53CC7B4",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n\nuniverse = ['300001.XSHE'] + DynamicUniverse('SH50')  # \u6df7\u5408\u5408\u5e76universe\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    # \u83b7\u5f97\u7684\u5217\u8868\uff0c\u5305\u542b\u6caa\u6df1300\u52a8\u6001\u8d44\u4ea7\u6c60\u548c\u666e\u901a\u5217\u8868\u7684\u5e76\u96c6\n    print len(context.get_universe())\n    print context.get_universe()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "51"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n['300001.XSHE', '600000.XSHG', '600016.XSHG', '600028.XSHG', '600029.XSHG', '600030.XSHG', '600036.XSHG', '600048.XSHG', '600050.XSHG', '600100.XSHG', '600104.XSHG', '600109.XSHG', '600111.XSHG', '600485.XSHG', '600518.XSHG', '600519.XSHG', '600547.XSHG', '600637.XSHG', '600837.XSHG', '600887.XSHG', '600893.XSHG', '600958.XSHG', '600999.XSHG', '601006.XSHG', '601088.XSHG', '601166.XSHG', '601169.XSHG', '601186.XSHG', '601198.XSHG', '601211.XSHG', '601288.XSHG', '601318.XSHG', '601328.XSHG', '601336.XSHG', '601377.XSHG', '601390.XSHG', '601398.XSHG', '601601.XSHG', '601628.XSHG', '601668.XSHG', '601688.XSHG', '601766.XSHG', '601788.XSHG', '601800.XSHG', '601818.XSHG', '601857.XSHG', '601901.XSHG', '601985.XSHG', '601988.XSHG', '601989.XSHG', '601998.XSHG']\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "51\n['300001.XSHE', '600000.XSHG', '600016.XSHG', '600028.XSHG', '600029.XSHG', '600030.XSHG', '600036.XSHG', '600048.XSHG', '600050.XSHG', '600100.XSHG', '600104.XSHG', '600109.XSHG', '600111.XSHG', '600485.XSHG', '600518.XSHG', '600519.XSHG', '600547.XSHG', '600637.XSHG', '600837.XSHG', '600887.XSHG', '600893.XSHG', '600958.XSHG', '600999.XSHG', '601006.XSHG', '601088.XSHG', '601166.XSHG', '601169.XSHG', '601186.XSHG', '601198.XSHG', '601211.XSHG', '601288.XSHG', '601318.XSHG', '601328.XSHG', '601336.XSHG', '601377.XSHG', '601390.XSHG', '601398.XSHG', '601601.XSHG', '601628.XSHG', '601668.XSHG', '601688.XSHG', '601766.XSHG', '601788.XSHG', '601800.XSHG', '601818.XSHG', '601857.XSHG', '601901.XSHG', '601985.XSHG', '601988.XSHG', '601989.XSHG', '601998.XSHG']\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 13,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": true,
+     "has_detail": true,
+     "id": "39C28989D8A94D3D9CF1DD985B9FA358",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n# \u5168A\u80a1\uff0cPE\u6700\u5c0f\u7684100\u4e2a\u80a1\u7968\nuniverse = DynamicUniverse('A').apply_filter(Factor.PE.nsmall(5))\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):\n    # \u83b7\u5f97\u5b9e\u65f6\u8c03\u6574\u7684PE\u6700\u5c0f\u7684100\u4e2a\u80a1\u7968\u5217\u8868\n    print context.get_universe()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000925.XSHE', '002068.XSHE', '600365.XSHG', '600462.XSHG', '601958.XSHG']"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000925.XSHE', '002068.XSHE', '600365.XSHG', '600462.XSHG', '601958.XSHG']\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 6,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "976C71F5925F4947856784D8E5E22C3C",
+     "input": [
+      "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\n",
+      "start = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\n",
+      "end = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\n",
+      "# \u5168A\u80a1\uff0cPE\u6700\u5c0f\u7684100\u4e2a\u80a1\u7968\n",
+      "universe = DynamicUniverse('A').apply_filter(Factor.PE.nsmall(100)) # \u67e5\u9605\u6240\u6709\u7684Factor, \u548cFactor\u5185\u90e8\u7684doc\n",
+      "\n",
+      "############################ \u7b56\u7565\u903b\u8f91 ############################\n",
+      "def handle_data(context):\n",
+      "    # \u83b7\u5f97\u5b9e\u65f6\u8c03\u6574\u7684PE\u6700\u5c0f\u7684100\u4e2a\u80a1\u7968\u5217\u8868\n",
+      "    print context.get_universe()"
+     ],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    },
+    {
+     "cell_type": "strategy",
+     "collapsed": false,
+     "has_detail": true,
+     "id": "B5110F8FCA07492D83A4C22615D8423E",
+     "input": "########################### \u521d\u59cb\u5316\u914d\u7f6e ###########################\nstart = '2017-03-01'  # \u57282017\u5e741\u67081\u65e5\u5f00\u59cb\u56de\u6d4b\nend = '2017-03-02'    # \u57282017\u5e745\u67081\u65e5\u7ed3\u675f\u56de\u6d4b\nuniverse = ['000001.XSHE', 'IFM0', '399102.ZICN', \"000333.XSHE\"]\n\n############################ \u7b56\u7565\u903b\u8f91 ############################\ndef handle_data(context):    \n    # \u8fd4\u56de 000001.XSHE\n    stock_list = context.get_universe('stock')\n    print stock_list\n    # \u8fd4\u56de IFM0\n    futures_list = context.get_universe('futures')\n    print futures_list\n    # index\n    idx_list = context.get_universe('index')\n    print idx_list",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '000333.XSHE']"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "\n['IFM0']\n['399102.ZICN']\n"
+      },
+      {
+       "output_type": "stream",
+       "stream": "stdout",
+       "text": "['000001.XSHE', '000333.XSHE']\n['IFM0']\n['399102.ZICN']\n"
+      },
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 8,
+       "text": "'{\"information\": 6.83063, \"benchmark_cumulative_return\": {\"1488412800000\": -0.0051303141, \"1488326400000\": 0.0016299767}, \"benchmark_annualized_return\": -0.47426, \"turnover_rate\": 0.0, \"max_drawdown\": 0.0, \"beta\": 0.0, \"sharpe\": null, \"alpha\": 0.0, \"volatility\": 0.0, \"annualized_return\": 0.0, \"cumulative_return\": {\"1488412800000\": 0.0, \"1488326400000\": 0.0}}'"
+      }
+     ],
+     "trading_days": ""
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "id": "3871C1B3A915432E9643972028D75548",
+     "input": [],
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    }
+   ],
+   "metadata": {}
+  }
+ ]
+}

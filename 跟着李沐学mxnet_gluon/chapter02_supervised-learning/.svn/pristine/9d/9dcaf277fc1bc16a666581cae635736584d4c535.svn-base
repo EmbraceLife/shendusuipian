@@ -1,0 +1,490 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Overfitting and regularization\n",
+    "\n",
+    "In [the last tutorial](./P02-C03-softmax-regression-scratch.ipynb), we introduced the task of multiclass classification. We showed how you can tackle this problem with a linear model called logistic regression. Owing to some amount of randomness, you might get slightly different results, but when I ran the notebook, the model achieved 88.1% accuracy on the training data and actually did slightly (but not significantly) better on the test data than on the training data. \n",
+    " \n",
+    "Not every algorithm that performs well on training data will also perform well on test data. Take, for example, a trivial algorithm that memorizes its inputs and stores the associated labels. This model would have 100% accuracy on training data but would have no way of making any prediction at all on previously unseen data. \n",
+    "\n",
+    "The goal of supervised learning is to produce models that *generalize* to previously unseen data. When a model achieves low error on training data but performs much worse on test data, we say that the model has *overfit*. This means that the model has caught on to idiosyncratic features of the training data (e.g. one \"2\" happened to have a white pixel in the top-right corner), but hasn't really picked up on general patterns. \n",
+    "\n",
+    "We can express this more formally. The quantity we really care about is the test error $e$. Because this quantity reflects the error of our model when generalized to previously unseen data, we commonly call it the *generalization error*. When we have simple models and abundant data, we expect the generalization error to resemble the training error. When we work with more complex models and fewer examples, we expect the training error to go down but the generalization gap to grow. Fixing the size of the dataset, the following graph should give you some intuition about what we generally expect to see.\n",
+    "\n",
+    "![](../img/regularization-overfitting.png)\n",
+    "\n",
+    "What precisely constitutes model complexity is a complex matter. Many factors govern whether a model will generalize well. For example a model with more parameters might be considered more complex. A model whose parameters can take a wider range of values might be more complex. Often with neural networks, we think of a model that takes more training steps as more complex, and one subject to *early stopping* as less complex. \n",
+    "\n",
+    "It can be difficult to compare the complexity among members of very different model classes (say decision trees versus neural networks). Researchers in the field of statistical learning theory have developed a large body of mathematical analysis that formulizes the notion of model complexity and provides guarantees on the generalization error for simple classes of models. *We won't get into this theory but may delve deeper in a future chapter*. For now a simple rule of thumb is quite useful: A model that can readily explain *arbitrary* facts is what statisticians view as complex, whereas one that has only a limited expressive power but still manages to explain the data well is probably closer to the truth. In philosophy this is closely related to Popper's criterion of [falsifiability](https://en.wikipedia.org/wiki/Falsifiability) of a scientific theory: a theory is good if it fits data and if there are specific tests which can be used to disprove it. This is important since all statistical estimation is [post hoc](https://en.wikipedia.org/wiki/Post_hoc), i.e. we estimate after we observe the facts, hence vulnerable to the associated fallacy. Ok, enough of philosophy, let's get to more tangible issues.\n",
+    "\n",
+    "To give you some intuition in this chapter, we'll focus on a few factors that tend to influence the generalizability of a model class:\n",
+    "\n",
+    "1. **The number of tunable parameters.** When the number of tunable parameters, sometimes denoted as the number of degrees of freedom, is large, models tend to be more susceptible to overfitting.\n",
+    "2. **The values taken by the parameters.** When weights can take a wider range of values, models can be more susceptible to over fitting.\n",
+    "3. **The number of training examples.** It's trivially easy to overfit a dataset containing only one or two examples even if your model is simple. But overfitting a dataset with millions of examples requires an extremely flexible model.\n",
+    "\n",
+    "When classifying handwritten digits before, we didn't overfit because our 60,000 training examples far out numbered the  $784 \\times 10 = 7,840$ weights plus $10$ bias terms, which gave us far fewer parameters than training examples. Let's see how things can go wrong. We begin with our import ritual."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "from __future__ import print_function\n",
+    "import mxnet as mx\n",
+    "import mxnet.ndarray as nd\n",
+    "from mxnet import autograd\n",
+    "import numpy as np\n",
+    "ctx = mx.cpu()\n",
+    "mx.random.seed(1)\n",
+    "\n",
+    "\n",
+    "# for plotting purposes\n",
+    "%matplotlib inline\n",
+    "import matplotlib\n",
+    "import matplotlib.pyplot as plt\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Load the MNIST dataset"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "mnist = mx.test_utils.get_mnist()\n",
+    "num_examples = 1000\n",
+    "batch_size = 64\n",
+    "train_data = mx.gluon.data.DataLoader(\n",
+    "    mx.gluon.data.ArrayDataset(mnist[\"train_data\"][:num_examples],\n",
+    "                               mnist[\"train_label\"][:num_examples].astype(np.float32)), \n",
+    "                               batch_size, shuffle=True)\n",
+    "test_data = mx.gluon.data.DataLoader(\n",
+    "    mx.gluon.data.ArrayDataset(mnist[\"test_data\"][:num_examples],\n",
+    "                               mnist[\"test_label\"][:num_examples].astype(np.float32)), \n",
+    "                               batch_size, shuffle=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Allocate model parameters and define model\n",
+    "\n",
+    "We pick a simple linear model $f(x) = W x + b$ with subsequent softmax, i.e. $p(y|x) \\propto \\exp(f(x)_y)$. This is about as simple as it gets."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "W = nd.random_normal(shape=(784,10))\n",
+    "b = nd.random_normal(shape=10)\n",
+    "\n",
+    "params = [W, b]\n",
+    "\n",
+    "for param in params:\n",
+    "    param.attach_grad()\n",
+    "    \n",
+    "def net(X):\n",
+    "    y_linear = nd.dot(X, W) + b\n",
+    "    yhat = nd.softmax(y_linear, axis=1)\n",
+    "    return yhat"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Define loss function and optimizer\n",
+    "\n",
+    "A sensible thing to do is to minimize the negative log-likelihood of the data, i.e. $-\\log p(y|x)$. Statisticians have proven that this is actually the most *efficient* estimator, i.e. the one that makes the most use of the data provided. This is why it is so popular."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def cross_entropy(yhat, y):\n",
+    "    return - nd.sum(y * nd.log(yhat), axis=0, exclude=True)\n",
+    "\n",
+    "def SGD(params, lr):    \n",
+    "    for param in params:\n",
+    "        param[:] = param - lr * param.grad"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Write evaluation loop to calculate accuracy\n",
+    "\n",
+    "Ultimately we want to recognize digits. This is a bit different from knowing the *probability* of a digit - when given an image we need to *decide* what digit we are seeing, *regardless* of how uncertain we are. Hence we measure the number of actual misclassifications. \n",
+    "\n",
+    "For diagnosis purposes, it is always a good idea to calculate the average loss function."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def evaluate_accuracy(data_iterator, net):\n",
+    "    numerator = 0.\n",
+    "    denominator = 0.\n",
+    "    loss_avg = 0.\n",
+    "    for i, (data, label) in enumerate(data_iterator):\n",
+    "        data = data.as_in_context(ctx).reshape((-1,784))\n",
+    "        label = label.as_in_context(ctx)\n",
+    "        label_one_hot = nd.one_hot(label, 10)\n",
+    "        output = net(data)\n",
+    "        loss = cross_entropy(output, label_one_hot)\n",
+    "        predictions = nd.argmax(output, axis=1)\n",
+    "        numerator += nd.sum(predictions == label)\n",
+    "        denominator += data.shape[0]\n",
+    "        loss_avg = loss_avg*i/(i+1) + nd.mean(loss).asscalar()/(i+1)\n",
+    "    return (numerator / denominator).asscalar(), loss_avg\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Write a utility function to plot the learning curves\n",
+    "Just to visualize how loss functions and accuracy changes over the number of iterations."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def plot_learningcurves(loss_tr,loss_ts, acc_tr,acc_ts):\n",
+    "    xs = list(range(len(loss_tr)))\n",
+    "    \n",
+    "    f = plt.figure(figsize=(12,6))\n",
+    "    fg1 = f.add_subplot(121)\n",
+    "    fg2 = f.add_subplot(122)\n",
+    "    \n",
+    "    fg1.set_xlabel('epoch',fontsize=14)\n",
+    "    fg1.set_title('Comparing loss functions')\n",
+    "    fg1.semilogy(xs, loss_tr)\n",
+    "    fg1.semilogy(xs, loss_ts)\n",
+    "    fg1.grid(True,which=\"both\")\n",
+    "\n",
+    "    fg1.legend(['training loss', 'testing loss'],fontsize=14)\n",
+    "    \n",
+    "    fg2.set_title('Comparing accuracy')\n",
+    "    fg1.set_xlabel('epoch',fontsize=14)\n",
+    "    fg2.plot(xs, acc_tr)\n",
+    "    fg2.plot(xs, acc_ts)\n",
+    "    fg2.grid(True,which=\"both\")\n",
+    "    fg2.legend(['training accuracy', 'testing accuracy'],fontsize=14)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Execute training loop\n",
+    "\n",
+    "We now train the model until there is no further improvement. Our approach is actually a bit naive since we will keep the learning rate unchanged but it fits the purpose (we want to keep the code simple and avoid confusing anyone with further tricks for adjusting learning rate schedules). "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "epochs = 1000\n",
+    "moving_loss = 0.\n",
+    "niter=0\n",
+    "\n",
+    "loss_seq_train = []\n",
+    "loss_seq_test = []\n",
+    "acc_seq_train = []\n",
+    "acc_seq_test = []\n",
+    "\n",
+    "\n",
+    "for e in range(epochs):\n",
+    "    for i, (data, label) in enumerate(train_data):\n",
+    "        data = data.as_in_context(ctx).reshape((-1,784))\n",
+    "        label = label.as_in_context(ctx)\n",
+    "        label_one_hot = nd.one_hot(label, 10)\n",
+    "        with autograd.record():\n",
+    "            output = net(data)\n",
+    "            loss = cross_entropy(output, label_one_hot)\n",
+    "        loss.backward()\n",
+    "        SGD(params, .001)\n",
+    "\n",
+    "        ##########################\n",
+    "        #  Keep a moving average of the losses\n",
+    "        ##########################\n",
+    "        niter +=1\n",
+    "        moving_loss = .99 * moving_loss + .01 * nd.mean(loss).asscalar()\n",
+    "        est_loss = moving_loss/(1-0.99**niter)\n",
+    "            \n",
+    "    test_accuracy, test_loss = evaluate_accuracy(test_data, net)\n",
+    "    train_accuracy, train_loss = evaluate_accuracy(train_data, net)\n",
+    "    \n",
+    "    # save them for later\n",
+    "    loss_seq_train.append(train_loss)\n",
+    "    loss_seq_test.append(test_loss)\n",
+    "    acc_seq_train.append(train_accuracy)\n",
+    "    acc_seq_test.append(test_accuracy)\n",
+    "    \n",
+    "    \n",
+    "    if e % 100 == 99:\n",
+    "        print(\"Completed epoch %s. Train Loss: %s, Test Loss %s, Train_acc %s, Test_acc %s\" % \n",
+    "              (e+1, train_loss, test_loss, train_accuracy, test_accuracy))\n",
+    "\n",
+    "\n",
+    "## Plotting the learning curves\n",
+    "plot_learningcurves(loss_seq_train,loss_seq_test,acc_seq_train,acc_seq_test)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## What Happened?\n",
+    "\n",
+    "By the 700th epoch, our model achieves 100% accuracy on the training data. However, it only classifies 75% of the test examples accurately. This is a clear case of overfitting. At a high level, there's a reason this went wrong. Because we have 7450 parameters and only 1000 data points, there are actually many settings of the parameters that could produce 100% accuracy on training data. \n",
+    "\n",
+    "To get some intuition imagine that we wanted to fit a dataset with 2 dimensional data and 2 data points. Our model has three degrees of freedom, and thus for any dataset can find an arbitrary number of separators that will perfectly classify our training points. Note below that we can produce completely orthogonal separators that both classify our training data perfectly. Even if it seems preposterous that they could both describe our training data well.\n",
+    "\n",
+    "![](../img/overfitting-low-data.png)\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Regularization\n",
+    "\n",
+    "Now that we've characterized the problem of overfitting, we can begin talking about some solutions. \n",
+    "Broadly speaking the family of techniques geared towards mitigating overfitting are referred to as *regularization*.\n",
+    "The core idea is this: when a model is overfitting, its training error is substantially lower than its test error. We're already doing as well as we possibly can on the training data, but our test data performance leaves something to be desired. Typically, regularization techniques attempt to trade off our training performance in exchange for lowering our test error. \n",
+    "\n",
+    "There are several straightforward techniques we might employ. Given the intuition from the previous chart, we might attempt to make our model less complex. One way to do this would be to lower the number of free parameters. For example, we could throw away some subset of our input features (and thus the corresponding parameters) that we thought were least informative. \n",
+    "\n",
+    "![](../img/regularization-overfitting.png)\n",
+    "\n",
+    "Another approach is to limit the values that our weights might take. One common approach is to force the weights to take small values. \n",
+    "[give more intuition with example of polynomial curve fitting]\n",
+    "We can accomplish this by changing our optimization objective to penalize the value of our weights. \n",
+    "The most popular regularizer is the $\\ell^2_2$ norm. For linear models, $\\ell^2_2$ regularization has the additional benefit that it makes the solution unique, even when our model is overparametrized.\n",
+    "\n",
+    "$$\\sum_{i}(\\hat{y}-y)^2 + \\lambda \\| \\textbf{w} \\|^2_2$$\n",
+    "\n",
+    "Here, $\\|\\textbf{w}\\|$ is the $\\ell^2_2$ norm and $\\lambda$ is a hyper-parameter that determines how aggressively we want to push the weights towards 0. In code, we can express the $\\ell^2_2$ penalty succinctly:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def l2_penalty(params):\n",
+    "    penalty = nd.zeros(shape=1)\n",
+    "    for param in params:\n",
+    "        penalty = penalty + nd.sum(param ** 2)\n",
+    "    return penalty"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Re-initializing the parameters\n",
+    "\n",
+    "Just for good measure to ensure that the results in the second training run don't depend on the first one."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "for param in params:\n",
+    "    param[:] = nd.random_normal(shape=param.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Training L2-regularized logistic regression"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "epochs = 1000\n",
+    "moving_loss = 0.\n",
+    "l2_strength = .1\n",
+    "niter=0\n",
+    "\n",
+    "loss_seq_train = []\n",
+    "loss_seq_test = []\n",
+    "acc_seq_train = []\n",
+    "acc_seq_test = []\n",
+    "\n",
+    "\n",
+    "for e in range(epochs):\n",
+    "    for i, (data, label) in enumerate(train_data):\n",
+    "        data = data.as_in_context(ctx).reshape((-1,784))\n",
+    "        label = label.as_in_context(ctx)\n",
+    "        label_one_hot = nd.one_hot(label, 10)\n",
+    "        with autograd.record():\n",
+    "            output = net(data)\n",
+    "            loss = nd.sum(cross_entropy(output, label_one_hot)) + l2_strength * l2_penalty(params)\n",
+    "        loss.backward()\n",
+    "        SGD(params, .001)\n",
+    "\n",
+    "        ##########################\n",
+    "        #  Keep a moving average of the losses\n",
+    "        ##########################\n",
+    "        niter +=1\n",
+    "        moving_loss = .99 * moving_loss + .01 * nd.mean(loss).asscalar()\n",
+    "        est_loss = moving_loss/(1-0.99**niter)\n",
+    "        \n",
+    "            \n",
+    "    test_accuracy, test_loss = evaluate_accuracy(test_data, net)\n",
+    "    train_accuracy, train_loss = evaluate_accuracy(train_data, net)\n",
+    "    \n",
+    "    # save them for later\n",
+    "    loss_seq_train.append(train_loss)\n",
+    "    loss_seq_test.append(test_loss)\n",
+    "    acc_seq_train.append(train_accuracy)\n",
+    "    acc_seq_test.append(test_accuracy)\n",
+    "    \n",
+    "    if e % 100 == 99:\n",
+    "        print(\"Completed epoch %s. Train Loss: %s, Test Loss %s, Train_acc %s, Test_acc %s\" % \n",
+    "              (e+1, train_loss, test_loss, train_accuracy, test_accuracy))  \n",
+    "        \n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "## Plotting the learning curves\n",
+    "plot_learningcurves(loss_seq_train,loss_seq_test,acc_seq_train,acc_seq_test)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Analysis\n",
+    "\n",
+    "By adding $L_2$ regularization we were able to increase the performance on test data from 75% accuracy to 83% accuracy. That's a 32% reduction in error. In a lot of applications, this big an improvement can make the difference between a viable product and useless system. Note that L2 regularization is just one of many ways of controlling capacity. Basically we assumed that small weight values are good. But there are many more ways to constrain the values of the weights:\n",
+    "\n",
+    "* We could require that the total sum of the weights is small. That is what $L_1$ regularization does via the penalty $\\sum_i |w_i|$. \n",
+    "* We could require that the largest weight is not too large. This is what $L_\\infty$ regularization does via the penalty $\\max_i |w_i|$. \n",
+    "* We could require that the number of nonzero weights is small, i.e. that the weight vectors are *sparse*. This is what the $L_0$ penalty does, i.e. $\\sum_i I\\{w_i \\neq 0\\}$. This penalty is quite difficult to deal with explicitly since it is nonsmooth. There is a lot of research that shows how to solve this problem approximately using an $L_1$ penalty. \n",
+    "\n",
+    "![](../img/regularization.png)\n",
+    "\n",
+    "From left to right: $L_2$ regularization, which constrains the parameters to a ball, $L_1$ regularization, which constrains the parameters to a diamond (for lack of a better name, this is often referred to as an $L_1$-ball), and $L_\\infty$ regularization, which constrains the parameters to a hypercube. \n",
+    "\n",
+    "All of this raises the question of **why** regularization is any good. After all, choice is good and giving our model more flexibility *ought* to be better (e.g. there are plenty of papers which show improvements on ImageNet using deeper networks). What is happening is somewhat more subtle. Allowing for many different parameter values allows our model to cherry pick a combination that is *just right* for all the training data it sees, without really learning the underlying mechanism. Since our observations are likely noisy, this means that we are trying to approximate the errors at least as much as we're learning what the relation between data and labels actually is. There is an entire field of statistics devoted to this issue - Statistical Learning Theory. For now, a few simple rules of thumb suffice:\n",
+    "\n",
+    "* Fewer parameters tend to be better than more parameters.\n",
+    "* Better engineering for a specific problem that takes the actual problem into account will lead to better models, due to the prior knowledge that data scientists have about the problem at hand.\n",
+    "* $L_2$ is easier to optimize for than $L_1$. In particular, many optimizers will not work well out of the box for $L_1$. Using the latter requires something called *proximal operators*.\n",
+    "* Dropout and other methods to make the model robust to perturbations in the data often work better than off-the-shelf $L_2$ regularization.\n",
+    "\n",
+    "We conclude with an [XKCD Cartoon](https://xkcd.com/882/) which captures the entire situation more succinctly than the proceeding paragraph. \n",
+    "\n",
+    "![](https://imgs.xkcd.com/comics/significant.png)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Next\n",
+    "[Overfitting and regularization with gluon](../chapter02_supervised-learning/regularization-gluon.ipynb)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For whinges or inquiries, [open an issue on  GitHub.](https://github.com/zackchase/mxnet-the-straight-dope)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

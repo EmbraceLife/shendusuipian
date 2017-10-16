@@ -1,0 +1,357 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Overfitting and regularization (with ``gluon``)\n",
+    "\n",
+    "Now that we've built a [regularized logistic regression model from scratch](regularization-scratch.html), let's make this more efficient with ``gluon``. We recommend that you read that section for a description as to why regularization is a good idea. As always, we begin by loading libraries and some data.\n",
+    "\n",
+    "[**REFINED DRAFT - RELEASE STAGE: CATFOOD**]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "from __future__ import print_function\n",
+    "import mxnet as mx\n",
+    "from mxnet import autograd\n",
+    "from mxnet import gluon\n",
+    "import mxnet.ndarray as nd\n",
+    "import numpy as np\n",
+    "ctx = mx.cpu()\n",
+    "\n",
+    "# for plotting purposes\n",
+    "%matplotlib inline\n",
+    "import matplotlib\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## The MNIST Dataset"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "mnist = mx.test_utils.get_mnist()\n",
+    "num_examples = 1000\n",
+    "batch_size = 64\n",
+    "train_data = mx.gluon.data.DataLoader(\n",
+    "    mx.gluon.data.ArrayDataset(mnist[\"train_data\"][:num_examples],\n",
+    "                               mnist[\"train_label\"][:num_examples].astype(np.float32)), \n",
+    "                               batch_size, shuffle=True)\n",
+    "test_data = mx.gluon.data.DataLoader(\n",
+    "    mx.gluon.data.ArrayDataset(mnist[\"test_data\"][:num_examples],\n",
+    "                               mnist[\"test_label\"][:num_examples].astype(np.float32)), \n",
+    "                               batch_size, shuffle=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Multiclass Logistic Regression"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "net = gluon.nn.Sequential()\n",
+    "with net.name_scope():\n",
+    "    net.add(gluon.nn.Dense(10))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Parameter initialization\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "net.collect_params().initialize(mx.init.Xavier(magnitude=2.24), ctx=ctx)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Softmax Cross Entropy Loss"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "loss = gluon.loss.SoftmaxCrossEntropyLoss()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Optimizer\n",
+    "\n",
+    "By default ``gluon`` tries to keep the coefficients from diverging by using a *weight decay* penalty. So, to get the real overfitting experience we need to switch it off. We do this by passing `'wd': 0.0'` when we instantiate the trainer. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.01, 'wd': 0.0})"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Evaluation Metric"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def evaluate_accuracy(data_iterator, net, loss_fun):\n",
+    "    acc = mx.metric.Accuracy()\n",
+    "    loss_avg = 0.\n",
+    "    for i, (data, label) in enumerate(data_iterator):\n",
+    "        data = data.as_in_context(ctx).reshape((-1,784))\n",
+    "        label = label.as_in_context(ctx)\n",
+    "        output = net(data)\n",
+    "        loss = loss_fun(output, label) \n",
+    "        predictions = nd.argmax(output, axis=1)\n",
+    "        acc.update(preds=predictions, labels=label)\n",
+    "        loss_avg = loss_avg*i/(i+1) + nd.mean(loss).asscalar()/(i+1)\n",
+    "    return acc.get()[1], loss_avg\n",
+    "\n",
+    "def plot_learningcurves(loss_tr,loss_ts, acc_tr,acc_ts):\n",
+    "    xs = list(range(len(loss_tr)))\n",
+    "    \n",
+    "    f = plt.figure(figsize=(12,6))\n",
+    "    fg1 = f.add_subplot(121)\n",
+    "    fg2 = f.add_subplot(122)\n",
+    "    \n",
+    "    fg1.set_xlabel('epoch',fontsize=14)\n",
+    "    fg1.set_title('Comparing loss functions')\n",
+    "    fg1.semilogy(xs, loss_tr)\n",
+    "    fg1.semilogy(xs, loss_ts)\n",
+    "    fg1.grid(True,which=\"both\")\n",
+    "\n",
+    "    fg1.legend(['training loss', 'testing loss'],fontsize=14)\n",
+    "    \n",
+    "    fg2.set_title('Comparing accuracy')\n",
+    "    fg1.set_xlabel('epoch',fontsize=14)\n",
+    "    fg2.plot(xs, acc_tr)\n",
+    "    fg2.plot(xs, acc_ts)\n",
+    "    fg2.grid(True,which=\"both\")\n",
+    "    fg2.legend(['training accuracy', 'testing accuracy'],fontsize=14)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Execute training loop"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "epochs = 700\n",
+    "moving_loss = 0.\n",
+    "niter=0\n",
+    "\n",
+    "loss_seq_train = []\n",
+    "loss_seq_test = []\n",
+    "acc_seq_train = []\n",
+    "acc_seq_test = []\n",
+    "\n",
+    "for e in range(epochs):\n",
+    "    for i, (data, label) in enumerate(train_data):\n",
+    "        data = data.as_in_context(ctx).reshape((-1,784))\n",
+    "        label = label.as_in_context(ctx)\n",
+    "        with autograd.record():\n",
+    "            output = net(data)\n",
+    "            cross_entropy = loss(output, label)\n",
+    "        cross_entropy.backward()\n",
+    "        trainer.step(data.shape[0])\n",
+    "        \n",
+    "        ##########################\n",
+    "        #  Keep a moving average of the losses\n",
+    "        ##########################\n",
+    "        niter +=1\n",
+    "        moving_loss = .99 * moving_loss + .01 * nd.mean(cross_entropy).asscalar()\n",
+    "        est_loss = moving_loss/(1-0.99**niter)\n",
+    "            \n",
+    "    test_accuracy, test_loss = evaluate_accuracy(test_data, net, loss)\n",
+    "    train_accuracy, train_loss = evaluate_accuracy(train_data, net, loss)\n",
+    "    \n",
+    "    # save them for later\n",
+    "    loss_seq_train.append(train_loss)\n",
+    "    loss_seq_test.append(test_loss)\n",
+    "    acc_seq_train.append(train_accuracy)\n",
+    "    acc_seq_test.append(test_accuracy)\n",
+    "    \n",
+    "        \n",
+    "    if e % 20 == 0:\n",
+    "        print(\"Completed epoch %s. Train Loss: %s, Test Loss %s, Train_acc %s, Test_acc %s\" % \n",
+    "              (e+1, train_loss, test_loss, train_accuracy, test_accuracy))     \n",
+    "\n",
+    "## Plotting the learning curves\n",
+    "plot_learningcurves(loss_seq_train,loss_seq_test,acc_seq_train,acc_seq_test)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Regularization\n",
+    "\n",
+    "Now let's see what this mysterious *weight decay* is all about. We begin with a bit of math. When we add an L2 penalty to the weights we are effectively adding $\\frac{\\lambda}{2} \\|w\\|^2$ to the loss. Hence, every time we compute the gradient it gets an additional $\\lambda w$ term that is added to $g_t$, since this is the very derivative of the L2 penalty. As a result we end up taking a descent step not in the direction $-\\eta g_t$ but rather in the direction $-\\eta (g_t + \\lambda w)$. This effectively shrinks $w$ at each step by $\\eta \\lambda w$, thus the name weight decay. To make this work in practice we just need to set the weight decay to something nonzero."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "net.collect_params().initialize(mx.init.Xavier(magnitude=2.24), ctx=ctx, force_reinit=True)\n",
+    "trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.01, 'wd': 0.001})\n",
+    "\n",
+    "moving_loss = 0.\n",
+    "niter=0\n",
+    "loss_seq_train = []\n",
+    "loss_seq_test = []\n",
+    "acc_seq_train = []\n",
+    "acc_seq_test = []\n",
+    "\n",
+    "for e in range(epochs):\n",
+    "    for i, (data, label) in enumerate(train_data):\n",
+    "        data = data.as_in_context(ctx).reshape((-1,784))\n",
+    "        label = label.as_in_context(ctx)\n",
+    "        with autograd.record():\n",
+    "            output = net(data)\n",
+    "            cross_entropy = loss(output, label)\n",
+    "        cross_entropy.backward()\n",
+    "        trainer.step(data.shape[0])\n",
+    "        \n",
+    "        ##########################\n",
+    "        #  Keep a moving average of the losses\n",
+    "        ##########################\n",
+    "        niter +=1\n",
+    "        moving_loss = .99 * moving_loss + .01 * nd.mean(cross_entropy).asscalar()\n",
+    "        est_loss = moving_loss/(1-0.99**niter)\n",
+    "            \n",
+    "    test_accuracy, test_loss = evaluate_accuracy(test_data, net,loss)\n",
+    "    train_accuracy, train_loss = evaluate_accuracy(train_data, net, loss)\n",
+    "    \n",
+    "    # save them for later\n",
+    "    loss_seq_train.append(train_loss)\n",
+    "    loss_seq_test.append(test_loss)\n",
+    "    acc_seq_train.append(train_accuracy)\n",
+    "    acc_seq_test.append(test_accuracy)\n",
+    "    \n",
+    "    if e % 20 == 0:\n",
+    "        print(\"Completed epoch %s. Train Loss: %s, Test Loss %s, Train_acc %s, Test_acc %s\" % \n",
+    "              (e+1, train_loss, test_loss, train_accuracy, test_accuracy))  \n",
+    "        \n",
+    "## Plotting the learning curves\n",
+    "plot_learningcurves(loss_seq_train,loss_seq_test,acc_seq_train,acc_seq_test)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As we can see, the test accuracy improves a bit. Note that the amount by which it improves actually depends on the amount of weight decay. We recommend that you try and experiment with different extents of weight decay. For instance, a larger weight decay (e.g. $0.01$) will lead to inferior performance, one that's larger still ($0.1$) will lead to terrible results. This is one of the reasons why tuning parameters is quite so important in getting good experimental results in practice."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Next\n",
+    "[Learning environments](../chapter02_supervised-learning/environment.ipynb)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "For whinges or inquiries, [open an issue on  GitHub.](https://github.com/zackchase/mxnet-the-straight-dope)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

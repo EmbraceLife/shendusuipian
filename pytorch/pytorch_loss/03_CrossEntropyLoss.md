@@ -15,11 +15,12 @@ print(nn.functional.softmax(input))
 
 ## 公式
 ```python
+
 from IPython.display import Math
 Math(r'loss(x, class) = -\log(e^{x[class]}/\sum(e^{x[j]})) = -x[class]+\log(\sum_j(e^{x[j]}))')
 import sympy as sp
 x = sp.symbols('x')
-lines = plot(sp.log(x), sp.exp(x), xlim=(-2,2), ylim=(-2,2), show=False)
+lines = sp.plot(sp.log(x), sp.exp(x), xlim=(-2,2), ylim=(-2,2), show=False)
 lines[0].line_color = 'gray'
 lines[1].line_color = 'blue'
 lines.title = "gray=log(x), blue=exp(x)"

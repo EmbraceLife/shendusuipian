@@ -41,10 +41,10 @@ class BadFFTFunction(Function):
         return torch.FloatTensor(result)
 
     def backward(self, grad_output):
-    #     numpy_go = grad_output.numpy()
-    #     result = irfft2(numpy_go)
-    #     return torch.FloatTensor(result)
-        pass
+        numpy_go = grad_output.numpy()
+        result = irfft2(numpy_go)
+        return torch.FloatTensor(result)
+
 
 # since this layer does not have any parameters, we can
 # simply declare this as a function, rather than as an nn.Module class

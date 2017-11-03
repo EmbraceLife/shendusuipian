@@ -1,0 +1,15 @@
+*.pyc
+scratch/
+examples/data
+.idea/
+.DS_Store
+build/
+data/
+dist/
+MANIFEST
+*.so
+*.c
+.asv/
+autograd.egg-info/
+asv.conf.json
+benchmarks/asv.conf.js

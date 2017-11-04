@@ -1,9 +1,20 @@
 import warnings
 from contextlib import contextmanager
 from collections import defaultdict
-from .util import subvals
-from .wrap_util import wraps
+from autograd.util import subvals
+from autograd.wrap_util import wraps
+#######################
+#### what does contextmanager and defaultdict do?
+# import contextlib
+# help(contextlib)
+# help(contextlib.contextmanager)
+# help(defaultdict)
+#### directory issues and package path
+# from .util import subvals
+# from autograd.util import subvals
+# help(defaultdict)
 
+# trace_stack(TraceStack), new_box
 def trace(start_node, fun, x):
     with trace_stack.new_trace() as t:
         start_box = new_box(x, t, start_node)
@@ -14,20 +25,29 @@ def trace(start_node, fun, x):
             warnings.warn("Output seems independent of input.")
             return end_box, None
 
+# done
 class Node(object):
     __slots__ = []
     def __init__(self, value, fun, args, kwargs, parent_argnums, parents):
-        assert False
+        assert False # default assert False is for later overwrite?
 
     def initialize_root(self, *args, **kwargs):
-        assert False
+        assert False # default assert False is for later overwrite?
 
     @classmethod
     def new_root(cls, *args, **kwargs):
         root = cls.__new__(cls)
-        root.initialize_root(*args, **kwargs)
+        print("what is root: ", root)
+        root.initialize_root(*args, **kwargs) # default assert False is for later overwrite?
         return root
+# help(object.__new__)
+# n = Node.new_root()
+# def fun(x): pass
+# node = Node(1, fun, 1, "node", parent_argnums=1, parents="p")
+# n.initialize_root()
+# n.new_root()
 
+# wraps, subvals, find_top_boxed_args, new_box, notrace_primitives
 def primitive(f_raw):
     """
     Wraps a function so that its gradient can be specified and its invocation
@@ -49,10 +69,14 @@ def primitive(f_raw):
     f_wrapped.fun = f_raw
     return f_wrapped
 
+# defaultdict
 notrace_primitives = defaultdict(set)
+
+# notrace_primitives
 def register_notrace(trace_type, primitive_fun):
     notrace_primitives[trace_type].add(primitive_fun)
 
+# wraps, map
 def notrace_primitive(f_raw):
     @wraps(f_raw)
     def f_wrapped(*args, **kwargs):
@@ -61,6 +85,7 @@ def notrace_primitive(f_raw):
     f_wrapped._is_primitive = True
     return f_wrapped
 
+# isbox
 def find_top_boxed_args(args):
     top_trace = -1
     top_boxes = []
@@ -76,6 +101,7 @@ def find_top_boxed_args(args):
                 top_boxes.append((argnum, arg))
     return top_boxes, top_trace, top_node_type
 
+# contextmanager
 class TraceStack(object):
     def __init__(self):
         self.top = -1
@@ -86,6 +112,7 @@ class TraceStack(object):
         self.top -= 1
 trace_stack = TraceStack()
 
+#
 class Box(object):
     type_mappings = {}
     types = set()
@@ -111,6 +138,7 @@ class Box(object):
         Box.type_mappings[value_type] = cls
         Box.type_mappings[cls] = cls
 
+#
 def toposort(end_node):
     child_counts = {}
     stack = [end_node]
@@ -132,13 +160,21 @@ def toposort(end_node):
             else:
                 child_counts[parent] -= 1
 
+# Box
 box_type_mappings = Box.type_mappings
+
+# box_type_mappings
 def new_box(value, trace, node):
     try:
         return box_type_mappings[type(value)](value, trace, node)
     except KeyError:
         raise TypeError("Can't differentiate w.r.t. type {}".format(type(value)))
 
+# Box
 box_types = Box.types
+
+# box_types
 isbox  = lambda x: type(x) in box_types  # almost 3X faster than isinstance(x, Box)
+
+# isbox, getval
 getval = lambda x: getval(x._value) if isbox(x) else x

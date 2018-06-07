@@ -8,6 +8,8 @@
 
 > [在知乎上做的有关机器深度学习的问答](https://www.zhihu.com/people/shendusuipian/answers) （努力做到直观简洁，将前提知识与概念要求降到最低）
 >
+> [3blue1brown的神经网络学习笔记](https://zhuanlan.zhihu.com/p/31610304) （更早期的学习）
+>
 > [讲给路人听的深度学习](https://zhuanlan.zhihu.com/c_164834731) （早期视频系列尝试）
 >
 > [算法的人生启示](https://zhuanlan.zhihu.com/c_186658192) （近期视频系列尝试）
@@ -52,7 +54,9 @@
 
 通过图解视频系列，解读了机器学习所需的概率论，线性代数，微积分直观理解，
 
-> [图解叶丙成概率公开课](https://www.bilibili.com/video/av19511740/)
+> [3blue1brown的线代概念学习笔记](https://zhuanlan.zhihu.com/p/32580897) （早期尝试）
+>
+> [图解叶丙成概率公开课](https://www.bilibili.com/video/av19511740/) 
 >
 > [图解机器学习的数学基础（线性代数，微积分，PCA）](https://www.bilibili.com/video/av21562345/)
 

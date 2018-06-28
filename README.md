@@ -87,6 +87,8 @@
 > [图解bridgewater研报](https://www.bilibili.com/video/av24237591/)
 >
 > [机器是如何获得人类的能力的](https://www.bilibili.com/video/av23972551/) 
+>
+> [ProbStats Anatomy](https://github.com/EmbraceLife/shendusuipian/blob/master/ProbStats%20Anatomy.md) **==Now==** 
 
 
 

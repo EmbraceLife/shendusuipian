@@ -1,5 +1,9 @@
 [book cover](http://m.qpic.cn/psb?/V119hAgO3eS46m/yaBrqVIRjnGGN4xNzctrt5iQDPoe.DoeSfxrEh*UKD4!/b/dEABAAAAAAAA&bo=1ANuBNQDbgQDCSw!&rf=viewer_4)  
 
+[TOC]
+
+
+
 # Bayes Everyday 
 
 ## Book intro
@@ -99,13 +103,27 @@
 
 > [apply formula](http://m.qpic.cn/psb?/V119hAgO3eS46m/a2ahu91Z0Rua3G9fvxYBafRrLh6Q0cucWJCDwS6rwVQ!/b/dDABAAAAAAAA&bo=0gPiANID4gADCSw!&rf=viewer_4) to the problem above 
 >
-> P(B | A) = P(chocolate cookie | box A) = 100% sure = 1
+> likelihood
 >
-> P(A) = P(box A) = 50% of universe = 0.5
+> -  P(chocolate cookie | box A) = 100% sure = 1 (in Universe of box A)
 >
-> P(B) = P(get a cholocate cookie) = # chocolate / # universe = 15/20 = 0.75
+> prior probability
 >
-> [simple calculation process](http://m.qpic.cn/psb?/V119hAgO3eS46m/WWRM33d65HUuI9A1z.KoZ.8P0tVp5IQFtcpXnmf0UOA!/b/dPMAAAAAAAAA&bo=zgNOAs4DTgIDCSw!&rf=viewer_4)
+> - $P(A) = P(box A) = P(box A | Universe)$ = 50% of universe = 0.5 (in Universe Original)
+>
+> intersection
+>
+> - $ P(B|A) P(A) = P(A \cap B) = P(A \cap B | Universe)$ = 10/20 = 1/2 (in Universe Original)
+>
+> probability of data or evidence
+>
+> - P(B) = P(get a cholocate cookie | Universe) = # chocolate / # universe = 15/20 = 0.75 (in Universe Original) 
+>
+> key intuition
+>
+> - $P(A | B) = \frac{P(B|A)P(A)}{P(B)}$ shift Universe from original to Chocolate cookies to look at intersection
+>
+> [simple calculation process](http://m.qpic.cn/psb?/V119hAgO3eS46m/WWRM33d65HUuI9A1z.KoZ.8P0tVp5IQFtcpXnmf0UOA!/b/dPMAAAAAAAAA&bo=zgNOAs4DTgIDCSw!&rf=viewer_4) 
 
 # Solving for one possible outcome with all data provided
 
@@ -115,7 +133,14 @@
 
 > “You have a headache and sore throat, and you know that people with the flu have the same symptoms roughly 90% of the time. In other words, 90% of people with the flu have the same symptoms you currently have. Does this mean you have the flu?”
 >
-> Excerpt From: Dan Morris. “Bayes Theorem: A Visual Introduction For Beginners.” iBooks. 
+
+### Base Rate Fallacy
+
+> **Don't fall into common error trap** to assume
+>
+> - P(A | B) = P(B | A) 
+> - P(headache and sore throat | Flu) = P(Flu | headache and sore throat) 
+> - so P(Flu | headache and sore throat) = 90% (**wrong**)
 
 ### Posterior Probability
 
@@ -138,14 +163,6 @@
 > personal belief about relationship between Flu and [headache with sore throat]
 >
 > - P(headache and sore throat | Flu) = 90% **current belief or likelihood** 
-
-### Base Rate Fallacy
-
-> **Don't fall into common error trap** to assume
->
-> - P(A | B) = P(B | A) 
-> - P(headache and sore throat | Flu) = P(Flu | headache and sore throat) 
-> - so P(Flu | headache and sore throat) = 90% (**wrong**)
 
 ### Visualizing the problem and solution
 
@@ -203,17 +220,18 @@
 
 ### Problem
 
-> after lunch, having headache and sore throat
+> prior probability
 >
-> Google tells 5% of population will get Flu every year P(Flu | all) = 5%
+> - Google tells 5% of population will get Flu every year P(Flu | all) = 5%
 >
-> App test with symptoms, report Flu positive
+> likelihood probabilities
 >
-> P(positive | Flu) = 75% (correctly predict with Flu 75% of time)
+> - P(positive | Flu) = 75% (correctly predict with Flu 75% of time)
+> - P(positive | No Flu) = 20% (wrong predict with Flu 20% of time)
 >
-> P(positive | No Flu) = 20% (wrong predict with Flu 20% of time)
+> what to know posterior probability
 >
-> what to know: P(Flu | positive)
+> - P(Flu | positive)
 
 ### Visualizing the solution
 
@@ -331,15 +349,11 @@
 
 > location and time - find the lost person at sea
 >
-> ![image-20180630183220523](/var/folders/gz/ch3n2mp51m9386sytqf97s6w0000gn/T/abnerworks.Typora/image-20180630183220523.png) 
->
 > [SAROPS paper](http://www.metsci.com/Portals/0/Search%20and%20Rescue%20Optimal%20Planning%20System.pdf)
 
 ## spam filtering
 
 > 1998 Microsoft use bayesian filter for spam emails
->
-> ![image-20180630183118517](/var/folders/gz/ch3n2mp51m9386sytqf97s6w0000gn/T/abnerworks.Typora/image-20180630183118517.png)
 >
 > microsoft paper on [Bayesian filter](https://pdfs.semanticscholar.org/b449/8c71651f0327b5d51c8f8008d5a1804a084a.pdf)
 

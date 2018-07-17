@@ -1,0 +1,1333 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>Bayes Theorem Visualization</title><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg-color: #B5D6FC; --select-text-font-color: auto; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857143; overflow-x: hidden; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; background-position: inherit inherit; background-repeat: inherit inherit; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; word-wrap: break-word; position: relative; padding-bottom: 70px; white-space: pre-wrap; overflow-x: visible; }
+.first-line-indent #write p .md-line { text-indent: 0px; }
+.first-line-indent #write li, .first-line-indent #write p, .first-line-indent #write p .md-line:first-child { text-indent: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+@media screen and (max-width: 500px) { 
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write > blockquote:first-child, #write > div:first-child, #write > figure:first-child, #write > ol:first-child, #write > p:first-child, #write > pre:first-child, #write > ul:first-child { margin-top: 30px; }
+#write li > figure:first-child { margin-top: -20px; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font-family: inherit; font-size: inherit; font-style: inherit; font-variant-caps: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 2; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+h1, h2, h3, h4, h5, h6 { margin-top: 1rem; margin-bottom: 1rem; }
+p { -webkit-margin-before: 1rem; -webkit-margin-after: 1rem; -webkit-margin-start: 0px; -webkit-margin-end: 0px; }
+.mathjax-block { margin-top: 0px; margin-bottom: 0px; -webkit-margin-before: 0px; -webkit-margin-after: 0px; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.701961); color: rgb(85, 85, 85); border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 80px; }
+.CodeMirror-gutters { border-right-width: 0px; background-color: inherit; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+pre { white-space: pre-wrap; }
+pre.contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; position: relative !important; background-position: inherit inherit; background-repeat: inherit inherit; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+.md-fences.mock-cm { white-space: pre-wrap; }
+.show-fences-line-number .md-fences { padding-left: 0px; }
+.show-fences-line-number .md-fences.mock-cm { padding-left: 40px; }
+.CodeMirror-line { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; background-position: 0px 0px; background-repeat: initial initial; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+.footnote-line { white-space: pre-wrap; }
+@media print { 
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid-page; break-before: avoid-page; }
+  #write { margin-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 1cm; padding-right: 1cm; padding-bottom: 0px; break-after: avoid-page; }
+  .typora-export #write::after { height: 0px; }
+  @page { margin: 20mm 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background-color: rgb(204, 204, 204); display: block; overflow-x: hidden; background-position: initial initial; background-repeat: initial initial; }
+p > img:only-child { display: block; margin: auto; }
+.md-line > .md-image:only-child, p > .md-image:only-child { display: inline-block; width: 100%; text-align: center; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.mathjax-block { white-space: pre; overflow: hidden; width: 100%; }
+p + .mathjax-block { margin-top: -1.143rem; }
+.mathjax-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) { 
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, tt { font-family: var(--monospace); }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; }
+a.md-print-anchor { border: none !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; text-shadow: initial !important; background-position: 0px 0px !important; background-repeat: initial initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.mathjax-block .MathJax_SVG_Display { text-align: center; margin: 1em 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: monospace; }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom-width: 0px; }
+
+
+/* Flowchart variables */
+/* Sequence Diagram variables */
+/* Gantt chart variables */
+.mermaid .label {
+  color: #323D47;
+}
+
+g.label {
+    color: #333;
+}
+
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon {
+  fill: #BDD5EA;
+  stroke: #81B1DB;
+  stroke-width: 1px;
+}
+.edgePath .path {
+  stroke: lightgrey;
+}
+.edgeLabel {
+  background-color: #e8e8e8;
+}
+.cluster rect {
+  fill: #6D6D65 !important;
+  rx: 4 !important;
+  stroke: rgba(255, 255, 255, 0.25) !important;
+  stroke-width: 1px !important;
+}
+.cluster text {
+  fill: #F9FFFE;
+}
+.actor {
+  stroke: #81B1DB;
+  fill: #BDD5EA;
+}
+text.actor {
+  fill: black;
+  stroke: none;
+}
+.actor-line {
+  stroke: lightgrey;
+}
+.messageLine0 {
+  stroke-width: 1.5;
+  stroke-dasharray: "2 2";
+  marker-end: "url(file:///Users/Natsume/Library/Application%20Support/abnerworks.Typora/themes/night/#arrowhead)";
+  stroke: lightgrey;
+}
+.messageLine1 {
+  stroke-width: 1.5;
+  stroke-dasharray: "2 2";
+  stroke: lightgrey;
+}
+#arrowhead {
+  fill: lightgrey !important;
+}
+#crosshead path {
+  fill: lightgrey !important;
+  stroke: lightgrey !important;
+}
+.messageText {
+  fill: lightgrey;
+  stroke: none;
+}
+.labelBox {
+  stroke: #81B1DB;
+  fill: #BDD5EA;
+}
+.labelText {
+  fill: #323D47;
+  stroke: none;
+}
+.loopText {
+  fill: lightgrey;
+  stroke: none;
+}
+text>tspan {
+  fill: inherit;
+}
+.loopLine {
+  stroke-width: 2;
+  stroke-dasharray: "2 2";
+  marker-end: "url(file:///Users/Natsume/Library/Application%20Support/abnerworks.Typora/themes/night/#arrowhead)";
+  stroke: #81B1DB;
+}
+.note {
+  stroke: rgba(255, 255, 255, 0.25);
+  fill: #fff5ad;
+}
+.noteText {
+  fill: black;
+  stroke: none;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-size: 14px;
+}
+/** Section styling */
+.section {
+  stroke: none;
+  opacity: 0.2;
+}
+.section0 {
+  fill: rgba(255, 255, 255, 0.3);
+}
+.section2 {
+  fill: #EAE8B9;
+}
+.section1,
+.section3 {
+  fill: white;
+  opacity: 0.2;
+}
+.sectionTitle0 {
+  fill: #F9FFFE;
+}
+.sectionTitle1 {
+  fill: #F9FFFE;
+}
+.sectionTitle2 {
+  fill: #F9FFFE;
+}
+.sectionTitle3 {
+  fill: #F9FFFE;
+}
+.sectionTitle {
+  text-anchor: start;
+  font-size: 11px;
+  text-height: 14px;
+}
+/* Grid and axis */
+.grid .tick {
+  stroke: rgba(255, 255, 255, 0.3);
+  opacity: 0.3;
+  shape-rendering: crispEdges;
+}
+.grid .tick text {
+  fill: lightgrey;
+  opacity: 0.5;
+}
+.grid path {
+  stroke-width: 0;
+}
+/* Today line */
+.today {
+  fill: none;
+  stroke: #DB5757;
+  stroke-width: 2px;
+}
+/* Task styling */
+/* Default task */
+.task {
+  stroke-width: 1;
+}
+.taskText {
+  text-anchor: middle;
+  font-size: 11px;
+}
+.taskTextOutsideRight {
+  fill: #323D47;
+  text-anchor: start;
+  font-size: 11px;
+}
+.taskTextOutsideLeft {
+  fill: #323D47;
+  text-anchor: end;
+  font-size: 11px;
+}
+/* Specific task settings for the sections*/
+.taskText0,
+.taskText1,
+.taskText2,
+.taskText3 {
+  fill: #323D47;
+}
+.task0,
+.task1,
+.task2,
+.task3 {
+  fill: #BDD5EA;
+  stroke: rgba(255, 255, 255, 0.5);
+}
+.taskTextOutside0,
+.taskTextOutside2 {
+  fill: lightgrey;
+}
+.taskTextOutside1,
+.taskTextOutside3 {
+  fill: lightgrey;
+}
+/* Active task */
+.active0,
+.active1,
+.active2,
+.active3 {
+  fill: #81B1DB;
+  stroke: rgba(255, 255, 255, 0.5);
+}
+.activeText0,
+.activeText1,
+.activeText2,
+.activeText3 {
+  fill: #323D47 !important;
+}
+/* Completed task */
+.done0,
+.done1,
+.done2,
+.done3 {
+  fill: lightgrey;
+}
+.doneText0,
+.doneText1,
+.doneText2,
+.doneText3 {
+  fill: #323D47 !important;
+}
+/* Tasks on the critical line */
+.crit0,
+.crit1,
+.crit2,
+.crit3 {
+  stroke: #E83737;
+  fill: #E83737;
+  stroke-width: 2;
+}
+.activeCrit0,
+.activeCrit1,
+.activeCrit2,
+.activeCrit3 {
+  stroke: #E83737;
+  fill: #81B1DB;
+  stroke-width: 2;
+}
+.doneCrit0,
+.doneCrit1,
+.doneCrit2,
+.doneCrit3 {
+  stroke: #E83737;
+  fill: lightgrey;
+  stroke-width: 1;
+  cursor: pointer;
+  shape-rendering: crispEdges;
+}
+.doneCritText0,
+.doneCritText1,
+.doneCritText2,
+.doneCritText3 {
+  fill: lightgrey !important;
+}
+.activeCritText0,
+.activeCritText1,
+.activeCritText2,
+.activeCritText3 {
+  fill: #323D47 !important;
+}
+.titleText {
+  text-anchor: middle;
+  font-size: 18px;
+  fill: lightgrey;
+}
+/*
+
+
+*/
+.node text {
+  font-family: 'trebuchet ms', verdana, arial;
+  font-size: 14px;
+}
+div.mermaidTooltip {
+  position: absolute;
+  text-align: center;
+  max-width: 200px;
+  padding: 2px;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-size: 12px;
+  background: #6D6D65;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 100;
+}
+@import "";
+@import "night/codeblock.dark.css";
+@import "night/sourcemode.dark.css";
+
+:root {
+    --bg-color:  #363B40;
+    --side-bar-bg-color: #2E3033;
+    --text-color: #b8bfc6;
+
+    --select-text-bg-color:#4a89dc;
+
+    --item-hover-bg-color: #0a0d16;
+    --control-text-color: #b7b7b7;
+    --control-text-hover-color: #eee;
+    --window-border: 1px dashed #9b9b9b;
+
+    --active-file-bg-color: rgb(34, 34, 34);
+    --active-file-border-color: #8d8df0;
+
+    --primary-color: #a3d5fe;
+
+    --active-file-text-color: white;
+    --item-hover-bg-color: #70717d;
+    --item-hover-text-color: white;
+    --primary-color: #6dc1e7;
+}
+
+html {
+    font-size: 16px;
+}
+
+html,
+body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    background: #363B40;
+    background: var(--bg-color);
+    fill: currentColor;
+}
+
+#write {
+    max-width: 914px;
+    padding-top: 20px;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+div.code-tooltip-content {
+    color: #b8bfc6;
+}
+
+div.code-tooltip,
+.md-hover-tip .md-arrow:after {
+    background: #4B535A;
+}
+
+.popover.bottom > .arrow:after {
+    border-bottom-color: #4B535A;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+    font-style: normal;
+    line-height: 1.625rem;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+hr {
+    height: 2px;
+    border: 0;
+    margin: 24px 0 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Lucida Grande", "Corbel", sans-serif;
+    font-weight: normal;
+    clear: both;
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
+    margin: 0;
+    padding: 0;
+    color: #DEDEDE
+}
+
+h1 {
+    font-size: 2.5rem;
+    /* 36px */
+    line-height: 2.75rem;
+    /* 40px */
+    margin-bottom: 1.5rem;
+    /* 24px */
+    letter-spacing: -1.5px;
+}
+
+h2 {
+    font-size: 1.63rem;
+    /* 24px */
+    line-height: 1.875rem;
+    /* 30px */
+    margin-bottom: 1.5rem;
+    /* 24px */
+    letter-spacing: -1px;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 1.17rem;
+    /* 18px */
+    line-height: 1.5rem;
+    /* 24px */
+    margin-bottom: 1.5rem;
+    /* 24px */
+    letter-spacing: -1px;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 1.12rem;
+    /* 16px */
+    line-height: 1.375rem;
+    /* 22px */
+    margin-bottom: 1.5rem;
+    /* 24px */
+    color: white;
+}
+
+h5 {
+    font-size: 0.97rem;
+    /* 16px */
+    line-height: 1.25rem;
+    /* 22px */
+    margin-bottom: 1.5rem;
+    /* 24px */
+    font-weight: bold;
+}
+
+h6 {
+    font-size: 0.93rem;
+    /* 16px */
+    line-height: 1rem;
+    /* 16px */
+    margin-bottom: 0.75rem;
+    color: white;
+}
+
+@media (min-width: 980px) {
+    h3.md-focus:before,
+    h4.md-focus:before,
+    h5.md-focus:before,
+    h6.md-focus:before {
+        color: #ddd;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        position: absolute;
+        left: -1.642857143rem;
+        top: .357142857rem;
+        float: left;
+        font-size: 9px;
+        padding-left: 2px;
+        padding-right: 2px;
+        vertical-align: bottom;
+        font-weight: normal;
+        line-height: normal;
+    }
+
+    h3.md-focus:before {
+        content: 'h3';
+    }
+
+    h4.md-focus:before {
+        content: 'h4';
+    }
+
+    h5.md-focus:before {
+        content: 'h5';
+        top: 0px;
+    }
+
+    h6.md-focus:before {
+        content: 'h6';
+        top: 0px;
+    }
+}
+
+a {
+    text-decoration: none;
+    outline: 0;
+}
+
+a:hover {
+    outline: 0;
+}
+
+a:focus {
+    outline: thin dotted;
+}
+
+sup.md-footnote {
+    background-color: #555;
+    color: #ddd;
+}
+
+p {
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
+}
+
+p,
+ul,
+dd,
+ol,
+hr,
+address,
+pre,
+table,
+iframe,
+.wp-caption,
+.wp-audio-shortcode,
+.wp-video-shortcode {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    /* 24px */
+}
+
+audio:not([controls]) {
+    display: none;
+}
+
+[hidden] {
+    display: none;
+}
+
+::-moz-selection {
+    background: #4a89dc;
+    color: #fff;
+    text-shadow: none;
+}
+
+*.in-text-selection,
+::selection {
+    background: #4a89dc;
+    color: #fff;
+    text-shadow: none;
+}
+
+ul,
+ol {
+    padding: 0 0 0 1.875rem;
+    /* 30px */
+}
+
+ul {
+    list-style: square;
+}
+
+ol {
+    list-style: decimal;
+}
+
+ul ul,
+ol ol,
+ul ol,
+ol ul {
+    margin: 0;
+}
+
+b,
+th,
+dt,
+strong {
+    font-weight: bold;
+}
+
+i,
+em,
+dfn,
+cite {
+    font-style: italic;
+}
+
+blockquote {
+    padding-left: 1.875rem;
+    margin: 0 0 1.875rem 1.875rem;
+    border-left: solid 2px #474d54;
+    padding-left: 30px;
+    margin-top: 35px;
+}
+
+pre,
+code,
+kbd,
+tt,
+var {
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+    font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+}
+
+pre.md-fences {
+    padding: 10px 30px;
+    margin-bottom: 20px;
+    border: 1px solid;
+}
+
+.md-fences .code-tooltip {
+    bottom: -3.2em;
+}
+
+code,
+kbd,
+tt,
+var {
+    padding: 2px 5px;
+}
+
+table {
+    max-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+th,
+td {
+    padding: 5px 10px;
+    vertical-align: top;
+}
+
+a {
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+hr {
+    background: #474d54;
+    /* variable */
+}
+
+#write>*:first-child {
+    margin-top: 40px;
+}
+
+h1 {
+    margin-top: 2em;
+}
+
+a {
+    color: #e0e0e0;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #fff;
+}
+
+.md-inline-math script {
+    color: #81b1db;
+}
+
+b,
+th,
+dt,
+strong {
+    color: #DEDEDE;
+    /* variable */
+}
+
+mark {
+    background: #D3D40E;
+}
+
+blockquote {
+    color: #9DA2A6;
+}
+
+table a {
+    color: #DEDEDE;
+    /* variable */
+}
+
+th,
+td {
+    border: solid 1px #474d54;
+    /* variable */
+}
+
+.task-list {
+    padding-left: 0;
+}
+
+.md-task-list-item {
+    padding-left: 1.25rem;
+}
+
+.md-task-list-item > input {
+    top: auto;
+}
+
+.md-task-list-item > input:before {
+    content: "";
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.875rem;
+    vertical-align: middle;
+    text-align: center;
+    border: 1px solid #b8bfc6;
+    background-color: #363B40;
+    margin-top: -0.4rem;
+}
+
+.md-task-list-item > input:checked:before,
+.md-task-list-item > input[checked]:before {
+    content: '\221A';
+    /*◘*/
+    font-size: 0.625rem;
+    line-height: 0.625rem;
+    color: #DEDEDE;
+}
+
+.CodeMirror-gutters {
+    background: transparent;
+    border-right: 1px solid transparent;
+}
+
+/** quick open **/
+.auto-suggest-container {
+    border: 0px;
+    background-color: #525C65;
+}
+
+#typora-quick-open {
+    background-color: #525C65;
+}
+
+#typora-quick-open input{
+    background-color: #525C65;
+    border: 0;
+    border-bottom: 1px solid grey;
+}
+
+.typora-quick-open-item {
+    background-color: inherit;
+    color: inherit;
+}
+
+.typora-quick-open-item.active {
+    background-color: #4D8BDB;
+    color: white;
+}
+
+.typora-search-spinner > div {
+  background-color: #fff;
+}
+
+#write pre.md-meta-block {
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    padding-bottom: 0.6em;
+    line-height: 1.6em;
+}
+
+.btn,
+.btn .btn-default {
+    background: transparent;
+    color: #b8bfc6;
+}
+
+.ty-table-edit {
+    border-top: 1px solid gray;
+    background-color: #363B40;
+}
+
+.popover-title {
+    background: transparent;
+}
+
+.md-image>.md-meta {
+    color: #BBBBBB;
+    background: transparent;
+}
+
+.md-expand.md-image>.md-meta {
+    color: #DDD;
+}
+
+#write>h3:before,
+#write>h4:before,
+#write>h5:before,
+#write>h6:before {
+    border: none;
+    border-radius: 0px;
+    color: #888;
+    text-decoration: underline;
+    left: -1.4rem;
+    top: 0.2rem;
+}
+
+#write>h3.md-focus:before {
+    top: 2px;
+}
+
+#write>h4.md-focus:before {
+    top: 2px;
+}
+
+.md-toc-item {
+    color: #A8C2DC;
+}
+
+#write div.md-toc-tooltip {
+    background-color: #363B40;
+}
+
+.dropdown-menu .btn:hover,
+.dropdown-menu .btn:focus,
+.md-toc .btn:hover,
+.md-toc .btn:focus {
+    color: white;
+    background: black;
+}
+
+#toc-dropmenu {
+    background: rgba(50, 54, 59, 0.93);
+    border: 1px solid rgba(253, 253, 253, 0.15);
+}
+
+#toc-dropmenu .divider {
+    background-color: #9b9b9b;
+}
+
+.outline-expander:before {
+    top: 2px;
+}
+
+#typora-sidebar {
+    box-shadow: none;
+    border-right: 1px dashed;
+    border-right: none;
+}
+
+.sidebar-tabs {
+    border-bottom:0;
+}
+
+#typora-sidebar:hover .outline-title-wrapper {
+    border-left: 1px dashed;
+}
+
+.outline-title-wrapper .btn {
+    color: inherit;
+}
+
+.outline-item:hover {
+    border-color: #363B40;
+    background-color: #363B40;
+    color: white;
+}
+
+h1.md-focus .md-attr,
+h2.md-focus .md-attr,
+h3.md-focus .md-attr,
+h4.md-focus .md-attr,
+h5.md-focus .md-attr,
+h6.md-focus .md-attr,
+.md-header-span .md-attr {
+    color: #8C8E92;
+    display: inline;
+}
+
+.md-comment {
+    color: #5a95e3;
+    opacity: 1;
+}
+
+.md-inline-math g,
+.md-inline-math svg {
+    stroke: #b8bfc6 !important;
+    fill: #b8bfc6 !important;
+}
+
+[md-inline='inline_math'] {
+    color: #9CB2E9;
+}
+
+#math-inline-preview .md-arrow:after {
+    background: black;
+}
+
+.modal-content {
+    background: var(--bg-color);
+    border: 0;
+}
+
+.modal-title {
+    font-size: 1.5em;
+}
+
+.modal-content input {
+    background-color: rgba(26, 21, 21, 0.51);
+    color: white;
+}
+
+.modal-content .input-group-addon {
+    background-color: rgba(0, 0, 0, 0.17);
+    color: white;
+}
+
+.modal-backdrop {
+    background-color: rgba(174, 174, 174, 0.7);
+}
+
+.modal-content .btn-primary {
+    border-color: var(--primary-color);
+}
+
+.md-table-resize-popover {
+    background-color: #4B535A;
+}
+
+.form-inline .input-group .input-group-addon {
+    color: white;
+}
+
+#md-searchpanel {
+    border-bottom: 1px dashed grey;
+}
+
+/** UI for electron */
+
+.context-menu {
+    background-color: #42464A;
+}
+
+.context-menu.dropdown-menu .divider {
+    background-color: #777777;
+}
+
+footer {
+    color: inherit;
+}
+
+@media (max-width: 1000px) {
+    footer {
+        border-top: none;
+    }
+    footer:hover {
+        color: inherit;
+    }
+}
+
+#file-info-file-path .file-info-field-value:hover {
+    background-color: #555;
+    color: #dedede;
+}
+
+.megamenu-content,
+.megamenu-opened header {
+    background: var(--bg-color);
+}
+
+.megamenu-menu-panel h2,
+.megamenu-menu-panel h1,
+.long-btn {
+    color: inherit;
+}
+
+.megamenu-menu-panel input[type='text'] {
+    background: inherit;
+    border: 0;
+    border-bottom: 1px solid;
+}
+
+#recent-file-panel-action-btn {
+    background: inherit;
+    border: 1px grey solid;
+}
+
+.megamenu-menu-panel .btn:hover, 
+.megamenu-menu-panel .btn:focus, 
+.megamenu-menu-panel .btn.focus {
+    color: white;
+}
+
+.megamenu-menu-panel .dropdown-menu > li > a {
+    color: inherit;
+    background-color: #2F353A;
+    text-decoration: none;
+}
+
+.megamenu-menu-panel table td:nth-child(1) {
+    color: inherit;
+    font-weight: bold;
+}
+
+.megamenu-menu-panel tbody tr:hover td:nth-child(1) {
+    color: white;
+}
+
+.modal-footer .btn-default, 
+.modal-footer .btn-primary,
+.modal-footer .btn-default:not(:hover) {
+    border: 1px solid;
+    border-color: transparent;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default.focus, .btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+    color: white;
+    border: 1px solid #ddd;
+    background-color: inherit;
+}
+
+.modal-header {
+    border-bottom: 0;
+}
+
+.modal-footer {
+    border-top: 0;
+}
+
+#recent-file-panel tbody tr:nth-child(2n-1) {
+    background-color: transparent !important;
+}
+
+.megamenu-menu-panel tbody tr:hover td:nth-child(2) {
+    color: inherit;
+}
+
+.megamenu-menu-panel .btn {
+    border: 1px solid #eee;
+    background: transparent;
+}
+
+.mouse-hover .toolbar-icon.btn:hover,
+#w-full.mouse-hover,
+#w-pin.mouse-hover {
+    background-color: inherit;
+}
+
+.typora-node::-webkit-scrollbar {
+    width: 5px;
+}
+
+.typora-node::-webkit-scrollbar-thumb:vertical {
+    background: rgba(250, 250, 250, 0.3);
+}
+
+.typora-node::-webkit-scrollbar-thumb:vertical:active {
+    background: rgba(250, 250, 250, 0.5);
+}
+
+#w-unpin {
+    background-color: #4182c4;
+}
+
+#top-titlebar, #top-titlebar * {
+    color: var(--item-hover-text-color);
+}
+
+.typora-sourceview-on #toggle-sourceview-btn,
+#footer-word-count:hover,
+.show-word-count #footer-word-count {
+    background: #333333;
+}
+
+#toggle-sourceview-btn:hover {
+    color: #eee;
+    background: #333333;
+}
+
+/** focus mode */
+.on-focus-mode .md-end-block:not(.md-focus):not(.md-focus-container) * {
+    color: #686868 !important;
+}
+
+.on-focus-mode .md-end-block:not(.md-focus) img,
+.on-focus-mode .md-task-list-item:not(.md-focus-container)>input {
+    opacity: #686868 !important;
+}
+
+.on-focus-mode li[cid]:not(.md-focus-container){
+    color: #686868;
+}
+
+.on-focus-mode .md-fences.md-focus .CodeMirror-code>*:not(.CodeMirror-activeline) *,
+.on-focus-mode .CodeMirror.cm-s-inner:not(.CodeMirror-focused) * {
+    color: #686868 !important;
+}
+
+.on-focus-mode .md-focus,
+.on-focus-mode .md-focus-container {
+    color: #fff;
+}
+
+.on-focus-mode #typora-source .CodeMirror-code>*:not(.CodeMirror-activeline) * {
+    color: #686868 !important;
+}
+
+
+/*diagrams*/
+#write .md-focus .md-diagram-panel {
+    border: 1px solid #ddd;
+    margin-left: -30px;
+}
+
+/*diagrams*/
+#write.show-fences-line-number .md-focus .md-diagram-panel {
+    margin-left: auto;
+}
+
+.md-diagram-panel-error {
+    color: #f1908e;
+}
+
+.active-tab-files #info-panel-tab-file,
+.active-tab-files #info-panel-tab-file:hover,
+.active-tab-outline #info-panel-tab-outline,
+.active-tab-outline #info-panel-tab-outline:hover {
+    color: #eee;
+}
+
+.sidebar-footer-item:hover,
+.footer-item:hover {
+    background: inherit;
+    color: white;
+}
+
+.ty-side-sort-btn.active,
+.ty-side-sort-btn:hover,
+.selected-folder-menu-item a:after {
+    color: white;
+}
+
+#sidebar-files-menu {
+    border:solid 1px;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.79);
+    background-color: var(--bg-color);
+}
+
+.file-list-item {
+    border-bottom:none;
+}
+
+.file-list-item-summary {
+    opacity: 1;
+}
+
+.file-list-item.active:first-child {
+    border-top: none;
+}
+
+.sidebar-footer {
+    border-top: 1px solid #555;
+}
+
+.file-node-background {
+    height: 32px;
+}
+
+.file-library-node.active>.file-node-content,
+.file-list-item.active {
+    color: white;
+    color: var(--active-file-text-color);
+}
+
+.file-library-node.active>.file-node-background{
+    background-color: rgb(34, 34, 34);
+    background-color: var(--active-file-bg-color);
+}
+.file-list-item.active {
+    background-color: rgb(34, 34, 34);
+    background-color: var(--active-file-bg-color);
+}
+
+#ty-tooltip {
+    background-color: black;
+    color: #eee;
+}
+
+#write {
+    cursor: -webkit-image-set(url("file:///Users/Natsume/Library/Application%20Support/abnerworks.Typora/themes/night/cursor.png") 1x, url("file:///Users/Natsume/Library/Application%20Support/abnerworks.Typora/themes/night/cursor@2x.png") 2x) 8 8, auto;
+}
+
+.md-task-list-item>input {
+    margin-left: -1.3em;
+    margin-top: calc(1rem - 10px);
+    -webkit-appearance: none;
+}
+
+ .typora-export p, .typora-export .footnote-line {white-space: normal;} 
+</style>
+</head>
+<body class='typora-export' >
+<div  id='write'  class = 'is-mac show-fences-line-number'><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/yaBrqVIRjnGGN4xNzctrt5iQDPoe.DoeSfxrEh*UKD4!/b/dEABAAAAAAAA&bo=1ANuBNQDbgQDCSw!&rf=viewer_4'>book cover</a><br/></p><div class='md-toc' mdtype='toc'><p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n6"><a class="md-toc-inner" style="" href="#header-n6">Bayes Everyday video </a></span><span class="md-toc-item md-toc-h2" data-ref="n626"><a class="md-toc-inner" style="" href="#header-n626">Book intro </a></span><span class="md-toc-item md-toc-h2" data-ref="n15"><a class="md-toc-inner" style="" href="#header-n15">used everywhere</a></span><span class="md-toc-item md-toc-h2" data-ref="n23"><a class="md-toc-inner" style="" href="#header-n23">Nature</a></span><span class="md-toc-item md-toc-h2" data-ref="n31"><a class="md-toc-inner" style="" href="#header-n31">Examples</a></span><span class="md-toc-item md-toc-h2" data-ref="n41"><a class="md-toc-inner" style="" href="#header-n41">why visual?</a></span><span class="md-toc-item md-toc-h2" data-ref="n45"><a class="md-toc-inner" style="" href="#header-n45">Visual Aids</a></span><span class="md-toc-item md-toc-h1" data-ref="n55"><a class="md-toc-inner" style="" href="#header-n55">A Visual Intro Part 1</a></span><span class="md-toc-item md-toc-h2" data-ref="n56"><a class="md-toc-inner" style="" href="#header-n56">Bayes' theorem without formula video  </a></span><span class="md-toc-item md-toc-h3" data-ref="n57"><a class="md-toc-inner" style="" href="#header-n57">Problem setting</a></span><span class="md-toc-item md-toc-h3" data-ref="n80"><a class="md-toc-inner" style="" href="#header-n80">Problem proposed</a></span><span class="md-toc-item md-toc-h3" data-ref="n86"><a class="md-toc-inner" style="" href="#header-n86">Explanation</a></span><span class="md-toc-item md-toc-h2" data-ref="n104"><a class="md-toc-inner" style="" href="#header-n104">The Bayes' theorem Fomula video  </a></span><span class="md-toc-item md-toc-h3" data-ref="n105"><a class="md-toc-inner" style="" href="#header-n105">3 ingredients of the formula</a></span><span class="md-toc-item md-toc-h3" data-ref="n111"><a class="md-toc-inner" style="" href="#header-n111">solution with formula</a></span><span class="md-toc-item md-toc-h1" data-ref="n127"><a class="md-toc-inner" style="" href="#header-n127">Solving for one possible outcome with all data provided video  </a></span><span class="md-toc-item md-toc-h2" data-ref="n128"><a class="md-toc-inner" style="" href="#header-n128">Senario 1: The Flu</a></span><span class="md-toc-item md-toc-h3" data-ref="n129"><a class="md-toc-inner" style="" href="#header-n129">Problem Setting</a></span><span class="md-toc-item md-toc-h3" data-ref="n133"><a class="md-toc-inner" style="" href="#header-n133">Base Rate Fallacy</a></span><span class="md-toc-item md-toc-h3" data-ref="n588"><a class="md-toc-inner" style="" href="#header-n588">Posterior Probability</a></span><span class="md-toc-item md-toc-h3" data-ref="n141"><a class="md-toc-inner" style="" href="#header-n141">Prior Knowlege</a></span><span class="md-toc-item md-toc-h3" data-ref="n155"><a class="md-toc-inner" style="" href="#header-n155">Likelihood</a></span><span class="md-toc-item md-toc-h3" data-ref="n177"><a class="md-toc-inner" style="" href="#header-n177">Visualizing the problem and solution</a></span><span class="md-toc-item md-toc-h2" data-ref="n187"><a class="md-toc-inner" style="" href="#header-n187">Scenario 2: Breathalyzer</a></span><span class="md-toc-item md-toc-h3" data-ref="n188"><a class="md-toc-inner" style="" href="#header-n188">Problem</a></span><span class="md-toc-item md-toc-h3" data-ref="n194"><a class="md-toc-inner" style="" href="#header-n194">Visualizing the solution</a></span><span class="md-toc-item md-toc-h2" data-ref="n204"><a class="md-toc-inner" style="" href="#header-n204">Scenario 3: Peacekeeping - A surprise attack</a></span><span class="md-toc-item md-toc-h3" data-ref="n205"><a class="md-toc-inner" style="" href="#header-n205">problem</a></span><span class="md-toc-item md-toc-h3" data-ref="n209"><a class="md-toc-inner" style="" href="#header-n209">visualizing the solution</a></span><span class="md-toc-item md-toc-h1" data-ref="n221"><a class="md-toc-inner" style="" href="#header-n221">Solving for one possible outcome with No P(B) provided video </a></span><span class="md-toc-item md-toc-h2" data-ref="n227"><a class="md-toc-inner" style="" href="#header-n227">Scenario 1: The Flu</a></span><span class="md-toc-item md-toc-h3" data-ref="n228"><a class="md-toc-inner" style="" href="#header-n228">Problem</a></span><span class="md-toc-item md-toc-h3" data-ref="n242"><a class="md-toc-inner" style="" href="#header-n242">Visualizing the solution</a></span><span class="md-toc-item md-toc-h2" data-ref="n294"><a class="md-toc-inner" style="" href="#header-n294">Scenario 2: The Drunk Driver</a></span><span class="md-toc-item md-toc-h3" data-ref="n295"><a class="md-toc-inner" style="" href="#header-n295">problem</a></span><span class="md-toc-item md-toc-h3" data-ref="n317"><a class="md-toc-inner" style="" href="#header-n317">Visualizing Solution</a></span><span class="md-toc-item md-toc-h2" data-ref="n323"><a class="md-toc-inner" style="" href="#header-n323">Scenario 3 Peacekeeping - a surprise attack</a></span><span class="md-toc-item md-toc-h3" data-ref="n324"><a class="md-toc-inner" style="" href="#header-n324">problem</a></span><span class="md-toc-item md-toc-h3" data-ref="n350"><a class="md-toc-inner" style="" href="#header-n350">Visualizing Solution</a></span><span class="md-toc-item md-toc-h1" data-ref="n356"><a class="md-toc-inner" style="" href="#header-n356">Solving for two possible outcomes with all probability data provided</a></span><span class="md-toc-item md-toc-h2" data-ref="n364"><a class="md-toc-inner" style="" href="#header-n364">Scenario 1: The Flu</a></span><span class="md-toc-item md-toc-h3" data-ref="n365"><a class="md-toc-inner" style="" href="#header-n365">problem</a></span><span class="md-toc-item md-toc-h3" data-ref="n391"><a class="md-toc-inner" style="" href="#header-n391">Visualizing Solutions</a></span><span class="md-toc-item md-toc-h1" data-ref="n397"><a class="md-toc-inner" style="" href="#header-n397">Advanced usage</a></span><span class="md-toc-item md-toc-h2" data-ref="n398"><a class="md-toc-inner" style="" href="#header-n398">Search and Rescue</a></span><span class="md-toc-item md-toc-h2" data-ref="n406"><a class="md-toc-inner" style="" href="#header-n406">spam filtering</a></span><span class="md-toc-item md-toc-h2" data-ref="n414"><a class="md-toc-inner" style="" href="#header-n414">Driverless Car</a></span><span class="md-toc-item md-toc-h1" data-ref="n420"><a class="md-toc-inner" style="" href="#header-n420">3 steps to think like a Bayesian everyday video </a></span><span class="md-toc-item md-toc-h2" data-ref="n421"><a class="md-toc-inner" style="" href="#header-n421">scenario 1: Dating</a></span><span class="md-toc-item md-toc-h3" data-ref="n422"><a class="md-toc-inner" style="" href="#header-n422">Non-Visual Approach</a></span><span class="md-toc-item md-toc-h3" data-ref="n466"><a class="md-toc-inner" style="" href="#header-n466">Visual Approach</a></span><span class="md-toc-item md-toc-h2" data-ref="n474"><a class="md-toc-inner" style="" href="#header-n474">Scenario 2: Can you trust your mechanic?</a></span><span class="md-toc-item md-toc-h3" data-ref="n475"><a class="md-toc-inner" style="" href="#header-n475">Non-Visual approach</a></span><span class="md-toc-item md-toc-h3" data-ref="n519"><a class="md-toc-inner" style="" href="#header-n519">Visual approach</a></span></p></div><p>&nbsp;</p><h1><a name='header-n6' class='md-header-anchor '></a>Bayes Everyday <a href='https://www.bilibili.com/video/av26967124/'>video</a> <br/></h1><h2><a name='header-n626' class='md-header-anchor '></a>Book intro </h2><blockquote><p>what is Bayes&#39; theorem and how does it work</p><p>is simple and built on elementary math</p><p>different names: Bayes&#39; rule, Bayes&#39; theorem, Bayes&#39; formula</p></blockquote><h2><a name='header-n15' class='md-header-anchor '></a>used everywhere</h2><blockquote><p>help display google search result </p><p>same true to Netflix recommendations</p><p>Hedge funds, self-driving cars, search and rescue </p></blockquote><h2><a name='header-n23' class='md-header-anchor '></a>Nature</h2><blockquote><p>a simple math formula revolutionalized how understand and deal with uncertainty</p><p>if life is black and white, Bayes&#39; Theorem help to think about the gray areas</p><p>how much should we change our confidence in a belief when given new evidence</p></blockquote><h2><a name='header-n31' class='md-header-anchor '></a>Examples</h2><blockquote><p>a test for cancer came back positive, what is the probability of having cancer if the test is positive?</p><p>what is the probability that the dog likes you given it licks you?</p><p>what is the probability the stock prices will fall given interest rate rises?</p><p>what is the probability you are truly drunk given the breathalyzer test is positive?</p></blockquote><h2><a name='header-n41' class='md-header-anchor '></a>why visual?</h2><blockquote><p>applying the theorem is not intuitive for most people</p></blockquote><h2><a name='header-n45' class='md-header-anchor '></a>Visual Aids</h2><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/8fFCYtIzwuPC8M8uy3FujsUxrxtIOQFsNVQ2EDqRhKk!/b/dC8BAAAAAAAA&bo=1gNOAtYDTgIDCSw!&rf=viewer_4'>Venn Diagrams</a> </p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/dapBaWT3sbEAfWPZyQWxoBLSN2kTFYXdRTJMq1zeUZA!/b/dIMAAAAAAAAA&bo=0ANIAtADSAIDGTw!&rf=viewer_4'>Decision Trees</a></p><p>Letters (T, H for tail and head)</p><p>Physical objects (real coins)</p></blockquote><h1><a name='header-n55' class='md-header-anchor '></a>A Visual Intro Part 1</h1><h2><a name='header-n56' class='md-header-anchor '></a>Bayes&#39; theorem without formula <a href='https://www.bilibili.com/video/av26967124/?p=2'>video</a>  <br/></h2><h3><a name='header-n57' class='md-header-anchor '></a>Problem setting</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/lCusU*hqR6kX*EBi2jjqo5eeJ*Gas4.J6DgKB94JPvE!/b/dDMBAAAAAAAA&bo=1ANGAtQDRgIDCSw!&rf=viewer_4'>a box with 2 outcomes</a>, both are equally likely to happen</p><ul><li>p(A) = 1/2, p(B) = 1/2</li></ul><p>a box with 3 outcomes, all of them are equally likely to happen</p><ul><li>p(A) = 1/3, p(B) = 1/3, p(C) = 1/3</li></ul><p>focus on <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/OtU9mzDSZniy.*NtZCgh72QCkCd4U7bi5eTL7ccDX2E!/b/dDABAAAAAAAA&bo=zgM6As4DOgIDGTw!&rf=viewer_4'>first case</a>, two types of cookies, <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/50SPuxzJw8*gmF7yxpQT1Hh42qD4*8GYv4Fr1HakoT4!/b/dEABAAAAAAAA&bo=0gNMAtIDTAIDCSw!&rf=viewer_4'>chocolate and peanut</a> </p><ul><li>p(A) = 1/2, p(B) = 1/2</li><li>P(chocolate) = 3/4, P(peanut butter) = 1/4</li></ul></blockquote><h3><a name='header-n80' class='md-header-anchor '></a>Problem proposed</h3><blockquote><p>prob(boxA | chocolate cookie) ?&gt;? prob(boxB | chocolate cookie) </p><p><strong>intuitive:</strong> box A has double the amount of chocolate than box B</p></blockquote><h3><a name='header-n86' class='md-header-anchor '></a>Explanation</h3><blockquote><p>New Evidence change the universe </p><ul><li>Evidence: given a chocolate cookie</li><li>Ignorance: peanut butter cookie (<a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/MdQ4JfO7ucjhPmi5JIKaHIOGg9R57aLUzkdpG4a5ANc!/b/dGEBAAAAAAAA&bo=1ANOAtQDTgIDCSw!&rf=viewer_4'>sample space changed</a>)</li><li><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/gs1Duxkk1NZIgKZPVK11i01qykJ0JniE2YwkRtDNHzo!/b/dC4BAAAAAAAA&bo=zgNEAgAAAAADB6k!&rf=viewer_4'>new universe</a> has only 15 chocolate cookies,  A has 10, B has 5</li></ul><p>prob(boxA | chocolate cookie) = 2/3 </p><p>prob(boxB | chocolate cookie) =1/3</p></blockquote><h2><a name='header-n104' class='md-header-anchor '></a>The Bayes&#39; theorem Fomula <a href='https://www.bilibili.com/video/av26967124/?p=3'>video</a>  <br/></h2><h3><a name='header-n105' class='md-header-anchor '></a><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/b2K9Zk3P28YW91Xh7J0.VxfxiMF4co8szRynpClT2vA!/b/dC0BAAAAAAAA&bo=0ANOAtADTgIDCSw!&rf=viewer_4'>3 ingredients</a> of the formula</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/2bhK.Z.EpZhQctZyrw.naJNnLbOvS71M8NPW9P4knRc!/b/dDEBAAAAAAAA&bo=1gNQAtYDUAIDORw!&rf=viewer_4'>meaning of each component</a> of the formula</p><p>posterior probability = normalized weighted average</p></blockquote><h3><a name='header-n111' class='md-header-anchor '></a>solution with formula</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/a2ahu91Z0Rua3G9fvxYBafRrLh6Q0cucWJCDwS6rwVQ!/b/dDABAAAAAAAA&bo=0gPiANID4gADCSw!&rf=viewer_4'>apply formula</a> to the problem above </p><p>likelihood</p><ul><li> P(chocolate cookie | box A) = 100% sure = 1 (in Universe of box A)</li></ul><p>prior probability</p><ul><li><span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-1-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="39.027ex" height="2.671ex" viewBox="0 -835.3 16803.1 1149.8" role="img" focusable="false" style="vertical-align: -0.73ex;"><defs><path stroke-width="0" id="E1-MJMATHI-50" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path stroke-width="0" id="E1-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E1-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E1-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path stroke-width="0" id="E1-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path stroke-width="0" id="E1-MJMATHI-62" d="M73 647Q73 657 77 670T89 683Q90 683 161 688T234 694Q246 694 246 685T212 542Q204 508 195 472T180 418L176 399Q176 396 182 402Q231 442 283 442Q345 442 383 396T422 280Q422 169 343 79T173 -11Q123 -11 82 27T40 150V159Q40 180 48 217T97 414Q147 611 147 623T109 637Q104 637 101 637H96Q86 637 83 637T76 640T73 647ZM336 325V331Q336 405 275 405Q258 405 240 397T207 376T181 352T163 330L157 322L136 236Q114 150 114 114Q114 66 138 42Q154 26 178 26Q211 26 245 58Q270 81 285 114T318 219Q336 291 336 325Z"></path><path stroke-width="0" id="E1-MJMATHI-6F" d="M201 -11Q126 -11 80 38T34 156Q34 221 64 279T146 380Q222 441 301 441Q333 441 341 440Q354 437 367 433T402 417T438 387T464 338T476 268Q476 161 390 75T201 -11ZM121 120Q121 70 147 48T206 26Q250 26 289 58T351 142Q360 163 374 216T388 308Q388 352 370 375Q346 405 306 405Q243 405 195 347Q158 303 140 230T121 120Z"></path><path stroke-width="0" id="E1-MJMATHI-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path stroke-width="0" id="E1-MJMAIN-7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path><path stroke-width="0" id="E1-MJMATHI-55" d="M107 637Q73 637 71 641Q70 643 70 649Q70 673 81 682Q83 683 98 683Q139 681 234 681Q268 681 297 681T342 682T362 682Q378 682 378 672Q378 670 376 658Q371 641 366 638H364Q362 638 359 638T352 638T343 637T334 637Q295 636 284 634T266 623Q265 621 238 518T184 302T154 169Q152 155 152 140Q152 86 183 55T269 24Q336 24 403 69T501 205L552 406Q599 598 599 606Q599 633 535 637Q511 637 511 648Q511 650 513 660Q517 676 519 679T529 683Q532 683 561 682T645 680Q696 680 723 681T752 682Q767 682 767 672Q767 650 759 642Q756 637 737 637Q666 633 648 597Q646 592 598 404Q557 235 548 205Q515 105 433 42T263 -22Q171 -22 116 34T60 167V183Q60 201 115 421Q164 622 164 628Q164 635 107 637Z"></path><path stroke-width="0" id="E1-MJMATHI-6E" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E1-MJMATHI-69" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E1-MJMATHI-76" d="M173 380Q173 405 154 405Q130 405 104 376T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Q21 294 29 316T53 368T97 419T160 441Q202 441 225 417T249 361Q249 344 246 335Q246 329 231 291T200 202T182 113Q182 86 187 69Q200 26 250 26Q287 26 319 60T369 139T398 222T409 277Q409 300 401 317T383 343T365 361T357 383Q357 405 376 424T417 443Q436 443 451 425T467 367Q467 340 455 284T418 159T347 40T241 -11Q177 -11 139 22Q102 54 102 117Q102 148 110 181T151 298Q173 362 173 380Z"></path><path stroke-width="0" id="E1-MJMATHI-65" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path><path stroke-width="0" id="E1-MJMATHI-72" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E1-MJMATHI-73" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E1-MJMATHI-50" x="0" y="0"></use><use xlink:href="#E1-MJMAIN-28" x="751" y="0"></use><use xlink:href="#E1-MJMATHI-41" x="1140" y="0"></use><use xlink:href="#E1-MJMAIN-29" x="1890" y="0"></use><use xlink:href="#E1-MJMAIN-3D" x="2556" y="0"></use><use xlink:href="#E1-MJMATHI-50" x="3612" y="0"></use><use xlink:href="#E1-MJMAIN-28" x="4363" y="0"></use><use xlink:href="#E1-MJMATHI-62" x="4752" y="0"></use><use xlink:href="#E1-MJMATHI-6F" x="5181" y="0"></use><use xlink:href="#E1-MJMATHI-78" x="5666" y="0"></use><use xlink:href="#E1-MJMATHI-41" x="6238" y="0"></use><use xlink:href="#E1-MJMAIN-29" x="6988" y="0"></use><use xlink:href="#E1-MJMAIN-3D" x="7655" y="0"></use><use xlink:href="#E1-MJMATHI-50" x="8711" y="0"></use><use xlink:href="#E1-MJMAIN-28" x="9462" y="0"></use><use xlink:href="#E1-MJMATHI-62" x="9851" y="0"></use><use xlink:href="#E1-MJMATHI-6F" x="10280" y="0"></use><use xlink:href="#E1-MJMATHI-78" x="10765" y="0"></use><use xlink:href="#E1-MJMATHI-41" x="11337" y="0"></use><use xlink:href="#E1-MJMAIN-7C" x="12087" y="0"></use><use xlink:href="#E1-MJMATHI-55" x="12365" y="0"></use><use xlink:href="#E1-MJMATHI-6E" x="13132" y="0"></use><use xlink:href="#E1-MJMATHI-69" x="13732" y="0"></use><use xlink:href="#E1-MJMATHI-76" x="14077" y="0"></use><use xlink:href="#E1-MJMATHI-65" x="14562" y="0"></use><use xlink:href="#E1-MJMATHI-72" x="15028" y="0"></use><use xlink:href="#E1-MJMATHI-73" x="15479" y="0"></use><use xlink:href="#E1-MJMATHI-65" x="15948" y="0"></use><use xlink:href="#E1-MJMAIN-29" x="16414" y="0"></use></g></svg></span><script type="math/tex" id="MathJax-Element-1">P(A) = P(box A) = P(box A | Universe)</script> = 50% of universe = 0.5 (in Universe Original)</li></ul><p>intersection</p><ul><li><span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-2-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="48.514ex" height="2.671ex" viewBox="0 -835.3 20888 1149.8" role="img" focusable="false" style="vertical-align: -0.73ex;"><defs><path stroke-width="0" id="E2-MJMATHI-50" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path stroke-width="0" id="E2-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E2-MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="0" id="E2-MJMAIN-7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path><path stroke-width="0" id="E2-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E2-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path stroke-width="0" id="E2-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path stroke-width="0" id="E2-MJMAIN-2229" d="M88 -21T75 -21T55 -7V200Q55 231 55 280Q56 414 60 428Q61 430 61 431Q77 500 152 549T332 598Q443 598 522 544T610 405Q611 399 611 194V-7Q604 -22 591 -22Q582 -22 572 -9L570 405Q563 433 556 449T529 485Q498 519 445 538T334 558Q251 558 179 518T96 401Q95 396 95 193V-7Q88 -21 75 -21Z"></path><path stroke-width="0" id="E2-MJMATHI-55" d="M107 637Q73 637 71 641Q70 643 70 649Q70 673 81 682Q83 683 98 683Q139 681 234 681Q268 681 297 681T342 682T362 682Q378 682 378 672Q378 670 376 658Q371 641 366 638H364Q362 638 359 638T352 638T343 637T334 637Q295 636 284 634T266 623Q265 621 238 518T184 302T154 169Q152 155 152 140Q152 86 183 55T269 24Q336 24 403 69T501 205L552 406Q599 598 599 606Q599 633 535 637Q511 637 511 648Q511 650 513 660Q517 676 519 679T529 683Q532 683 561 682T645 680Q696 680 723 681T752 682Q767 682 767 672Q767 650 759 642Q756 637 737 637Q666 633 648 597Q646 592 598 404Q557 235 548 205Q515 105 433 42T263 -22Q171 -22 116 34T60 167V183Q60 201 115 421Q164 622 164 628Q164 635 107 637Z"></path><path stroke-width="0" id="E2-MJMATHI-6E" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E2-MJMATHI-69" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E2-MJMATHI-76" d="M173 380Q173 405 154 405Q130 405 104 376T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Q21 294 29 316T53 368T97 419T160 441Q202 441 225 417T249 361Q249 344 246 335Q246 329 231 291T200 202T182 113Q182 86 187 69Q200 26 250 26Q287 26 319 60T369 139T398 222T409 277Q409 300 401 317T383 343T365 361T357 383Q357 405 376 424T417 443Q436 443 451 425T467 367Q467 340 455 284T418 159T347 40T241 -11Q177 -11 139 22Q102 54 102 117Q102 148 110 181T151 298Q173 362 173 380Z"></path><path stroke-width="0" id="E2-MJMATHI-65" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path><path stroke-width="0" id="E2-MJMATHI-72" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E2-MJMATHI-73" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E2-MJMATHI-50" x="0" y="0"></use><use xlink:href="#E2-MJMAIN-28" x="751" y="0"></use><use xlink:href="#E2-MJMATHI-42" x="1140" y="0"></use><use xlink:href="#E2-MJMAIN-7C" x="1899" y="0"></use><use xlink:href="#E2-MJMATHI-41" x="2177" y="0"></use><use xlink:href="#E2-MJMAIN-29" x="2927" y="0"></use><use xlink:href="#E2-MJMATHI-50" x="3316" y="0"></use><use xlink:href="#E2-MJMAIN-28" x="4067" y="0"></use><use xlink:href="#E2-MJMATHI-41" x="4456" y="0"></use><use xlink:href="#E2-MJMAIN-29" x="5206" y="0"></use><use xlink:href="#E2-MJMAIN-3D" x="5872" y="0"></use><use xlink:href="#E2-MJMATHI-50" x="6928" y="0"></use><use xlink:href="#E2-MJMAIN-28" x="7679" y="0"></use><use xlink:href="#E2-MJMATHI-41" x="8068" y="0"></use><use xlink:href="#E2-MJMAIN-2229" x="9040" y="0"></use><use xlink:href="#E2-MJMATHI-42" x="9930" y="0"></use><use xlink:href="#E2-MJMAIN-29" x="10689" y="0"></use><use xlink:href="#E2-MJMAIN-3D" x="11355" y="0"></use><use xlink:href="#E2-MJMATHI-50" x="12411" y="0"></use><use xlink:href="#E2-MJMAIN-28" x="13162" y="0"></use><use xlink:href="#E2-MJMATHI-41" x="13551" y="0"></use><use xlink:href="#E2-MJMAIN-2229" x="14523" y="0"></use><use xlink:href="#E2-MJMATHI-42" x="15413" y="0"></use><use xlink:href="#E2-MJMAIN-7C" x="16172" y="0"></use><use xlink:href="#E2-MJMATHI-55" x="16450" y="0"></use><use xlink:href="#E2-MJMATHI-6E" x="17217" y="0"></use><use xlink:href="#E2-MJMATHI-69" x="17817" y="0"></use><use xlink:href="#E2-MJMATHI-76" x="18162" y="0"></use><use xlink:href="#E2-MJMATHI-65" x="18647" y="0"></use><use xlink:href="#E2-MJMATHI-72" x="19113" y="0"></use><use xlink:href="#E2-MJMATHI-73" x="19564" y="0"></use><use xlink:href="#E2-MJMATHI-65" x="20033" y="0"></use><use xlink:href="#E2-MJMAIN-29" x="20499" y="0"></use></g></svg></span><script type="math/tex" id="MathJax-Element-2"> P(B|A) P(A) = P(A \cap B) = P(A \cap B | Universe)</script> = 10/20 = 1/2 (in Universe Original)</li></ul><p>probability of data or evidence</p><ul><li>P(B) = P(get a cholocate cookie | Universe) = # chocolate / # universe = 15/20 = 0.75 (in Universe Original) </li></ul><p>key intuition</p><ul><li><span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-3-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="20.824ex" height="4.364ex" viewBox="0 -1199.9 8965.8 1879" role="img" focusable="false" style="vertical-align: -1.577ex;"><defs><path stroke-width="0" id="E3-MJMATHI-50" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path stroke-width="0" id="E3-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E3-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E3-MJMAIN-7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path><path stroke-width="0" id="E3-MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="0" id="E3-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path stroke-width="0" id="E3-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E3-MJMATHI-50" x="0" y="0"></use><use xlink:href="#E3-MJMAIN-28" x="751" y="0"></use><use xlink:href="#E3-MJMATHI-41" x="1140" y="0"></use><use xlink:href="#E3-MJMAIN-7C" x="1890" y="0"></use><use xlink:href="#E3-MJMATHI-42" x="2168" y="0"></use><use xlink:href="#E3-MJMAIN-29" x="2927" y="0"></use><use xlink:href="#E3-MJMAIN-3D" x="3593" y="0"></use><g transform="translate(4371,0)"><g transform="translate(397,0)"><rect stroke="none" width="4076" height="60" x="0" y="220"></rect><g transform="translate(60,584)"><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-50" x="0" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-28" x="751" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-42" x="1140" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-7C" x="1899" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-41" x="2177" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-29" x="2927" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-50" x="3316" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-28" x="4067" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-41" x="4456" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-29" x="5206" y="0"></use></g><g transform="translate(1229,-438)"><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-50" x="0" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-28" x="751" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMATHI-42" x="1140" y="0"></use><use transform="scale(0.707)" xlink:href="#E3-MJMAIN-29" x="1899" y="0"></use></g></g></g></g></svg></span><script type="math/tex" id="MathJax-Element-3">P(A | B) = \frac{P(B|A)P(A)}{P(B)}</script> shift Universe from original to Chocolate cookies to look at intersection</li></ul><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/WWRM33d65HUuI9A1z.KoZ.8P0tVp5IQFtcpXnmf0UOA!/b/dPMAAAAAAAAA&bo=zgNOAs4DTgIDCSw!&rf=viewer_4'>simple calculation process</a> </p></blockquote><h1><a name='header-n127' class='md-header-anchor '></a>Solving for one possible outcome with all data provided <a href='https://www.bilibili.com/video/av26967124/?p=4'>video</a>  <br/></h1><h2><a name='header-n128' class='md-header-anchor '></a>Senario 1: The Flu</h2><h3><a name='header-n129' class='md-header-anchor '></a>Problem Setting</h3><blockquote><p>“You have a headache and sore throat, and you know that people with the flu have the same symptoms roughly 90% of the time. In other words, 90% of people with the flu have the same symptoms you currently have. Does this mean you have the flu?”</p></blockquote><h3><a name='header-n133' class='md-header-anchor '></a>Base Rate Fallacy</h3><blockquote><p><strong>Don&#39;t fall into common error trap</strong> to assume</p><ul><li>P(A | B) = P(B | A) </li><li>P(headache and sore throat | Flu) = P(Flu | headache and sore throat) </li><li>so P(Flu | headache and sore throat) = 90% (<strong>wrong</strong>)</li></ul></blockquote><h3><a name='header-n588' class='md-header-anchor '></a>Posterior Probability</h3><blockquote><p>what is probability you have a flu, given you find out you have a headache, sore throat?</p><ul><li>P(Flu | headache and sore throat) <strong>Posterior probability</strong></li></ul></blockquote><h3><a name='header-n141' class='md-header-anchor '></a>Prior Knowlege</h3><blockquote><p>search in google to find more <strong>prior knowledge</strong> about the flu</p><ul><li>P(Flu | all population in general) = 5%</li></ul><p>search in google to find <strong>prior knowledge</strong> about headache and sore throat</p><ul><li>P(headache and sore throat | all population in general) = 20%</li></ul></blockquote><h3><a name='header-n155' class='md-header-anchor '></a>Likelihood</h3><blockquote><p>personal belief about relationship between Flu and [headache with sore throat]</p><ul><li>P(headache and sore throat | Flu) = 90% <strong>current belief or likelihood</strong> </li></ul></blockquote><h3><a name='header-n177' class='md-header-anchor '></a>Visualizing the problem and solution</h3><blockquote><p>use Venn Diagram to <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/K0xehlamTJtsFhQjo3Xm.5EZpyiuLqah5Rf5F5aVYJA!/b/dDIBAAAAAAAA&bo=1ANKAtQDSgIDCSw!&rf=viewer_4'>show what we know</a></p><p><span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-4-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="9.765ex" height="2.671ex" viewBox="0 -835.3 4204.3 1149.8" role="img" focusable="false" style="vertical-align: -0.73ex;"><defs><path stroke-width="0" id="E4-MJMATHI-50" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path stroke-width="0" id="E4-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E4-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E4-MJSZ1-22C2" d="M139 -217Q127 -241 114 -246Q106 -249 97 -249Q67 -249 57 -220Q55 -214 55 102Q55 152 55 221T54 312Q54 422 60 464T91 554Q120 612 165 654T257 714T337 741T392 749Q393 750 402 750Q414 750 422 749Q557 749 660 659T776 430Q777 422 777 102Q777 -214 775 -220Q765 -249 735 -249Q716 -249 708 -241T694 -217L692 428L690 441Q674 540 597 603T416 666H409Q388 666 364 662T294 638T212 581Q156 523 142 441L140 428L139 105V-217Z"></path><path stroke-width="0" id="E4-MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="0" id="E4-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E4-MJMATHI-50" x="0" y="0"></use><use xlink:href="#E4-MJMAIN-28" x="751" y="0"></use><use xlink:href="#E4-MJMATHI-41" x="1140" y="0"></use><use xlink:href="#E4-MJSZ1-22C2" x="2056" y="-1"></use><use xlink:href="#E4-MJMATHI-42" x="3056" y="0"></use><use xlink:href="#E4-MJMAIN-29" x="3815" y="0"></use></g></svg></span><script type="math/tex" id="MathJax-Element-4">P(A \bigcap B)</script> is <strong>not known or given</strong>, but formula does not need it</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/89xI9AgrjEupJlkcIscGEmoBo4zSnFlW.aRdcy1EDe0!/b/dIMAAAAAAAAA&bo=0gNcAdIDXAEDCSw!&rf=viewer_4'>apply to Bayes&#39; theorem</a> and <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/VWWN6nmfruK6Tbll2V16SI7vPmV.vxjYTpPYT.7Chqs!/b/dFYAAAAAAAAA&bo=zANGAswDRgIDGTw!&rf=viewer_4'>calculate the answer</a> </p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/6YMkMJu7FsaBtOK0UUTthJn0Q7AazauzanbXtO4F6zs!/b/dDEBAAAAAAAA&bo=JgSGAiYEhgIDGTw!&rf=viewer_4'>many highly educated people</a> don&#39;t know about Bayes&#39; theorem</p></blockquote><h2><a name='header-n187' class='md-header-anchor '></a>Scenario 2: Breathalyzer</h2><h3><a name='header-n188' class='md-header-anchor '></a>Problem</h3><blockquote><p>you are a police officer, “Around 2 am you randomly pull over a vehicle and have the driver take a breathalyzer test, and the result is positive. You assume the test is accurate and think nothing of it as you process the driver”</p><p>are you really correct in assuming so?</p></blockquote><h3><a name='header-n194' class='md-header-anchor '></a>Visualizing the solution</h3><blockquote><p>prior knowledge on <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/PGrVZv3KeHAyiqpo9WsTFwc4EtekWFLtErkP.TlO8ko!/b/dPIAAAAAAAAA&bo=0gNOAtIDTgIDCSw!&rf=viewer_4'>drunk driving</a> and <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/xFHDFyAiVDmowyYnsaLLYpFCxp78DiP2g5JujzrSrgk!/b/dDMBAAAAAAAA&bo=zANMAswDTAIDKQw!&rf=viewer_4'>testing positive</a> in general</p><p>visualizing likelihood, <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/1RRkv6RCj8gCteawSESoipr8rtrTidSWyFyzbcQfSqQ!/b/dDEBAAAAAAAA&bo=0ANKAtADSgIDKQw!&rf=viewer_4'>causal effect from drunk driving to test result</a> </p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/73ytFVJZsw0fKvrtIsbG2GNX0TgDsu2YarI0VncKC3M!/b/dDABAAAAAAAA&bo=0ANCAtADQgIDKQw!&rf=viewer_4'>apply formula</a> to the problem</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/9IvBOpyyoYgSsPlLoZ0DxaAd3a.GetsUKuDj9i14nYU!/b/dC0BAAAAAAAA&bo=0gNOAtIDTgIDKQw!&rf=viewer_4'>far cry difference</a> between P(positve | drunk driving) vs P(drunk driving | positive) </p></blockquote><h2><a name='header-n204' class='md-header-anchor '></a>Scenario 3: Peacekeeping - A surprise attack</h2><h3><a name='header-n205' class='md-header-anchor '></a>problem</h3><blockquote><p>“the probability of the truck being rigged with a gun given that we were just fired at with heavy firepower.”</p></blockquote><h3><a name='header-n209' class='md-header-anchor '></a>visualizing the solution</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/LnBxi2LH6kUsCuvb3VH0nnfShVShuh2issYDLsvw378!/b/dEMBAAAAAAAA&bo=0ANOAtADTgIDCSw!&rf=viewer_4'>prior knowledge</a> P(a rebel truck with guns | all rebel trucks ) = 40%</p><p>prior knowledge or <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/Xn5sSRv3bAHNO*lu97wZ2Y26t8fVgO*aKifW1YtQ29o!/b/dDABAAAAAAAA&bo=0gNMAtIDTAIDORw!&rf=viewer_4'>observations</a> P(rebel truck with heavy firepower | all rebels trucks ) = 50%</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/xfcdNOQxx.PxTOAsIVqTkUgTOwLp6w*WmH9rWjEEfHI!/b/dDABAAAAAAAA&bo=1gNOAtYDTgIDCSw!&rf=viewer_4'>likelihood</a> P(rebel truck with heavy firepower | rebel with gun) = 80%</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/9Lh6TeeJk6*AZEQIYuPpL1b5fgbp8UwCfVQrRsrAkNg!/b/dGEBAAAAAAAA&bo=2gNiAdoDYgEDGTw!&rf=viewer_4'>apply formula</a> to problem and <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/5mBpWbSR4Chm4Im34LmlDeoZS31CxudC6*RYVlbs9j4!/b/dEYBAAAAAAAA&bo=0gNEAtIDRAIDGTw!&rf=viewer_4'>calculate the result</a> </p><p>whether or not have a far cry difference depends on how much is updated on the belief</p></blockquote><h1><a name='header-n221' class='md-header-anchor '></a>Solving for one possible outcome with No P(B) provided <a href='https://www.bilibili.com/video/av26967124/?p=5'>video</a> <br/></h1><blockquote><p>previously 3 ingredients are given, now only 2 ingredients are given, <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/4N.S5n1qdJUEC9VxsMlZuPwXLZH3AAh1j83zBhh8FCw!/b/dEMBAAAAAAAA&bo=1gNMAtYDTAIDCSw!&rf=viewer_4'>P(B) must be discovered by ourselves</a><br/></p><p>decision tree is a powerful tool to help find P(B) </p></blockquote><h2><a name='header-n227' class='md-header-anchor '></a>Scenario 1: The Flu</h2><h3><a name='header-n228' class='md-header-anchor '></a>Problem</h3><blockquote><p>prior probability</p><ul><li>Google tells 5% of population will get Flu every year P(Flu | all) = 5%</li></ul><p>likelihood probabilities</p><ul><li>P(positive | Flu) = 75% (correctly predict with Flu 75% of time)</li><li>P(positive | No Flu) = 20% (wrong predict with Flu 20% of time)</li></ul><p>what to know posterior probability</p><ul><li>P(Flu | positive)</li></ul></blockquote><h3><a name='header-n242' class='md-header-anchor '></a>Visualizing the solution</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/*0yhGAfeEeYin3XYtXhKAjvax73vsv5q8*xjqie9zqE!/b/dDMBAAAAAAAA&bo=0ANQAtADUAIDGTw!&rf=viewer_4'>start with what we know</a>, the most basic node (have two branches)</p><ul><li>P(Flu | over all population)</li><li>P(No Flu | over all population)</li></ul><p>build upon primary branches, <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/0vcveN.Vk9OMDKRbh3MeRbX1tS41rObZAGCTdRXUZ.E!/b/dEIBAAAAAAAA&bo=0gNQAtIDUAIDCSw!&rf=viewer_4'>produce 4 secondary branches </a> </p><ul><li>branches from each node, sum to 1 </li><li>having 3 nodes so far</li></ul><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/aCXc6hvH*E7R8HwkQ2dEXK0xWHz2m2Y6PMs1UtelyXw!/b/dDABAAAAAAAA&bo=1gNWAtYDVgIDCSw!&rf=viewer_4'>meaning of final nodes</a> on the end of secondary branches </p><ul><li>top final node = P(Flu) * P(positive | Flu) = P(Flu ^ Positive)</li><li>each final node = branches (on each node path) multiple together </li><li>final node 1 = path 1 = P(Positive ^ Flu)</li><li>final node 2 = path 2 = P(Negative ^ Flu)</li><li>final node 3 = path 3 = P(Positive ^ no Flu)</li><li>final node 4 = path 4 = P(Negative ^ no Flu)</li><li>all final nodes sum up to 1</li></ul><p>How to discover P(B)</p><ul><li>P(B) = path 1 + path 3 = P(positive ^ Flu) + P(positive ^ no Flu)</li></ul><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/aO0etvHedufQFyIEmRy8IINhWwmGlF*G7VxtOSzwTWM!/b/dDABAAAAAAAA&bo=0ANcAdADXAEDGTw!&rf=viewer_4'>apply the formula</a> and <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/82MnqA.XC3sCg2kl5IDWNAEtyd3S0pJJGJ0SA2moZZg!/b/dC0BAAAAAAAA&bo=0gNOAtIDTgIDKQw!&rf=viewer_4'>calc the result</a> </p></blockquote><h2><a name='header-n294' class='md-header-anchor '></a>Scenario 2: The Drunk Driver</h2><h3><a name='header-n295' class='md-header-anchor '></a>problem</h3><blockquote><p>prior knowledge</p><ul><li>“Approximately 3 out of every 1000 drivers will drive while drunk. This is .3%.</li></ul><p>likelihood P(positive | drunk)</p><ul><li>The breathalyzer test does not always detect a drunk person. This is not 100% like you both previously thought, but 98%.</li></ul><p>likelihood P(positive | not drunk)</p><ul><li>4% of the time breathalyzer tests give a positive result for someone who is not drunk. This is called a false positive.”</li></ul><p>goal = Posterior probability = P(drunk | positive)</p></blockquote><h3><a name='header-n317' class='md-header-anchor '></a>Visualizing Solution</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/RxLSR8u4dikmf6YqiGZGxZQpU37wudMaXUXjKPSolZI!/b/dDMBAAAAAAAA&bo=3ANUAtwDVAIDCSw!&rf=viewer_4'>decision tree solution</a><br/></p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/Aq8hozlcFJ5k65765Iy.S.tmkY2pNoJn5pZwFFoHQGk!/b/dEcBAAAAAAAA&bo=2ANeAdgDXgEDGTw!&rf=viewer_4'>apply the formula</a><br/></p></blockquote><h2><a name='header-n323' class='md-header-anchor '></a>Scenario 3 Peacekeeping - a surprise attack</h2><h3><a name='header-n324' class='md-header-anchor '></a>problem</h3><blockquote><p>prior knowledge: P(rebels) = 100/175</p><ul><li>“There are roughly 100 rebels in the city and 75 coalition troops.”</li></ul><p>likelihood: P(positive | rebels) = 65%</p><ul><li>“Local Intel is not always reliable. In your experience it correctly predicts rebels 65% of the time.”</li></ul><p>likelihood: P(positive | no rebels) = 15%</p><ul><li>“Intel has been sketchy lately and has incorrectly predicted men as rebels when they are not rebels 15% of the time”</li></ul><p>what to know: Posterior probability = P(rebels | intel says positive)</p><ul><li>“We want to know the probability that the soldiers are rebels given that Intel says they are.”</li></ul></blockquote><h3><a name='header-n350' class='md-header-anchor '></a>Visualizing Solution</h3><blockquote><p>apply what we know above to <a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/t9PtiogZeZD.CsO*3*X.GVdINBtrFZS3MR8MphUNWyc!/b/dDIBAAAAAAAA&bo=1ANSAtQDUgIDCSw!&rf=viewer_4'>a decision tree</a></p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/orm5dn6lxJCFOyQ5l63fB9fvdw37gBiDyCCSiI7ivh8!/b/dEEBAAAAAAAA&bo=zANWAcwDVgEDGTw!&rf=viewer_4'>apply the formula</a> </p></blockquote><h1><a name='header-n356' class='md-header-anchor '></a>Solving for two possible outcomes with all probability data provided</h1><blockquote><p>given symptoms (sneezing and coughing), previously we want to know P(cold | symptoms)</p><p>now, we want to know P(cold | symptoms) vs P(allergy | symptoms)?</p><p>so, we will use Bayes&#39; formula twice</p></blockquote><h2><a name='header-n364' class='md-header-anchor '></a>Scenario 1: The Flu</h2><h3><a name='header-n365' class='md-header-anchor '></a>problem</h3><blockquote><p>likelihood on Flu or food poison causing symptoms</p><ul><li>P(symptoms | Flu) = 90%, P(symptoms | food poison) = 75%</li><li>“You have a slight headache and sore throat, and you see that people with the flu have the same symptoms as you 90% of the time. People with food poisoning have the same symptoms 75% of the time”</li></ul><p>prior knowledge on Flu or food poison</p><ul><li>P(Flu | all population) = 5%, P(food poison | all population) = 16%</li><li>“You see that the probability of having the flu is 5%, while the probability of having food poisoning is 16%”</li></ul><p>prior knowledge or observations</p><ul><li>P(symptoms = headache and sore throat | all population) = 20%</li></ul></blockquote><h3><a name='header-n391' class='md-header-anchor '></a>Visualizing Solutions</h3><blockquote><p>using Venn Diagram twice</p><p>apply the formula twice</p></blockquote><h1><a name='header-n397' class='md-header-anchor '></a>Advanced usage</h1><h2><a name='header-n398' class='md-header-anchor '></a>Search and Rescue</h2><blockquote><p>location and time - find the lost person at sea</p><p><a href='http://www.metsci.com/Portals/0/Search%20and%20Rescue%20Optimal%20Planning%20System.pdf'>SAROPS paper</a></p></blockquote><h2><a name='header-n406' class='md-header-anchor '></a>spam filtering</h2><blockquote><p>1998 Microsoft use bayesian filter for spam emails</p><p>microsoft paper on <a href='https://pdfs.semanticscholar.org/b449/8c71651f0327b5d51c8f8008d5a1804a084a.pdf'>Bayesian filter</a></p></blockquote><h2><a name='header-n414' class='md-header-anchor '></a>Driverless Car</h2><blockquote><p>use a Bayesian model similar to hidden markov model for localization</p><p><a href='http://stanford.edu/~cpiech/cs221/apps/driverlessCar.html'>stanford driverless car page</a></p></blockquote><h1><a name='header-n420' class='md-header-anchor '></a>3 steps to think like a Bayesian everyday <a href='https://www.bilibili.com/video/av26967124/?p=6'>video</a> <br/></h1><h2><a name='header-n421' class='md-header-anchor '></a>scenario 1: Dating</h2><h3><a name='header-n422' class='md-header-anchor '></a>Non-Visual Approach</h3><blockquote><p>prior knowledge </p><ul><li>P(a gilr likes you | all girls on date) = 20%</li><li>P(a gilr not like you | all girls on date) = 80%</li><li>number 1 = 2 (out of 10)</li><li>number 2 = 8 (out of 10)</li></ul><p>likelihood </p><ul><li>P(laughing and flirting | she likes you) = 90%</li><li>number 3 = 9 (out of 10)</li><li>P(laughing and flirting | she not like you) = 10%</li><li>number 4 = 1 (out of 10)</li></ul><p>goal = P(she likes you | laughing and flirting)</p><ul><li>option1 = P(laughing and flirting | she likes you) * P(a girl likes you) = 9 * 2 = 18 = P(laughing and flirting ^ she likes you)</li><li>option2 = P(laughing and flirting | she not like you) * P(a girl not like you) = 1 * 8= 8 = P(laughing and flirting ^ she not like you)</li><li>option1 : option2 = 9:4 &gt; 50%</li></ul></blockquote><h3><a name='header-n466' class='md-header-anchor '></a>Visual Approach</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/NbNmwgrPQ.kT*fvtsAnUvWUIJDnEQfa2hqO2yXEGG6k!/b/dC8BAAAAAAAA&bo=0gNQAtIDUAIDCSw!&rf=viewer_4'>prior knowledge</a> visualized</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/hXFK*DIintJBRVTUPutfO1RD7cCoqHomGL8ZzSAOODo!/b/dFcAAAAAAAAA&bo=1gNUAtYDVAIDORw!&rf=viewer_4'>likelihood</a> visualized</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/xdyPN31A9xMn6So1h4K1jmbw8sLgeUy52GYwSPRlo1g!/b/dDABAAAAAAAA&bo=0gNKAtIDSgIDGTw!&rf=viewer_4'>calculate</a> option 1 and option 2 to compare</p></blockquote><h2><a name='header-n474' class='md-header-anchor '></a>Scenario 2: Can you trust your mechanic?</h2><h3><a name='header-n475' class='md-header-anchor '></a>Non-Visual approach</h3><blockquote><p>prior knowledge</p><ul><li>P(honest mechanics | all mechanics) = 70%</li><li>Number 1 = 7 (out of 10)</li><li>P(dishonest mechanics | all mechanics) = 30%</li><li>Number 2 = 3 (out of 10)</li></ul><p>likelihood </p><ul><li>P(bad reviews | honest mechanics) = 30%</li><li>Number 3 = 3</li><li>P(bad reviews | dishonest mechanics) = 90%</li><li>Number 4 = 9</li></ul><p>goal</p><ul><li>P(honest mechanics ^ bad reviews) = number 1 * number 3 = 21</li><li>P(dishonest mechanics ^ bad reviews) = number 2 * number 4 = 27</li><li>27 &gt; 21 = given bad reviews, more likely to run into a dishonest mechanics</li></ul></blockquote><h3><a name='header-n519' class='md-header-anchor '></a>Visual approach</h3><blockquote><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/Y.Nm9E1EVawPHAp1MPvfKlvTMpSzQDupVo2MVxODqwI!/b/dDABAAAAAAAA&bo=0gNOAtIDTgIDCSw!&rf=viewer_4'>prior knowledge</a> visualized</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/SlCwybLjoEHqlONSfyfNAK.pqMDnv0AESBxvsbPOuXs!/b/dDABAAAAAAAA&bo=0ANOAtADTgIDSWw!&rf=viewer_4'>likelihood</a> visualized</p><p><a href='http://m.qpic.cn/psb?/V119hAgO3eS46m/GQIC0zBAtWbiopDpD1aLrsNL*jegGrrtfamNLYhvMWc!/b/dEEBAAAAAAAA&bo=zgNMAs4DTAIDGTw!&rf=viewer_4'>calculation</a> visualized</p></blockquote></div>
+</body>
+</html>

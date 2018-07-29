@@ -2,6 +2,32 @@
 
 
 
+current (2018.7 onward) 
+
+## 如何一起学习
+
+> 如何学习，如何一起探讨问题 ([notes](http://htmlpreview.github.io/?https://github.com/EmbraceLife/shendusuipian/blob/master/%E5%AD%A6%E4%B9%A0%20%3D%20social.html) and [video](https://www.bilibili.com/video/av17823290))  
+
+## 专注的方向
+
+> 概率与统计的直觉 （Now）
+>
+> 微积分的直觉 （Later）
+
+## 笔记视频积累
+
+> [Bayes' Theorem visual guide](http://htmlpreview.github.io/?https://github.com/EmbraceLife/shendusuipian/blob/master/Bayes%20Theorem%20Visualization.html) (notes and [videos](https://www.bilibili.com/video/av26967124/))
+>
+> [Cartoon guide to statistics](https://github.com/EmbraceLife/shendusuipian/blob/master/statistics%20in%20cartoon.pdf) (notes and [videos](https://www.bilibili.com/video/av27442306/?p=1))
+>
+> Statistics by CrashCourse ([notes](https://github.com/EmbraceLife/shendusuipian/issues/4))  
+
+
+
+---
+
+before 2018.5
+
 ### 持续学习的原动力
 
 让那些束之高阁但充满魅力的论文和教材里的知识，能用普通人的语言来讲述和理解；
@@ -88,7 +114,6 @@
 >
 > [机器是如何获得人类的能力的](https://www.bilibili.com/video/av23972551/) 
 >
-> [ProbStats Anatomy](https://github.com/EmbraceLife/shendusuipian/blob/master/ProbStats%20Anatomy.md) **==Now==** 
 
 
 

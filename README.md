@@ -16,11 +16,17 @@ current (2018.7 onward)
 
 ## 笔记视频积累
 
-> [Bayes' Theorem visual guide](http://htmlpreview.github.io/?https://github.com/EmbraceLife/shendusuipian/blob/master/Bayes%20Theorem%20Visualization.html) (notes and [videos](https://www.bilibili.com/video/av26967124/))
+> Bayes' Theorem visual guide ([notes](http://htmlpreview.github.io/?https://github.com/EmbraceLife/shendusuipian/blob/master/Bayes%20Theorem%20Visualization.html) and [videos](https://www.bilibili.com/video/av26967124/))
 >
-> [Cartoon guide to statistics](https://github.com/EmbraceLife/shendusuipian/blob/master/statistics%20in%20cartoon.pdf) (notes and [videos](https://www.bilibili.com/video/av27442306/?p=1))
+> - very easy and intuitive introduction to bayes' theorem
+>
+> Cartoon guide to statistics ([notes](https://github.com/EmbraceLife/shendusuipian/blob/master/statistics%20in%20cartoon.pdf) and [videos](https://www.bilibili.com/video/av27442306/?p=1)) 
+>
+> - my first attempt to link all ideas of statistics cover in a 10 week stats course for first-year Undergraduates
 >
 > Statistics by CrashCourse ([notes](https://github.com/EmbraceLife/shendusuipian/issues/4))  
+>
+> - brilliant video series to introduce 10-week-long statistical concepts intuitively and visually
 
 
 

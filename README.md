@@ -6,7 +6,7 @@ current (2018.7 onward)
 
 ## 如何一起学习
 
-> 如何学习，如何一起探讨问题 ([notes](http://htmlpreview.github.io/?https://github.com/EmbraceLife/shendusuipian/blob/master/%E5%AD%A6%E4%B9%A0%20%3D%20social.html) and [video](https://www.bilibili.com/video/av17823290))  
+> 如何学习，如何一起探讨问题 ([notes](https://github.com/EmbraceLife/shendusuipian/issues/11) and [video](https://www.bilibili.com/video/av17823290))  
 
 ## 专注的方向
 

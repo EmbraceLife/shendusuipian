@@ -28,6 +28,12 @@ current (2018.7 onward)
 >
 > - brilliant video series to introduce 10-week-long statistical concepts intuitively and visually
 
+## 早期概率视频专辑
+
+> [zurich intuitive probability](https://www.bilibili.com/video/av23922698/)  （前28个视频）
+>
+> [叶丙成概率公开课](https://zhuanlan.zhihu.com/p/34835280)  
+
 
 
 ---

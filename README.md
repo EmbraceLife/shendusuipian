@@ -27,6 +27,8 @@ current (2018.7 onward)
 > Statistics by CrashCourse ([notes](https://github.com/EmbraceLife/shendusuipian/issues/4))  
 >
 > - brilliant video series to introduce 10-week-long statistical concepts intuitively and visually
+> 
+> Harvard Fat Chance ([course videos](https://www.bilibili.com/video/av27939219/), [my notes videos](https://github.com/EmbraceLife/shendusuipian/issues/16))
 
 ## 早期概率视频专辑
 

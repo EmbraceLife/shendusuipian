@@ -1,0 +1,100 @@
+;; Background of this model, quotes from Wilensky's book at https://github.com/EmbraceLife/shendusuipian/issues/51
+;; concept for analyzing this model at https://github.com/EmbraceLife/shendusuipian/issues/53
+;; What are the basic rules created such exponential inequality?
+;; 1. total wealth stays the same; 2. the population stays the same; 3. each agent has the same initial wealth;
+;; 4. each iteration, for any one of the agents gives away 1 dollar, and one other agent receives one dollar
+
+globals [
+          med med-up med-dn top-10-threshold bottom-10-threshold total-top total-bottom  ;;
+          stay-top-25 stay-top-10 stay-top-50 stay-top-10-2
+          out-bottom-10 out-bottom-25 out-bottom-50
+]
+
+turtles-own [ wealth   ;; make wealth as a property of agents
+
+
+]
+
+to setup  ;; create a world, put all agents in the same xcor (same wealth), different ycor (different person)
+  clear-all                          ;; wipe out the world
+  create-turtles 500 [               ;; create 500 agents
+    set wealth 100                   ;; set wealth 100 for each agent
+    set color green                  ;; make agents green
+    set shape "circle"               ;; make agent a circle shape
+    set size 2                       ;; make agent size 2
+
+    ;; visualize the turtles from left to right in ascending order of wealth
+    setxy wealth random-ycor         ;; put all agent at (100, random-ycor), random but allowed y value
+  ]
+
+
+  reset-ticks                        ;; set clock to 0
+
+end
+
+
+to go  ;; every agent transact: its wealth change = its xcor position change
+  ;; transact and then update your location
+  ask turtles with [ wealth > 0 ] [ transact ]
+  ;; prevent wealthy turtles from moving too far to the right
+  ask turtles [ if wealth <= max-pxcor [ set xcor wealth ] ]
+
+
+
+
+  if ticks = time1 [   ;; begin at specific ticks
+
+    set med median [ wealth ] of turtles
+    set med-up median [ wealth ] of turtles with [ wealth > med ]
+    set med-dn median [ wealth ] of turtles with [ wealth < med ]
+    set top-10-threshold precision (med-up * 90 / 75 ) 1
+    set bottom-10-threshold precision (med-dn * 10 / 25) 1
+
+    ask turtles with [ wealth > top-10-threshold ] [ set color red set size 3 ]
+    ask turtles with [ wealth < bottom-10-threshold ] [ set color blue set size 3]
+
+    set total-top count turtles with [ color = red ]
+    set total-bottom count turtles with [ color = blue ]
+
+  ]
+
+  if ticks > time1 [  ;; ater specific ticks
+
+    set med median [ wealth ] of turtles
+    set med-up median [ wealth ] of turtles with [ wealth > med ]
+    set med-dn median [ wealth ] of turtles with [ wealth < med ]
+    set top-10-threshold precision (med-up * 90 / 75 ) 1
+    set bottom-10-threshold precision (med-dn * 10 / 25) 1
+
+    set stay-top-10 precision ( count turtles with [ color = red and wealth >= top-10-threshold] / total-top  * 100 ) 1
+    set stay-top-25 precision ( count turtles with [ color = red and wealth >= med-up ] / total-top  * 100 ) 1
+    set stay-top-50 precision ( count turtles with [ color = red and wealth >= med ] / total-top  * 100 ) 1
+
+    set out-bottom-10 precision ( count turtles with [ color = blue and wealth >= bottom-10-threshold] / total-bottom  * 100 ) 1
+    set out-bottom-25 precision ( count turtles with [ color = blue and wealth >= med-dn ] / total-bottom  * 100 ) 1
+    set out-bottom-50 precision ( count turtles with [ color = blue and wealth >= med ] / total-bottom  * 100 ) 1
+
+  ]
+
+
+  tick
+
+end
+
+to transact  ;; for every agent, it gives away 1 dollar, and one of other agent will receive one dollar
+  ;; give a dollar to another turtle
+  set wealth wealth - 1
+  ask one-of other turtles [ set wealth wealth + 1 ]
+end
+
+to-report top-10-pct-wealth  ;; keep track of the wealth of the top 10% of wealthiest people (not have to be the same people)
+  report sum [ wealth ] of max-n-of (count turtles * 0.10) turtles [ wealth ]
+end
+
+to-report bottom-50-pct-wealth  ;; keep track of the wealth of the bottom 50% of poorest people (not have to be the same people)
+  report sum [ wealth ] of min-n-of (count turtles * 0.50) turtles [ wealth ]
+end
+
+
+; Copyright 2011 Uri Wilensky.
+; See Info tab for full copyright and license.

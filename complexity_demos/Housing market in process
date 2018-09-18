@@ -141,7 +141,7 @@ to setup
 ;     if scenario = "poorentrants" [ set MeanIncome 24000 ]
 ;     if scenario = "clusters", continue for 400 steps
 
-  set scenario "ratefall"
+  set scenario "ratefall" ;; question: there is no chooser for the scenarios 
 
 ;; initialise globals
   set initialVacancyRate 0.05
@@ -150,33 +150,40 @@ to setup
   set interestPerTick InterestRate / ( TicksPerYear * 100 )
   set min-price-fraction 0.1
 
-  no-display
+;  no-display  ;; show all changes all at once and make program run faster, step by step if commented out 
 
-  ask patches [ set pcolor 57 ] ; muddy green colour
+  ask patches [ set pcolor 57 ] ; muddy green colour for the world 
 
 ;; create and distribute the realtors (estate agents)
 
-  set-default-shape realtors "cylinder"
+  set-default-shape realtors "cylinder"  ;; 
   let direction random 360
   create-realtors nRealtors [
     set color yellow
     ; distribute realtors in a rough circle
     set heading direction
-    jump (max-pxcor - min-pxcor) / 4
-    set direction direction + 120 + random 30
-    set size 3
-    ; draw a circle to indicate this realtor's territory
-    draw-circle RealtorTerritory
+    jump (max-pxcor - min-pxcor) / 4  ;; jump outward by 1/4 of length of the world 
+    set direction direction + 120 + random 30 ; update the direction for the next realtor's location (spread widely)
+    set size 3  ;; make sure they are big enough
+    
+    ; draw a circle to indicate this realtor's territory (every realtor will do it)
+    draw-circle RealtorTerritory   ;; RealtorTerritory is slider global variable 
+    
     ]
 
 ;; create and distribute the houses
 
-  repeat (count patches * Density / 100) [ build-house ]
+  repeat (count patches * Density / 100) [ build-house ]  
+  ;; Density=70% is a slider global variable for houses, 70 houses on 100 patches, use this ratio to create enough houses for this world 
+  
 
 ;; create the owners, one per house
 
   set-default-shape owners "dot"
-  let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses
+  
+  let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses  ;; n-of number agentset 
+;  user-message (word "occupied-houses should be a list, count its items " count occupied-houses ) ;; length occupied-houses not work as it is not a list but agentset
+  
   ask occupied-houses [
     set for-sale? false
     hatch-owners 1 [
@@ -267,7 +274,7 @@ to assign-income    ;; owner procedure
   set capital income * Savings / 100
 end
 
-to build-house     ;; observer procedure
+to build-house     ;; How to build a house  ; Continue here
 ;; add a single house to the town, in a random location
   create-houses 1 [
    ; house turtles are never displayed; instead the patch is used to show the
@@ -276,14 +283,21 @@ to build-house     ;; observer procedure
    ; for speed, dump the house anywhere, check if there is already a house there,
    ;  and if so, move to an empty spot
     move-to one-of patches
-    if count houses-here > 1 [
-      let empty-sites patches with [ not any? houses-here ]
-      if any? empty-sites [ move-to one-of empty-sites ]
+    if count houses-here > 1 [  ;; if more than 1 houses on the current patch ;;  houses-here == turtles-here, check document
+      user-message ( word "count houses-here > 1 is true, how many inside houses-here?  " count houses-here )
+      
+      let empty-sites patches with [ not any? houses-here ]  ;; ask every patch to see whether it already has a house on it or not, if not consider it an empty-site
+;      user-message ( word "let empty-sites patches with [ not any? houses-here ], length empty-sites" count empty-sites) ;; debug for details 
+      
+      if any? empty-sites [ move-to one-of empty-sites ]  ;; if empty-sites exist, let current house move to any one of the empty-site
+      
       ]
+    
     ; assign to a realtor or realtors if in their territory
-    set local-realtors realtors with [ distance myself < RealtorTerritory ]
-    ; if no realtor, then choose nearest
-    if not any? local-realtors [ set local-realtors turtle-set min-one-of realtors [ distance myself ] ]
+    set local-realtors realtors with [ distance myself < RealtorTerritory ]  ;; if the realtor to the house distance < radius, make the realtor(s) for the house
+    
+    ; if no realtor assigned, then choose nearest 
+    if not any? local-realtors [ set local-realtors turtle-set min-one-of realtors [ distance myself ] ]  ;; turtle-set to check
     put-on-market  ; initially empty houses are for sale
     ; note how long this house will last before it falls down and is demolished
     set end-of-life ticks + int random-exponential ( HouseMeanLifetime * TicksPerYear )
@@ -296,14 +310,17 @@ to put-on-market        ;; house procedure
     set date-for-sale ticks
 end
 
-to draw-circle [radius]    ;; observer procedure
+to draw-circle [radius]    ;; the current realtor turtle will create a new turtle to draw a circle as territory
 ;; draw the circumference of a circle at the given radius
-  hatch 1 [
-    set pen-size 1 set color yellow set heading -90 fd radius
-    set heading 0
+  hatch 1 [  ;; based on current turtle, let's create/hatch a new turtle which inherit its parent's properties 
+    
+    set pen-size 1 set color yellow set heading -90 fd radius  ;; set up pen size, color and radius for drawing a circle 
+    set heading 0  ;; set the heading to be tanget line direction 
     pendown
-    while [heading < 359 ] [ rt 1 fd (radius * sin 1)  ]
-    die
+    while [heading < 359 ] [ rt 1 fd (radius * sin 1)  ]  ;; drawing a circle, see the debug proof below
+;    user-message (word "finished drawing circle ? ") ;; yes, this is debugging 
+    
+    die  ;; end the drawing turtle 
    ]
 end
 

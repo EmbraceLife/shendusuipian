@@ -2,15 +2,9 @@
 extensions [palette]
 ;;;
 ;;; PwC Housing Market model
-
-;;; Updated and heavily modified and commented by 深度碎片 EmbraceLife
-;;; video tutorials on updating and understanding this model are available below
-;;; Chinese version see Bilibili: https://www.bilibili.com/video/av31860025/
-;;; English version see Youtube: https://www.youtube.com/playlist?list=PLx08F1efFq_XPiMl74IHpppb8NGqITLn2 
-
-;;; originally written by Nigel Gilbert, n.gilbert@surrey.ac.uk
-;;; the original model can be downloaded from http://cress.soc.surrey.ac.uk/housingmarket/ukhm.html
-
+;;;
+;;; written by Nigel Gilbert, n.gilbert@surrey.ac.uk
+;;;
 ;;; Disclaimer
 ;;; This model has been prepared for general guidance on matters of interest only, and
 ;;; does not constitute professional advice.  The results are purely illustrative. You
@@ -279,6 +273,10 @@ to setup
 ;; 5 empty  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For vacant houses, without owners, those houses have no sale-prices, my-owner properties
 
+   
+   let ln-min-price precision ln [sale-price] of min-one-of houses with [ sale-price != 0 ] [sale-price] 1   ;; copy ln-min-price from paint-houses
+   let ln-max-price precision ln [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1  
+  
    let median-price median [ sale-price ] of houses with [ sale-price > 0 ] ;; median sale-prices of all houses with owners
 
    ask houses with [ sale-price = 0 ] [  ;; loop each empty house
@@ -286,7 +284,7 @@ to setup
     if debug? or debug-setup = "5 empty" [
 
       inspect self ;; check bare empty house
-      user-message (word "5 empty : check a bare empty house " )
+      user-message (word "5 empty : check a bare empty house, to initialize my-owner, sale-price, and color it up " )
     ]
 
      set my-owner nobody  ;; my-owner from 0 to nobody
@@ -298,8 +296,11 @@ to setup
        [ set sale-price  median [ sale-price ] of local-houses ]  ;; use local houses median price as the empty house sale-price
        [ set sale-price  median-price ]  ;; otherwise, use all occupied houses median price for the empty house sale-price
 
+     set color palette:scale-scheme "Divergent" "Spectral" 5 (ln sale-price) ln-min-price ln-max-price  ;; borrow it from paint-houses to color the empty house 
+    
     if debug? or debug-setup = "5 empty" [
-      user-message (word "5 empty : initialize my-owner, sale-price. ")
+      
+      user-message (word "5 empty : No more a bare house, check my-owner, sale-price, and new color. " )
       stop-inspecting self
     ]
  ]
@@ -310,15 +311,16 @@ to setup
 
 
 ;; 7 quality ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   set medianPriceOfHousesForSale median [sale-price] of houses
+   set medianPriceOfHousesForSale median [sale-price] of houses  ;; get median price for all houses
 
    ask houses [
-      ; calculate quality index as ratio of this house's price to the median house price
-    set quality sale-price / medianPriceOfHousesForSale
-    if quality > 3 [set quality 3] if quality < 0.3 [set quality 0.3]
+      
+    set quality sale-price / medianPriceOfHousesForSale  ;; quality is sale-price/median-price
+    
+    if quality > 3 [set quality 3] if quality < 0.3 [set quality 0.3]  ;; quality is between 0.3 to 3
 
 
-    set color scale-color magenta quality 0 5  ;; quality by magenta scale
+;    set color scale-color magenta quality 0 5  ;; quality by magenta scale
 
   ]
 
@@ -326,51 +328,71 @@ to setup
   if debug? or debug-setup = "7 quality" [
 
     inspect max-one-of houses [ who ]
-    user-message (word "7 quality: color houses with quality " )
+    user-message (word "7 quality: initialize quality of house, based on sale-price " )
     stop-inspecting max-one-of houses [ who ]
   ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-   ; note the average price of a house in each realtor's territory
+   
+  
+;; 9 realtors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; initialize sales, my-houses, average-price
 
    ask realtors [
-     set sales []
-     set my-houses houses with [member? myself local-realtors ]
-     set average-price median [ sale-price ] of my-houses
+     set sales [] ;; take sales as empty list
+     set my-houses houses with [member? myself local-realtors ]  ;; take all houses having the realtor as one of their local-realtors to be my-houses
+     set average-price median [ sale-price ] of my-houses  ;; take median price of my-houses to be average-price
      ]
-
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-setup = "9 realtors: my-houses, avg-price" [
     inspect max-one-of realtors [ who ]
-    user-message (word "9 realtors: my-houses, avg-price : under `ask realtors` context, `set sales []`, `set my-houses houses with [member? myself local-realtors]` (`myself` here refers to current realtor) , set `average-price` to be median price of all `my-houses`. ")
+    user-message (word "9 realtors: initialize sales, my-houses, average-price for realtors ")
     stop-inspecting max-one-of realtors [ who ]
-
   ]
-
-    ask houses [
-     ; insert fake selling records in the histories of the realtors, so that they have
-     ; something to base their step 0 valuations on, and specify an average level of
-     ; buyer interest
-     let the-record nobody
-     hatch-records 1 [
-       hide-turtle
-       set the-house myself                          ;; inspect myself user-message (word "who is myself ") ;; debug house
-       set selling-price [ sale-price ] of myself
-       set the-record self                           ;; inspect self user-message (word "who is self" ) ;; debug record
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  
+;; 10 records;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; create records     
+  
+  ask houses [ ;; loop each house
+     
+     
+    
+     let the-record nobody ;; `the-record` is nobody
+    
+     hatch-records 1 [  ;; hatch a record from a house
+      
+      if debug? or debug-setup = "10 records" [
+         inspect myself ;; inspect the current house 
+         inspect self ;; inspect the current record 
+         user-message (word "10 records :  initialize the-house, selling-price for current record; initialize my-realtor for current house; update sales for my-realtor. ")
+      ]
+       hide-turtle  ;; hide the current record
+      
+       set the-house myself   ;; take the current house to be the-house of the current record                    
+      
+       set selling-price [ sale-price ] of myself  ;; take the sale-price of the house to be selling-price of the current record 
+      
+       set the-record self                           ;; use the-record to carry the current record outside the hatch function into the house context
        ]
-     set my-realtor one-of local-realtors
-     ask my-realtor [ file-record the-record ]  ;; save teh temporary record into a realtor's sales list
-     ]
-
-  if debug? or debug-setup = "10 records" [
-    inspect max-one-of records [ who ]
-    inspect [the-house] of max-one-of records [ who ]
-    inspect one-of realtors with [member? [the-house] of max-one-of records [ who ] my-houses ]
-    user-message (word "10 records : 1. create a record for each house, hide it = `ask houses [ hatch-records 1 [ hide-turtle] ]`; 2. make this house the record's property `the-house` = `ask houses [ hatch-records 1 [ set the-house myself ]` (`myself` is current house) ; 3. save this house selling price as record property `selling-price` = `ask houses [ hatch-records 1 [ set selling-price [ sale-price ] of myself ]` (myself is current house) ; 4. save record itself under local ariable `the-record` = `ask houses [ hatch-records 1 [ set the-record self ]` (`self` is the current record); 5. choose one of the `realtors` as the house realtor = `set my-realtor one-of local-realtors` ; 6. ask `my-realtor` to save `the-record` into `sales` list with `file-record` function and `fput` = `ask my-realtor [ file-record the-record ] `")
-    stop-inspecting max-one-of records [ who ]
-    stop-inspecting [the-house] of max-one-of records [ who ]
-    stop-inspecting one-of realtors with [member? [the-house] of max-one-of records [ who ] my-houses ]
-
+    
+     set my-realtor one-of local-realtors  ;; take one of the local-realtors to be my-realtor of the current house 
+    
+     ask my-realtor [ file-record the-record ]  ;; ask my-realtor to save the current record (the-record) into sales of my-realtor
+    
+    if debug? or debug-setup = "10 records" [
+      
+      inspect my-realtor
+      user-message (word "10 records :  initialize the-house, selling-price for current record; initialize my-realtor for current house; update sales for my-realtor. ")
+      stop-inspecting self
+      stop-inspecting the-record
+      stop-inspecting my-realtor
+    ]
   ]
+
+
 
 
    paint-houses
@@ -492,6 +514,11 @@ to paint-houses
   let ln-max-price precision ln [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1
 
   ask houses with [ sale-price != 0 ] [  ;; maybe set empty house initial 0 price to "0" ?
+    
+    if debug? or debug-setup = "11 paint-log-price" [
+      follow-me
+      user-message (word " 11 paint-log-price : loop each house , paint each house with divergent colors based on log sale-prices " )
+    ]
 
     set color palette:scale-scheme "Divergent" "Spectral" 5 (ln sale-price) ln-min-price ln-max-price
 
@@ -503,12 +530,15 @@ to paint-houses
 
 
     set color lput house-alpha color  ;; add transparency to color
-
+    
+    if debug? or debug-setup = "11 paint-log-price" [
+      
+      user-message (word " 11 paint-log-price : loop each house , paint each house with divergent colors based on log sale-prices " )
     ]
 
-  if debug? or debug-setup = "11 paint-log-price" [
-    user-message (word " 11 paint-log-price : loop each house , paint each house with divergent colors based on log sale-prices " )
   ]
+
+  
 
 end
 

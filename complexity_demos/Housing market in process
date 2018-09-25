@@ -2,7 +2,12 @@
 extensions [palette]
 ;;;
 ;;; PwC Housing Market model
-;;; Updated and heavily modified and commented by 深度碎片
+
+;;; Updated and heavily modified and commented by 深度碎片 EmbraceLife
+;;; video tutorials on updating and understanding this model are available below
+;;; Chinese version see Bilibili: https://www.bilibili.com/video/av31860025/
+;;; English version see Youtube: https://www.youtube.com/playlist?list=PLx08F1efFq_XPiMl74IHpppb8NGqITLn2 
+
 ;;; originally written by Nigel Gilbert, n.gilbert@surrey.ac.uk
 ;;;
 ;;; Disclaimer

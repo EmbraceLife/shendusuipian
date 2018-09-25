@@ -1,4 +1,5 @@
 ;extensions [profiler]
+extensions [palette]
 ;;;
 ;;; PwC Housing Market model
 ;;;
@@ -133,144 +134,156 @@ to setup
   clear-all
   reset-ticks
 
-;; set scenario to illustrate the effect of step changes.  scenario can
-;; be one of
+;; we can experiment on one of five scenarios (analysis)
+;; the choise is given in go procedure
 ;     if scenario = "ltv"  [ set MaxLoanToValue 60 ]
 ;     if scenario = "ratefall" [ set InterestRate 3 ]
 ;     if scenario = "influx" [ set EntryRate 10 ]
 ;     if scenario = "poorentrants" [ set MeanIncome 24000 ]
 ;     if scenario = "clusters", continue for 400 steps
 
-  set scenario "ratefall" ;; question: there is no chooser for the scenarios
+  set scenario "ratefall" ;; we can create a choose in interface if we want to
 
-;; initialise globals
+;; initialise globals (in code, but there are globals in interface to be initialized as well )
   set initialVacancyRate 0.05
-  set nRealtors 3  ;; original is 6
+  set nRealtors 3  ;; original is 6, I shrink the size of agents (all kinds)
   set maxHomelessPeriod 5
-  set interestPerTick InterestRate / ( TicksPerYear * 100 )
+  set interestPerTick InterestRate / ( TicksPerYear * 100 ) ;; meaning clarified in note
   set min-price-fraction 0.1
 
-;  no-display  ;; show all changes all at once and make program run faster, step by step if commented out
+;  no-display  ;; to make setup run faster, avoid display in process (given continous mode rather than tick mode)
 
-  ask patches [ set pcolor 57 ] ;57 muddy green colour for the world
 
-  if debug? or debug-options = "1 patches" [
+;; 1. patches  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; make the world or land light gray from color swatches
+  ask patches [ set pcolor gray + 3 ]
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-setup = "1 patches" [
   inspect patch 1 1
-  user-message (word "1 patches : scenario=ratefall, most globals set, patches are muddy green, patch-total = " count patches )
+  user-message (word "1 patches : loop each patch, paint it muddy green. ")
   stop-inspecting patch 1 1
   ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; 2 realtors  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; create and distribute the realtors (estate agents)
 
   set-default-shape realtors "flag"  ;;
   let direction random 360
-  create-realtors nRealtors [
+  create-realtors nRealtors [  ;; create one at a time, totally nRealtors
     set color yellow
     ; distribute realtors in a rough circle
     set heading direction
     jump (max-pxcor - min-pxcor) / 4  ;; jump outward by 1/4 of length of the world
-    set direction direction + 120 + random 30 ; update the direction for the next realtor's location (spread widely)
-    set size 1  ;; original 3 make sure they are big enough
+    set direction direction + 120 + random 30 ; prepare direction of jump for the next realtor
+    set size 1  ;; original 3, here only 1 is visually good
 
-    ; draw a circle to indicate this realtor's territory (every realtor will do it)
+    ; draw a circle to indicate a realtor's territory
     draw-circle RealtorTerritory   ;; RealtorTerritory is slider global variable
 
     ]
 
-  if debug? or debug-options = "2 realtors" [
-  inspect min-one-of realtors [who] user-message (word "2 realtors : realtors, world=non-wrap, realtors created, radius=8, 10 too large, num-realtors = " count realtors) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; setup part2
-  stop-inspecting min-one-of realtors [who]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-setup = "2 realtors" [
+    inspect min-one-of realtors [who]
+    user-message (word "2 realtors : build realtors with flags, and draw circles as territory ")
+    stop-inspecting min-one-of realtors [who]
   ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;; 3 houses;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; create and distribute the houses
 
   repeat (count patches * Density / 100) [ build-house ]
   ;; Density=70% is a slider global variable for houses, 70 houses on 100 patches, use this ratio to create enough houses for this world
 
-  if debug? or debug-options = "3 houses" [
-    inspect max-one-of houses [who] 
-    user-message (word "3 houses : houses, house-total based on density, one-house has at least 1 realtor, all-houses = on-market-for-sale, demolish-time is set, total-houses = " count houses )
-    user-message (word "3 houses : under create-houses, use `houses-here`, `any?`, `move-to` to make sure one patch build a single house; use `distance myself < RealtorTerritory` to define `local-realtors`, and select at least one realtor for a house; use `random-exponential` with `HouseMeanLifetime` to define `end-of-life` for houses" )
-    stop-inspecting max-one-of houses [who]   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; setup part3
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-setup = "3 houses" [
+    inspect max-one-of houses [who]
+    user-message (word "3 houses : build a number of houses. Check which properties are initialized. " )
+    stop-inspecting max-one-of houses [who]
   ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;; 4 owners: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; create the owners, one per house
 
-  set-default-shape owners "dot"
+  set-default-shape owners "dot"  ;; all owners are dots
 
-  let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses  ;; n-of number agentset
+  let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses  ;; find those houses with owners inside
 
-;  let user-message (word "check min occupied houses prices" [ sale-price ] of min-one-of occupied-houses [ sale-price ] ) n-of ((1 - initialVacancyRate) * count houses) houses  ;; n-of number agentset
-;  user-message (word "occupied-houses should be a list, count its items " count occupied-houses ) ;; length occupied-houses not work as it is not a list but agentset
+  ask occupied-houses [
 
-  ask occupied-houses [  ;; use vacncy to set all occupied houses, create owners for them, they are not for sale, match houses with owners,
-    ;; create capital and income with gamma distribution, add gradient effect to income if needed, set mortgage, deposit, repayment for owners
-    set for-sale? false
-    hatch-owners 1 [  ;; hatch a owner breed from a house breed, differ from hatch 1 from the same breed
+    set for-sale? false  ;; since owners living inside, it should not for-sale now
+
+    hatch-owners 1 [  ;; create an owner inside this house
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-setup = "4 owners" [
+
+        inspect self
+        inspect one-of houses-here ;; here refers to patch underneath
+
+        user-message ( word " 4 owners : it is a bare owner " )
+      ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
       set color red  ;; make owner red
-      set size 0.5   ;;
 
-      set my-house myself  ;; make owner's my-house to be this occupied house
-      ask my-house [set my-owner myself ] ;; ask the object behind my-house property to set my-owner property to this hatched owner
+      set size 0.7   ;; owner easy to see but not too big
 
-;      inspect myself  ;; debugging the objects behind two myself here
-;      user-message (word "let's differ two myself: first, set my-house myself is " [ breed ] of myself )  ;; this first myself breed == houses
-;      ask my-house [ inspect myself user-message (word "let's differ two myself: first, set my-house myself is " [ breed ] of myself ) ]  ;; this second myself breed == owners
+      set my-house myself  ;; owner claims its house
 
-      assign-income ;; assign income and capital for each owner
+      ask my-house [set my-owner myself ] ;; ask the house to claim its owner
 
-      ;; see debugging or testing code below
-;      set income 100  ;; debug use
-      if InitialGeography = "Gradient" [ set income income * ( xcor + ycor + 50) / 50 ]  ;; the income will be differentiated based on their positions
+      assign-income ;; create income and capital for owner
 
+      if InitialGeography = "Gradient" [ set income income * ( xcor + ycor + 50) / 50 ]  ;; income increase from bottom-left to top-right
 
-      ; calculate mortgage with the following formula
-      set mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 )
+      set mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 ) ;; create mortgage
 
-      ; calculate value of the deposit for this house with the following formula
-      let deposit mortgage * ( 100 /  MaxLoanToValue - 1 )
+      let deposit mortgage * ( 100 /  MaxLoanToValue - 1 )  ;; create deposit
 
-      ; set value of house to the mortgage + deposit of the owner
-      ;; every owner of a house has a sale-price for the house
-      ask my-house [ set sale-price [mortgage] of myself + [deposit] of myself ]
+      ask my-house [ set sale-price [mortgage] of myself + [deposit] of myself ] ;; create sale-price = mortgage + deposit for the house
 
-      ;; set repayment with the following formula
       set repayment mortgage * interestPerTick /
                  (1 - ( 1 + interestPerTick ) ^ ( - MortgageDuration * TicksPerYear ))
-      ]
+
+
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-setup = "4 owners" [
+
+          user-message (word "4 owners : build an owner, initialize properties to owner and its house. " )
+
+          stop-inspecting self
+          stop-inspecting one-of houses-here
+        ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ]
+  ]
+  paint-houses  ;; since houses got prices, let's paint houses
+
+
+
+;; 5 empty  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; For vacant houses, without owners, those houses have no sale-prices, my-owner properties
+
+   let median-price median [ sale-price ] of houses with [ sale-price > 0 ] ;; median sale-prices of all houses with owners
+
+   ask houses with [ sale-price = 0 ] [  ;; loop each empty house
+
+    if debug? or debug-setup = "5 empty" [
+
+      inspect self ;; check bare empty house
+      user-message (word "5 empty : check a bare empty house " )
     ]
 
-;  user-message (word " count owners " count owners )  ;; debug the income by gradient above `if InitialGeography = "Gradient" `
-;  ask owners [ set pcolor scale-color blue income [ income ] of min-one-of owners [ income ] [ income ] of max-one-of owners [ income ] ]
-;  show [ income ] of min-one-of owners [ income ] show [ income ] of max-one-of owners [ income ]
-;  user-message (word "now all patches should colored according to owners income" )
-
-  if debug? or debug-options = "4 owners" [
-    inspect max-one-of owners [ who ] inspect [my-house] of max-one-of owners [ who ]
-    user-message (word "4 owners : owner with houses, occupied vs vacancy houses, owners = occupied, occupied = not sell, owner match houses, owner's properties, `capital` & `income` on gamma, `gradient` income, `sale-price` & `mortgage` `deposit` `repayment`, total-occupied = " count owners )
-    user-message (word "4 owners : under `hatch-owners`, under `assign-income`, we use `MeanIncome`, `lambda`, `alpha`, `random-gamma`, `Inflation` to define `income`, and with `Savings` rate to define `capital`; `income` with xcor-ycor defined `Gradient` income; income with `Affordability` and `interestPerTick` define `mortgage`; `mortgage' and `MaxLoanToValue` define `deposit`; `mortgage` with `deposit` define `sale-price`; `mortgage` with `interestPerTick` and `MortgageDuration` define `repayment` ")
-    stop-inspecting max-one-of owners [ who ] stop-inspecting [my-house] of max-one-of owners [ who ]
-  ]
-
-
-   ; create a local variable median price to be all occupied houses median sale-price
-   let median-price median [ sale-price ] of houses with [ sale-price > 0 ]
-
-  ;; debugging or testing
-;  user-message (word "check min occupied houses prices" [ sale-price ] of min-one-of occupied-houses [ sale-price ] )
-;  user-message (word "check max occupied houses prices" [ sale-price ] of max-one-of occupied-houses [ sale-price ] )
-;  user-message (word " how many empty houses " (count houses - count occupied-houses))
-
-  let id [ who ] of max-one-of houses with [ sale-price = 0 ] [ who ]
-  if debug? or debug-options = "5 empty" [
-    inspect one-of houses with [who = id ] ;; max-one-of houses with [ sale-price = 0 ] [ who ]
-  user-message (word "5 empty : empty-houses at first without `sale-price`, total number of them is " count houses with [ sale-price = 0 ])
-  ]
-
-   ask houses with [ sale-price = 0 ] [  ;; loop all empty houses with no sale-price, no owner
-
-     set my-owner nobody
+     set my-owner nobody  ;; my-owner from 0 to nobody
 
      let local-houses houses with [distance myself < Locality and sale-price > 0]
      ;; find all local houses of the empty house = locality distance and has owner with sale-price
@@ -278,15 +291,19 @@ to setup
      ifelse any? local-houses ;; if there exist local houses,
        [ set sale-price  median [ sale-price ] of local-houses ]  ;; use local houses median price as the empty house sale-price
        [ set sale-price  median-price ]  ;; otherwise, use all occupied houses median price for the empty house sale-price
-     ]
 
-  if debug? or debug-options = "5 empty" [
-    user-message (word "5 empty : empty house, without neighbors, define its `sale-price` with median price of all occupied houses; with neighbors can define with neighbors' median sale-price" )
-    stop-inspecting one-of houses with [ who = id ]
-  ]
+    if debug? or debug-setup = "5 empty" [
+      user-message (word "5 empty : initialize my-owner, sale-price. ")
+      stop-inspecting self
+    ]
+ ]
+
+
 
    if InitialGeography = "Clustered" [ cluster ]   ;; move houses to the neighbors with similar prices
 
+
+;; 7 quality ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    set medianPriceOfHousesForSale median [sale-price] of houses
 
    ask houses [
@@ -299,12 +316,14 @@ to setup
 
   ]
 
-  if debug? or debug-options = "7 quality" [
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-setup = "7 quality" [
 
     inspect max-one-of houses [ who ]
-    user-message (word "7 quality: house `quality` is determined by `sale-price / medianPriceOfHousesForSale` at range 0.3 and 3, we scale-color quality with magenta between 0 and 5")
+    user-message (word "7 quality: color houses with quality " )
     stop-inspecting max-one-of houses [ who ]
   ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ; note the average price of a house in each realtor's territory
 
@@ -314,7 +333,7 @@ to setup
      set average-price median [ sale-price ] of my-houses
      ]
 
-  if debug? or debug-options = "9 realtors: my-houses, avg-price" [
+  if debug? or debug-setup = "9 realtors: my-houses, avg-price" [
     inspect max-one-of realtors [ who ]
     user-message (word "9 realtors: my-houses, avg-price : under `ask realtors` context, `set sales []`, `set my-houses houses with [member? myself local-realtors]` (`myself` here refers to current realtor) , set `average-price` to be median price of all `my-houses`. ")
     stop-inspecting max-one-of realtors [ who ]
@@ -336,7 +355,7 @@ to setup
      ask my-realtor [ file-record the-record ]  ;; save teh temporary record into a realtor's sales list
      ]
 
-  if debug? or debug-options = "10 records" [
+  if debug? or debug-setup = "10 records" [
     inspect max-one-of records [ who ]
     inspect [the-house] of max-one-of records [ who ]
     inspect one-of realtors with [member? [the-house] of max-one-of records [ who ] my-houses ]
@@ -348,7 +367,7 @@ to setup
   ]
 
 
-   paint-houses red
+   paint-houses
 
    display
 
@@ -358,11 +377,16 @@ to setup
 
 end
 
-to assign-income    ;; update income and capital for owner
-;; assigns the income and savings of a new owner
-;; uses gamma (alpha, lambda) distribution
-;; mean of a gamma distribution = alpha / lambda
-; parameters taken from http://www2.physics.umd.edu/~yakovenk/papers/PhysicaA-370-54-2006.pdf
+;; create random income and capital for an owner  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to assign-income
+
+;; an owner's income is a random number from a particular gamma distribution
+;; an owner's capital is a proportion of income
+
+;; income distribution formula is based on the following paper
+;; parameters taken from http://www2.physics.umd.edu/~yakovenk/papers/PhysicaA-370-54-2006.pdf
+
+
   let alpha 1.3
   let lambda 1 / 20000
   set income 0
@@ -378,16 +402,20 @@ to assign-income    ;; update income and capital for owner
 
 end
 
-to build-house     ;; created houses, make sure one patch one house, find realtors for houses at least 1 for each house, all houses are for sale at first, demolish-time is set
-;; add a single house to the town, in a random location
-  set-default-shape houses "house"
+;; 2.5 build-a-house ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; created houses, make sure one patch one house, one house has at least one realtor, house for sale at first, set demolish-time
+to build-house
+
+  set-default-shape houses "my-house" ;; I changed the design of a house
 
   create-houses 1 [
-   ; house turtles are never displayed; instead the patch is used to show the
-   ;  presence of a house
 
-;   hide-turtle  ;; original is hide-turtle
-    set color 35
+
+;   hide-turtle  ;; original code, but I don't like house to be hidden
+    set color 35 ;; set house to be brown
+
+    ;; How to make transparent color ?
+    set color lput house-alpha extract-rgb color
 
    ; for speed, dump the house anywhere, check if there is already a house there,
    ;  and if so, move to an empty spot
@@ -412,6 +440,17 @@ to build-house     ;; created houses, make sure one patch one house, find realto
 
     ; note how long this house will last before it falls down and is demolished
     set end-of-life ticks + int random-exponential ( HouseMeanLifetime * TicksPerYear )
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    if debug? or debug-setup = "2.5 build-a-house" [
+       inspect self
+       user-message (
+        word "2.5 build-a-house : create a single house, paint it brown, make it transparent, move it a random patch without house, find local-realtors, "
+        word "or just a nearest realtor, put on market for sale, calc end-of-life with random-exponential" "."
+       )
+       stop-inspecting self
+    ]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ]
 end
 
@@ -435,105 +474,103 @@ to draw-circle [radius]    ;; the current realtor turtle will create a new turtl
    ]
 end
 
-to paint-houses [a-color]      ;; observer procedure
-;; recolor patches to show the current sale price of houses
-; use log sale -price to get a better variation in colour
-  let min-price precision [sale-price] of min-one-of houses [sale-price] 1
-  let ln-min-price precision ln [sale-price] of min-one-of houses [sale-price] 1
-  let max-price precision [sale-price] of max-one-of houses [sale-price] 1
-  let ln-max-price precision ln [sale-price] of max-one-of houses [sale-price] 1
-  ask houses [
-;    set pcolor palette:scale-scheme "Divergent" "RdYlBu" 10 (ln sale-price) ln-min-price ln-max-price
-    set color scale-color a-color (ln sale-price) (ln-min-price ) (ln-max-price ) ;; original pcolor
+
+;; 11 paint-log-price ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; scale-paint houses according to log of sale-price
+
+to paint-houses
+
+  let min-price precision [sale-price] of min-one-of houses with [ sale-price != 0 ] [sale-price] 1
+  let ln-min-price precision ln [sale-price] of min-one-of houses with [ sale-price != 0 ] [sale-price] 1
+  let max-price precision [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1
+  let ln-max-price precision ln [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1
+
+  ask houses with [ sale-price != 0 ] [  ;; maybe set empty house initial 0 price to "0" ?
+
+    set color palette:scale-scheme "Divergent" "Spectral" 5 (ln sale-price) ln-min-price ln-max-price
+
+    ; scale-scheme "Divergent" "RdYlBu" 10 ; the number 10 control how many different colors in between, 5 may be the best
+    ; good color options:  "Spectral" "RdYlBu" "RdYlGn"
+    ;; ok color options : PiYG PRGn PuOr RdBu RdGy
+    ;; set color scale-color red ln sale-price ln-min-price ln-max-price
+
+
+
+    set color lput house-alpha color  ;; add transparency to color
+
     ]
-  if debug? or debug-options = "11 paint-log-price" [
-    user-message (word " 11 paint-log-price : under function `paint-houses` with 'min-one-of`, `max-one-of`, `ln`, paint with log-price is better than straight paint with sale-price, as the price difference is exponential" word ", min-price = " min-price word ", ln-min-price = " ln-min-price word ", max-price = " max-price word ", ln-max-price = " ln-max-price)
+
+  if debug? or debug-setup = "11 paint-log-price" [
+    user-message (word " 11 paint-log-price : loop each house , paint each house with divergent colors based on log sale-prices " )
   ]
 
 end
 
-to cluster          ;; observer procedure
-;; move the houses (and their owners) so that they are adjacent to other houses in the same
-;; price range
 
-  ; repeatedly move houses, so that they get a bit more clustered each time
-  repeat 3 [  ;; 3 original, more than 3 times no real effect
+;; 6 cluster ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to cluster
+;; cluster houses together based on price similarity
 
-    paint-houses orange  ;; color all houses by sale-prices, visually more natural
+  repeat 3 [  ;;  cluster all all houses three times
 
-    if debug-options = "8 cluster-exp" [
-      ask houses [ ifelse xcor <= 0 [ set sale-price 5000 set color gray ] [ set sale-price 20000 set color pink ] ]
-      user-message ( word "8 cluster-exp : green is empty land, black(dark pink) is low price houses, white (light pink) is high price houses" )
-    ]
+    paint-houses   ;; scale-paint houses based on log sale-price
 
-    ; start by moving houses that are most wrong
-;     let houses-to-move sort-by [ price-diff ?1 > price-diff ?2 ] houses   ;; old-version
     let houses-to-move sort-by [ [ house1 house2 ] ->  price-diff house1 > price-diff house2 ] houses  ;; new-version
-
-    if debug? or debug-options = "6 cluster" [
-      let max-diff price-diff first houses-to-move
-      let min-diff price-diff last houses-to-move
-      let med-diff median map price-diff houses-to-move
-      let too-much length filter [ f -> price-diff f > price-difference ] houses-to-move
-
-      user-message (word "6 cluster : move houses(with owners) whose sale-price differs a lot to its surrounding prices to neighbors with similar prices. we use `sort-by`, `price-diff` to re-range a list of all `houses`; we use `patches with [ not any? houses-here and abs (local-price - [ sale-price ] of x ) < 1000 ]` with `let local-houses houses-on neighbors` under `local-price` to define empty land with similar price neighborhood; as long as a house price-difference is greater than certain threshold, we move it empty land with price-similar neighborhood. we use the scale-color `orange` here ")
-      user-message (word "6 cluster : let's calculate key values for making a move: " word "min-diff = " min-diff  word ", max-diff = " max-diff word ", med-diff = " med-diff word ", count too-much-differ = " too-much  word ", in order to make most houses stay in the neighborhood with similar prices, we move houses with diff-price > " price-difference )
-    ]
-;
-;    show length houses-to-move ;; debug, must have show or type or print in front of length
-;    user-message (word "number of houses-to-move" length houses-to-move ) ;; it is better way debug, and count a list
-;    user-message (word "number of houses" count houses) ;; count agentset
-;    foreach houses-to-move [ h -> user-message (word "foreach houses-to-move [ h -> inspect h"  price-diff h ) ]  ;; debugging
+    ;; reorder every house based on price-difference to its neighbor houses, largest first, smallest last
 
 
-    foreach houses-to-move [
-      ; only move a house if the price difference between it and its local neighbors is
-      ; greater than a constant
-;      if price-diff ? > 10000 [  ;; old-version
-      x -> if price-diff x >= price-difference [  ;; > 10000 original new-version
-        ; find a vacant patch with neighbours in the right price bracket and move
-        ; the house there
+    foreach houses-to-move [  ;; loop each house
 
+      x -> if price-diff x >= price-difference [  ;; if current house price is way to different from its surroundign houses
 
+        let vacant-plot one-of patches with [  ;; get one of many empty patches, where
 
-        let vacant-plot one-of patches with [ not any? houses-here and  ;; if no house on this patch  and
-;                                  abs (local-price - [sale-price] of ?) < 10000 ]  ;; old-version
-                                   abs (local-price - [ sale-price ] of x ) < 1000 ]  ;; new-version
+                                   not any? houses-here and  ;; there is no house built
 
-        if vacant-plot != nobody [
-;          ask ? [ move-to vacant-plot ]  ;; old-version
-          ask x [
+                                   abs (local-price - [ sale-price ] of x ) < 1000 ]  ;; where the surrounding house prices is similar to the current house
 
-            if debug-options = "8 cluster-exp" [
-              set size 2 set color cyan
-              pen-down  set plabel (word local-price) set plabel-color red user-message (word "check-cluster-2L:  local price at this house is " local-price)
+        if vacant-plot != nobody [  ;; if those empty patches do exist
+
+          ask x [  ;; ask this current house
+
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            if debug? or debug-setup = "6 cluster" [
+
+              pd set pen-size 2  ;; put pen down to draw a track
+
+              if is-owner? my-owner [
+
+                ask my-owner [ follow-me ]  ;; watch the owner ( can't use watch-me here)
+
+              ]
+              user-message (word "6 cluster : the house move with a track line, the owner is watched. " )
+            ]
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+            move-to vacant-plot  ;; to move to one of the empty patch
+
+            if is-owner? my-owner [  ;; whether it got an owner, if so
+
+              ask my-owner [ move-to myself ] ;; ask the owner move to where the house is
             ]
 
-            move-to vacant-plot
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            if debug? or debug-setup = "6 cluster" [
 
-            if debug-options = "8 cluster-exp" and is-owner? [my-owner] of x [
+               user-message (word "6 cluster : the house move with a track line, the owner is watched. " )
 
-              ask [my-owner] of x [move-to vacant-plot]
+               pen-up ;; pull pen up
             ]
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-            if debug-options = "8 cluster-exp" [
-;              set hidden? false set shape "dot" set color red
-              set plabel (word local-price) set plabel-color red user-message (word "check-cluster-2L:  now the house along with owner moved to this new location with local-price" local-price)
-
-;              print "remember to set world to not wrap horizontally nor vertically"
-            ]
-
-           ]  ;; new-version
+           ]
 
           ]
         ]
       ]
 
-    ; make sure the owners are located in their own houses
-    ask houses [ if is-owner? my-owner [ ask my-owner [ move-to myself ] ] ] ;; update my-owner to where the house is ;; put it here is more natural
 
-    
-    ]
+  ]
 
 
 
@@ -556,6 +593,12 @@ end
 
 
 to go
+
+   if debug? or debug-go = "12 go-structure" [
+     user-message (word "12 go-structure : every go procedure will do the following 1. `step` take most actions; 2. stop model under 3 conditions: over 400 iterations, or no owners left, or no houses left; 3. half way through (200 iterations) apply one of 4 scenarios." )
+
+  ]
+
 ;; basic loop
    if ticks > 400 [ stop ]
    if ticks = 200 [
@@ -567,99 +610,216 @@ to go
   ; do one time step (a quarter of a year?)
   step
   ; stop if no owners or houses left
-  if not any? owners [ print "Finished: no remaining people" stop ]
+  if not any? owners [ print "Finished: no remaining people" stop ]  ;; show any? turtle-set nobody
   if not any? houses [ print "Finished: no remaining houses" stop ]
   ; update the plots
   do-plots
   ; advance the clock
   tick
+
+
 end
 
 to step
 ;;  each time step...
 
-  let n-owners count owners
+  let n-owners count owners  ;; take a count of total owners at the moment
+  if debug? or debug-go = "13 count-owners" [ user-message (word "13 count-owners, step 1: count number of owners = " n-owners) ]
 
   ; add an exogenous cyclical interest rate, if required: varies around mean of
   ; the rate set by slider with a fixed period of 10 years
 
   set interestPerTick InterestRate / ( TicksPerYear * 100 )
+  ;; a fixed period of 10 years = *10, 100 years = *100 ? , InterestRate per year, not InterestRAte per 10 years?
+  if debug? or debug-go = "14 interestPerTick" [ user-message (
+
+               word "14 interestPerTick, step 2: calculate `interestPerTick` with `InterestRate` and `TicksPerYear`"
+               word " Code : `set interestPerTick InterestRate / ( TicksPerYear * 100 )` "
+               word " Values : InterestRate = " InterestRate
+               word " TicksPerYear = " TicksPerYear
+               word " interestPerTick = " interestPerTick
+  ) ]
+
+
   if CycleStrength > 0 [
     set interestPerTick interestPerTick * (1 + (CycleStrength / 100 ) *
                                             sin ( 36 * ticks / TicksPerYear ))
     ]
+  ;; if CycleStrength is available, interestPerTick will be updated by it
+  if debug? or debug-go = "15 interest-Cycle"
+    [ user-message (word "15 interest-Cycle, step 3: if condition is met, update interestPerTick with CycleStrength and `sin (36*ticks/TickesPerYear)`. "
+                    word "Code : if CycleStrength > 0 [ set interestPerTick interestPerTick * (1 + (CycleStrength / 100 ) * sin ( 36 * ticks / TicksPerYear )) "
+                    word "; CycleStrength > 0 is " (CycleStrength > 0)
+                    word "; interestPerTick is " interestPerTick
+                    word "; CycleStrength is " CycleStrength
+
+     ) ]
+
+
+
 
   ; add inflation to salary, at inflation rate / TicksPerYear
+  if debug? or debug-go = "16 inflation-income" [
+    inspect min-one-of owners [ who ]
+    user-message (word "16 inflation-income, step 4: inflation forces income to update, check current income = " precision [ income ] of min-one-of owners [ who ] 1
+                  word "; Code : if Inflation > 0 [ ask owners [ set income income * (1 + Inflation / ( TicksPerYear * 100 )) ]]" "."
+    )
+  ]
+
+
   if Inflation > 0 [
     ask owners [ set income income * (1 + Inflation / ( TicksPerYear * 100 )) ]
     ]
+  if debug? or debug-go = "16 inflation-income" [
+    ifelse inflation > 0 [ user-message (word "16 inflation-income, step 4: Inflation is " Inflation
+      word "; adjusted to inflation, now the new of income is " precision ([income] of one-of owners with [ who = min [who] of owners ]) 1)
+                           stop-inspecting min-one-of owners [ who ]
+    ]
+                         [ user-message (word "16 inflation-income, step 4: inflation <= 0 no need to update income") ]
+  ]
+
 
   let owner-occupiers owners with [ is-house? my-house ]
+  if debug? or debug-go = "17 owner-occupiers" [ user-message (
+    word "17 owner-occupiers, step 5: use `owner-occupiers` agentset to count owners who still got houses. count " count owner-occupiers
+    word " Code : let owner-occupiers owners with [ is-house? my-house ] " "."
+    )
+
+  ]
 
   ; some have an income shock
-  let shocked-owners n-of (Shocked * count owner-occupiers / 100) owner-occupiers
+  let shocked-owners n-of (Shocked * count owner-occupiers / 100) owner-occupiers ;; get Shocked% of home-owners
   ; either a shock of 20% more income than before
-  let upshocked n-of (count shocked-owners / 2) shocked-owners
-  set nUpShocked 0
-  ask upshocked [ set income income * 1.2 ]
+  let upshocked n-of (count shocked-owners / 2) shocked-owners ;; get half of Shocked home-owners as upshocked home-owners
+  set nUpShocked 0  ;; number of up-shock is 0
+  ask upshocked [ set income income * 1.2 ] ;; let's upshocked home-owners increase income by 20%
    ; or a shock of 20% less income than before
-  let downshocked shocked-owners with [ not member? self upshocked ]
-  set nDownShocked 0
-  ask downshocked [ set income income * 0.8 ]
+  let downshocked shocked-owners with [ not member? self upshocked ] ;; group the rest of as downshocked from shocked
+  set nDownShocked 0 ;; set nDownShocked to be 0
+  ask downshocked [ set income income * 0.8 ]  ;; make those downshocked home-owners to decrease income by 20%
+  if debug? or debug-go = "18 income-shock" [
+    user-message (
+      word "18 income-shock, step 6: get `Shocked`% of home-owners = " (count shocked-owners)
+      word ", make half to be `upshocked` home-owners = " (count upshocked)
+      word ", with income rise by 20%, the other half as `downshocked` drop income by 20%, and started to count the number of up-down shocks at " 0 )
+  ]
 
-  ask owner-occupiers with [ not [for-sale?] of my-house ][
+
+
+  ask owner-occupiers with [ not [for-sale?] of my-house ][ ;; for all home-owners whose house is not for sale
    ; if they are now spending less than half the Affordability ratio of their
    ; income on their mortgage repayments, they want to move up
-   let ratio repayment * TicksPerYear / income
-   if  ratio < Affordability / 200 [
-      ask my-house [ put-on-market ]
-      set nUpShocked nUpShocked + 1
+   let ratio repayment * TicksPerYear / income ;; calc their repayment / income ratio (TicksPerYear? later)
+   if  ratio < Affordability / 200 [  ;; if ratio < affordability / 200 (why / 200? demo income rise a lot)
+      ask my-house [ put-on-market ]  ;; put the house for sale
+      set nUpShocked nUpShocked + 1   ;; start to count the number of home-owners to sale due to income rise
       ]
      ; if they are now spending more than twice the Affordability ratio of
      ; their income on their mortgage repayments, they want to move down
-   if ratio > Affordability / 50 [
-      ask my-house [ put-on-market ]
-      set nDownShocked nDownShocked + 1
+   if ratio > Affordability / 50 [   ;; demo increase drop a lot or repayment is an issue now
+      ask my-house [ put-on-market ]  ;; put the house for sale
+      set nDownShocked nDownShocked + 1  ;; count one more home-owner to sell due to income drop
       ]
+
+   if debug? or debug-go = "19 shock-sale" [
+     user-message (
+        word "19 shock-sale, step 7: ask all home-owners with houses not for-sale at the moment, calc their repayment/income ratio = " precision ratio 1
+        word "; if the ratio < Affordability / 200, meaning the home-owner can afford bigger repayment, the owner now put the house on-sale, we add 1 onto `nUpShocked`, Affordability = " Affordability
+        word "; if the ratio > Affordability / 50, meaning the home-owner now only afford a smaller repayment, the owner now put the house on-sale, we add 1 onto `nDownShocked`, given same affordability " Affordability
+      )
+    ]
+
    ]
+
+
 
   ; some owners put their houses on the market and leave town
   ask n-of (ExitRate * n-owners / 100) owners with [ is-house? my-house ] [
+
+    if debug? or debug-go = "20 owners-gone" [
+       inspect self
+       inspect my-house
+       user-message (
+          word " 20 owners-gone, step 8: this is a owner who is to sell a house and leaving town."
+          word " this group is totalling = " round (ExitRate * n-owners / 100)
+          word " next step, we will put the house on sale and make my-owner nobody, then let the owner die " " the owner is disappeared from the world."
+      )
+    ]
+
     ask my-house [
       put-on-market
       set my-owner nobody
+
       ]
     die
-    ]
+
+  ]
+
+
 
   ; some new owners arrive
-  create-owners EntryRate * n-owners / 100 [
-    set color gray
-    ; set initial income and savings
-    assign-income
-    ; give them an initial capital equal to the deposit for the house they could afford
-    ; new owners are not located anywhere yet
-    hide-turtle
+
+  repeat EntryRate * n-owners / 100 [
+;  create-owners EntryRate * n-owners / 100 [  ;; create a lot of turtles at the same time
+    create-owners 1 [
+      set color gray  ;; gray
+      set size 0.7
+
+      if debug? or debug-go = "21 new-comers" [
+        inspect self
+        user-message (word "21 new-comers, step 9: Let's one by one, create EntryRate * n-owners number of new owners with income and capital but without houses yet, so we hide them" )
+      ]
+      ; set initial income and savings
+      assign-income
+      ; give them an initial capital equal to the deposit for the house they could afford
+      ; new owners are not located anywhere yet
+      hide-turtle
+
+      if debug? or debug-go = "21 new-comers" [
+        user-message (word "21 new-comers, step 9: let's the effect of hidden" )
+        stop-inspecting self
+      ]
     ]
+  ]
 
   ; note that those without houses are homeless for another period, and remove those who
   ; have given up waiting for a house
 
-  if MaxHomelessPeriod  > 0 [ ; after this number of periods, the homeless emigrate
-       ask owners with [ not is-house? my-house ] [
-         set homeless homeless + 1
-         if homeless > maxHomelessPeriod [ die ]
-         ]
-      ]
+  if MaxHomelessPeriod  > 0 [ ; meaning if this value is set
+       ask owners with [ not is-house? my-house ] [  ;; for every owner without a house
+         set homeless homeless + 1  ;; record the ticks during which this owner has no house
+         if homeless > maxHomelessPeriod [ die ] ;; if over the max duration without a house, this owner will emigrate elsewhere
+
+     ]
+  ]
+
+   if debug? or debug-go = "22 discouraged-move-away" [
+
+    ask one-of owners with [ not is-house? my-house ] [
+      inspect self
+      user-message (word "22 discouraged-move-away, step 10 : homeless is a owner property track how long an owner has been without a house. The current owner's homeless = " homeless
+                  word ". The owner will be discouraged and leave the town, after maximum period without having a house = " maxHomelessPeriod
+      )
+      stop-inspecting self
+    ]
+  ]
 
   ; those who are paying mortgages greater than their income, are forced to move out
   ; of the housing market and their house is put up for sale
 
+  let total-drop-sale count owner-occupiers with [ [for-sale?] of my-house and repayment * TicksPerYear > income ]
   ask owner-occupiers with [ [for-sale?] of my-house and
                               repayment * TicksPerYear > income ] [
     ask my-house [ set my-owner nobody ]
+
     die
     ]
+  if debug? or debug-go = "23 drop-sale" [
+        user-message (word "23 drop-sale, step 11 : for owners who put house on sale, and their income can't afford "
+                      word "mortgage, will have to move out and stop being an owner. but why have to `die` not hide? "
+                      word "die, probably mean moving out to cheaper city" "?"
+    )
+  ]
 
   ; some new houses are built, and put up for sale
 
@@ -668,6 +828,13 @@ to step
   ; if there are not, no more houses are built
     if any? patches with [ not any? houses-here ]  [ build-house ]
     ]
+  if debug? or debug-go = "24 new-houses" [
+      user-message (word "24 new-houses, step 12 : each iteration, the city builds some new houses with number = " floor (count houses * HouseConstructionRate / 100)
+                    word " Meanwhile there are total-empty-land = " count patches with [ not any? houses-here ]
+    )
+  ]
+
+
   ask houses with [ quality = 0 ] [ ; these are the new houses
       ; calculate quality index as the mean of the qualities of those in the locality
       ; or set to 1 if there aren't any houses around here
@@ -677,36 +844,54 @@ to step
         [ 1 ]
       if quality > 3 [set quality 3] if quality < 0.3 [set quality 0.3]
       ]
+  if debug? or debug-go = "25 remove-0-quality" [
+     user-message (word "25 remove-0-quality, step 13 : ask each house with quality = 0, to find its local houses with distance `Locality`" Locality
+      word " Then set each house's quality to the mean quality of local houses; if no neighbor houses, set as 1."
+      word " If the new quality > 3 make it 3, if the quality < 0.3, make it 0.3" "."
+    )
+
+  ]
 
   ; for houses that are newly for sale, get the sale price, which is the highest
   ; valuation offered by local realtors. (Houses that remain for sale,
   ; not having been sold in the previous round, already have a sale price)
   ; Colour the house accordingly.
 
-  let houses-for-sale houses with [ for-sale? ]
-  if any? houses-for-sale [
-    ask houses-for-sale with [ date-for-sale = ticks ] [
-      set my-realtor max-one-of local-realtors [ valuation myself ]
-      set sale-price [ valuation myself ] of my-realtor
+  let houses-for-sale houses with [ for-sale? ] ;; find all the houses for sale at the moment
+  if any? houses-for-sale [  ;; if these houses exist
+    ask houses-for-sale with [ date-for-sale = ticks ] [  ;; ask each of those houses just on sale from now on
+      set my-realtor max-one-of local-realtors [ valuation myself ]  ;; find the realtor gives me the highest valuation
+      set sale-price [ valuation myself ] of my-realtor ;; take the highest value as sale-price
       ]
 
     ; update the average selling price of houses in each realtor's territory
-    ask realtors [
-      let my-houses-for-sale houses-for-sale with [ member? myself local-realtors ]
+    ask realtors [ ;; ask each realtor
+      let my-houses-for-sale houses-for-sale with [ member? myself local-realtors ];; get all houses under this realtor
       if any? my-houses-for-sale [ set average-price median [ sale-price ] of my-houses-for-sale ]
+      ;; if these houses exist, take their median price as the realtor's average-price for its all houses
       ]
 
     set medianPriceOfHousesForSale median [sale-price] of houses-for-sale
+    ;; store the median price of all houses-for-sale's sale-price
     ]
+  if debug? or debug-go = "26 value-houses" [
+     user-message (word "26 value-houses, step 14 : 1. find all the houses for sale; "
+                   word "2. if these houses exist, ask each of those houses just on sale from now on, "
+                   word "to find the realtor gives the house the highest valuation, take the highest value as sale-price for the house."
+                   word "3. ask each realtor to get all houses under this realtor, "
+                   word "if these houses exist, take their median price as the realtor's average-price for its all houses. "
+                   word "4. take all houses on sale and get their median price as `medianPriceOfHousesForSale`" ".")
+  ]
 
-  paint-houses red
+  paint-houses
+  if debug? or debug-go = "27 paint-house" [
+     user-message (word "27 paint-house, step 15 : pain houses for their price difference to its neighbors" )
+  ]
 
-  ; buyers (new entrants and those wishing to sell) search for a suitable property to buy
-
+  ;; find all owners who don't have a house or house on sale
   let buyers owners with [ not (is-house? my-house) or ([ for-sale? ] of my-house) ]
 
-  ;; those with nothing to sell get priority in making an offer; i.e. they go first
-
+  ;; ask each owner who has no house to make an offer on `houses-for-sale`
   ask owners with [ not (is-house? my-house) ] [
     make-offer houses-for-sale
     ]
@@ -717,62 +902,135 @@ to step
     make-offer houses-for-sale
     ]
 
-   ; Check which chains will complete.  A chain of buyers and sellers will complete only
-   ;  if the first buyer has nothing to sell, and the last seller has nothing to buy
-   ; This means that the first buyer must be a new entrant, and the last house must
-   ;  be vacant
 
-   set moves 0
-   ask buyers with [ not is-house? my-house and is-house? made-offer-on ] [
-     if follow-chain self [
-       ; this buyer is the start of a successful chain
-       ; call in the removal firm!
-       move-house
+
+
+  ;; if a deal is made, then households will move in and out of houses
+   set moves 0  ;; the number of households moving in this step
+   ask buyers with [ not is-house? my-house and is-house? made-offer-on ] [ ;; ask buyers who have no houses and made offer on a house
+     if follow-chain self [  ;; self is buyer, and check whether the buy-sell chain is intact or not
+       move-house  ;; if intact, deal is made, and households move out and into houses, count the number of moves
      ]
    ]
+  if debug? or debug-go = "33 deal-move" [
+     user-message (word "33 deal-move, step 21 : if a deal is made, then households will move in and out of houses. "
+                   word "1. create `moves` to record the number of households moving in this step; "
+                   word "2. ask buyers who have no houses and made offer on a house, and ask each of them to check whether the buy-sell chain is intact or not; "
+                   word "3. if intact, deal is made, and households move out and into houses, count the number of moves" "."
 
-   ; realtors forget any sale records that are too old
+    )
+  ]
 
-   ; kill old records
-   ask records [ if date < (ticks - RealtorMemory) [ die ] ]
-   ; remove references to outdated records
-   ask realtors [ set sales remove nobody sales ]
+  if debug? or debug-go = "34 follow-chain" [
+   user-message (word "34 follow-chain, step 22 : check whether the buy-sell houses mechanism is intact or not. "
+                 word "1. if buyer's `made-offer-on` is not house (meaning buyer buy nothing, no deal), report false; "
+                 word "2. given the buyer offered on a real house, then set `my-owner` of the house being offered on to be `seller`; "
+                 word "3. if the `seller` is not an `owner` (meaning the house is vacant, deal right away ), report true; "
+                 word "4. given `sell` is an owner, if the input `buyer` =  `seller`, then the flow is intact, This is confusing, but don't be. The following line solve the problem. "
+                 word "5. given the buyer is not the seller (no match), now let's focus on the seller, run follow-chain under seller context, meaning we are finding the owner of house which the seller made an offer on; "
+                 word "if the buyer and the seller of the house the older sell want to buy are the same owner, then both buyer and older seller match a deal." "so the flow is intact. "
+   )
+]
 
-   ; cancel any outstanding offer
+  if debug? or debug-go = "35 move-house" [
+      user-message (word "35 move-house, step 23 : move me to the house I am buying, then move the seller to their new house etc. "
+                    word "1. under context of buyer or owner, save `made-offer-on` into `new-house`; "
+                    word "2. if the `new-house` is not house, meaning buyer is not buying, then stop moving; "
+                    word "3. assign `my-owner` of `new-house` into `seller`; "
+                    word "4. if seller is an owner, calc the profit made by selling the house: "
+                    word "assign (sale-price - mortgage) to `profit`, and set seller's mortgage to 0; "
+                    word "If sell made a profit, then add profit into seller's capital. "
+                    word "5. since deal is made, change new-house owner to the buyer; "
+                    word "6. calc the duty payable with the new house sale-price; "
+                    word "7. if the owner can't pay for the house in cash, s/he has to have a mortgage, "
+                    word "borrow as much as possible, given owner's income and value of house, choose the smaller value of two calc formula; "
+                    word "8. after paying rest with capital, the remaining still kept inside capital. "
+                    word "9. calc repayment to pay back mortgage; "
+                    word "10. or if the buyer is a cash buyer, capital pays all, mortgage, repayment both are 0; the remaining still kept in capital "
+                    word "11. if buyer's capital is not enough for downpayment, set the negative remaining to 0; but this no enuogh capital for down-payment should not happen, why here? "
+                    word "12. new entrants are now made visible, and move buyer to its new house, set buyer's homeless period to 0; "
+                    word "13. set buyer's `my-house` to be the `new-house`, record the current ticks when the house is bought as `date-of-purchase`; "
+                    word "14. ask each new-house to put off market and make `offered-to` as nobody; "
+                    word "15. under buyer's context, buyer is not making any offer now; create a new record under the buyer context; "
+                    word "16. make record invisible, record current ticks to be the `date` of record, assign the current `new-house` to be `the-house` of record; "
+                    word "17. assign the `sale-price` of new-house to be `selling-price` of record; ask the new-house realtor to save record into its sales list; "
+                    word "18. count 1 more moving household into `moves`; if sell as owner exist, then ask seller to move-house too" "."
+     )
+  ]
 
-   ask houses with [ is-owner? offered-to ] [
-     ask offered-to [ set made-offer-on nobody ]
-     set offered-to nobody
-     set offer-date 0
+
+
+
+   ; after certain period, all old records should be removed, realtors will remove all their sales
+   ask records [ if date < (ticks - RealtorMemory) [ die ] ] ;; since the record is created, after RealtorMemory duration (update is needed now), ask all records to die
+   ask realtors [ set sales remove nobody sales ] ;; ask realtors to remove dead records from the sales list
+
+
+   ; remove the offers to houses
+   ask houses with [ is-owner? offered-to ] [  ;; for each of the houses which have owners/buyer to make offer on
+     ask offered-to [ set made-offer-on nobody ] ;; ask each buyer to set property `made-offer-on` as nobody
+     set offered-to nobody  ;; set the house's buyer property `offered-to` to be nobody
+     set offer-date 0  ;; set house property `offer-date` to 0
      ]
 
-   ; demolish any house that is either at the end of its life or that is no longer
-   ;  worth much
+   ;demolish old houses or houses with below minimum price
+   set nDemolished 0  ;; use this variable to record the number of houses demolished
+   if any? records [  ;; if there are records left
+     let minimum-price min-price-fraction * medianPriceOfHousesForSale ;; set minimum-price to be 10% of all sold-houses median price
 
-   set nDemolished 0
-   if any? records [
-     let minimum-price min-price-fraction * medianPriceOfHousesForSale
-
-     ask houses with [ (ticks > end-of-life) or
-                       (for-sale? and sale-price <  minimum-price )] [ demolish ]
+     ask houses with [ (ticks > end-of-life) or  ;; ask all houses, if its life is over its life limit or
+                       (for-sale? and sale-price <  minimum-price )] ;; if the house is for sale and sale-price < minimum-price
+         [ demolish ]  ;; let's demolish the house
     ]
 
-  ; any house that is still for sale has its price reduced
+  if debug? or debug-go = "36 remove-records-offers-houses" [
+      user-message (word "36 remove-records-offers-houses, step 24 : after certain period, all old records should be removed, realtors will remove all their sales: "
+                    word "1. since the record is created, after RealtorMemory duration (update is needed now), ask all records to die; "
+                    word "2. ask realtors to remove dead records from the sales list. "
+                    word "Next, remove the offers to houses : 1. for each of the houses which have owners/buyer to make offer on, "
+                    word "ask each buyer to set property `made-offer-on` as nobody, set the house's buyer property `offered-to` to be nobody, "
+                    word "set house property `offer-date` to 0. Finally, demolish old houses or houses with below minimum price. "
+                    word "1. use this variable to record the number of houses demolished; if there are records left, set minimum-price to be 10% of all sold-houses median price; "
+                    word "2. ask all houses, if its life is over its life limit or if the house is for sale and sale-price < minimum-price, let's demolish the house" "."
+    )
+  ]
 
-  ask houses with [ for-sale? ] [
-     set sale-price sale-price * (1 - PriceDropRate / 100 )
+
+
+  ; update houses sale-price
+  ask houses with [ for-sale? ] [  ;; ask all houses which still are for sale
+     set sale-price sale-price * (1 - PriceDropRate / 100 );; to reduce its sale-price by certain amount
      ]
 
-  ; owners that have a mortgage have to pay interest and some capital
-  ; the mortgage is reduced by the amount of capital repayment
-  ask owners with [ is-house? my-house and mortgage > 0 ] [
-    set mortgage mortgage - ( repayment - interestPerTick * mortgage )
-    ; check if mortgage has now been fully repaid; if so cancel it
-    if mortgage <= 0 [
+  ; update owners' mortgage and repayment
+  ask owners with [ is-house? my-house and mortgage > 0 ] [  ;; ask all owners who do have houses and mortgage to pay
+    set mortgage mortgage - ( repayment - interestPerTick * mortgage );; mortgage will be reduced due to repayment
+
+    if mortgage <= 0 [  ;; if mortgage is fully repaid, then set both mortgage and repayment to 0
       set mortgage 0
       set repayment 0
       ]
     ]
+
+  if debug? or debug-go = "37 update-house-owner" [
+     user-message( word "37 update-house-owner, step 25 : update houses sale-price 1. ask all houses which still are for sale, "
+                   word "to reduce its sale-price by certain amount. Now, update owners' mortgage and repayment : "
+                   word "1. ask all owners who do have houses and mortgage to pay, mortgage will be reduced due to repayment; "
+                   word "2. if mortgage is fully repaid, then set both mortgage and repayment to 0" "."
+
+     )
+  ]
+
+
+  if debug? or debug-go = "38 demolish" [
+   user-message (word "38 demolish, step 26 : let demolish the house and everything associate it. "
+                 word "1. under the context of the house, check the household is owner or not, if it is owner, set my-house nobody, "
+                 word "set mortgage and repayment to 0, set the owner invisible, meaning the owner is homeless; "
+                 word "2. delete any record that mentions the house inside the sales of a realtor, set the land to be muddy green, "
+                 word " add 1 upon nDemolished, make the house die" "."
+
+   )
+]
 
 end
 
@@ -789,20 +1047,31 @@ to-report valuation [ property ]    ;; realtor procedure
  ;;  median price of all the sale prices of local houses, or if there are
  ;;  none of those either, on the avergae price of all houses in the
  ;;  realtor's territory.
-
+  let normalization 1
   let multiplier [ quality ] of property *
-                  (1 + RealtorOptimism / 100) *
-  ;                0.9
- 1
+                  (1 + RealtorOptimism / 100) * normalization
+ ;; create a multiplier for valuation with quality, optimism, normalization
+
 
 
 ;  ask sales [ if [ who ] of self = 2156  [ inspect self user-message (word "let's have a look") ]  ]
 ;  foreach sales [ x -> if [ who ] of x = 5558 [ inspect x
 ;                                              user-message (word "let inspect records with 2156") ]  ]  ;; debugging and inspecting
 
+
+
 ;    let local-sales (turtle-set sales) with [ ( [distance property ] of the-house ) < Locality ]  ;; old-version
   let local-sales (turtle-set sales) with [ the-house != nobody and ( [distance property ] of the-house ) < Locality ]  ;; new-version
-
+;; under realtor context, sales is a list of records, use `turtle-set` force list into an agentset to use with, each record has property of the-house
+;; under `local-sales` get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house
+  if debug? or debug-go = "28 valuation-part1-multiplier" [
+    ask one-of local-sales [ user-message (
+                  word "28 valuation-part1-multiplier, step 16 : valuation of houses depend on neighboring sold houses or just neighboring houses "
+                  word "1. create a multiplier for valuation with quality, optimism, normalization. "
+                  word "2. under realtor context, sales is a list of records, use `turtle-set` force list into an agentset of records (can now use `with`). Each record has property of the-house."
+                  word "3. under `local-sales` get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house. "
+                  word "4. learning a usage: get distance between property and the-house using [distance property ] of the-house ) < Locality is " ([distance property ] of the-house  < Locality ) )]
+  ]
 ;  set inspect-object local-sales                                      ;; debugging and inspection on local-sales
 
 ;  user-message ( word "local-sales is created, let's inspect inspect-object " ticks )
@@ -819,15 +1088,32 @@ to-report valuation [ property ]    ;; realtor procedure
 
 
 
-  let old-price [sale-price] of property
-  let new-price 0
-  ifelse any? local-sales
-    [ set new-price median [ selling-price ] of local-sales ]
-    [ let local-houses houses with [ distance myself <= Locality ]
-      ifelse any? local-houses
-        [set new-price median [sale-price] of local-houses ]
-        [set new-price average-price ]
-      ]
+  let old-price [sale-price] of property  ;; set the input house's sale-price as old price
+  let new-price 0  ;; create a new price variable with 0 value
+  ifelse any? local-sales  ;; if the local-sales exist
+    [ set new-price median [ selling-price ] of local-sales ] ;; assign the median price of all record houses to new-price
+    [ let local-houses houses with [ distance myself <= Locality  ];;
+
+      ifelse any? local-houses  ;; if local-houses exist
+        [set new-price median [sale-price] of local-houses ] ;; set the median price of all local-houses to be new-price
+        [set new-price average-price ] ;; otherwise set average-price of the realtor to be new-price
+
+      if debug? or debug-go = "29 valuation-part2-locals" [
+      ask max-one-of local-houses [who] [ inspect myself user-message (
+            word "29 valuation-part2-locals, step 17 : 1. set the input house's sale-price as old price "
+            word " 2. create a new price variable with 0 value. if the local-sales exist, assign the median price of all record houses to `new-price`"
+            word " 3. if local-sales not exist, then create `local-houses` instead. Assign all the houses neighboring to the realtor to `local-houses`. "
+            word " 4. if local-houses exist, set the median price of all local-houses to be `new-price`, otherwise set `average-price` of the realtor to be `new-price`"
+            word " 5. inspect to see who is myself in `let local-houses houses with [ distance myself <= Locality ]`"  (distance myself <= Locality)
+            )
+            stop-inspecting myself
+          ]
+       ]
+
+  ]
+
+
+
   ; if this is a new valuation, return it
   if old-price < 5000 [ report multiplier * new-price ]
   ; otherwise prevent wild changes in price
@@ -836,7 +1122,19 @@ to-report valuation [ property ]    ;; realtor procedure
   ifelse ratio > threshold
     [ set new-price threshold * old-price ]
     [ if ratio < 1 / threshold [  set new-price old-price / threshold ] ]
+
+   if debug? or debug-go = "30 valuation-part3" [
+     user-message (word "30 valuation-part3, step 18 : 1. if old-price < 5000, report multiplier * new-price. "
+      word "2. get ratio = new-price/old-price, threshold = 2. "
+      word "3. if new-price is more than twice old-price,  make new-price twice of old-price. "
+      word "4. if new-price is less than half of old-price, make new-price half of old-price. "
+      word "5. finally report multiplier * new-price" "."
+    )
+  ]
+
   report  multiplier * new-price
+
+
 end
 
 to make-offer [ houses-for-sale ]      ;; owner procedure
@@ -857,49 +1155,81 @@ to make-offer [ houses-for-sale ]      ;; owner procedure
  ;;  The realtor notes the interest shown in each of the houses in this subset
 
   let new-mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 )
+  ;; use current income, Affordability, interestPerTick to calc new-mortgage
+
   let budget new-mortgage - stamp-duty-land-tax new-mortgage
+  ;; actual budget for buying a house is new-mortgage - duty or tax we get back
 
-  let deposit capital
+  let deposit capital  ;; buyer use capital to pay for new deposit
   if is-house? my-house [ set deposit deposit + ([ sale-price ] of my-house - mortgage) ]
+  ;; under the context of owners, if it has a house, update new deposit with new deposit + sale-price of current house - current mortgage
 
-  let upperbound budget + deposit
-  if MaxLoanToValue < 100 [
+  let upperbound budget + deposit  ;; upperbound total = new mortgage - duty-back + new deposit
+  if MaxLoanToValue < 100 [  ;; if mortgage is less than house value, update upperbound with the less between two similar values
     set upperbound min ( list (budget + deposit ) ( deposit / ( 1 - MaxLoanToValue / 100 )))
     ]
 
   ; if I am in negative equity, I cannot afford to buy a house and
   ;  will have to remain where I am
-  if upperbound < 0 [
-    ask my-house [ set for-sale? false ]
-    stop
+  if upperbound < 0 [  ;; if upperbound is less than 0, meaning the owner has negative equity (how it is possible?)
+    ask my-house [ set for-sale? false ] ;; pull the house back from market, and stay in the house
+    stop ;; this owner stop performing the rest action below
     ]
 
-  let lowerbound upperbound * 0.7
-  let current-house my-house
-  let interesting-houses houses-for-sale with [
-                            not is-owner? offered-to and
-                            sale-price <= upperbound and
-                            sale-price > lowerbound and
-                            self != current-house ]
+  let lowerbound upperbound * 0.7  ;; set lowerbound to be 70% of upperbound
+  let current-house my-house  ;; get the current house of the owner
+  let interesting-houses houses-for-sale with [ ;; from all the houses on sale, get those
+                            not is-owner? offered-to and ;; without offer
+                            sale-price <= upperbound and ;; and sale-prices within upperbound
+                            sale-price > lowerbound and  ;; and sale-prices greater than lowerbound
+                            self != current-house ]  ;; and the house is not current house into `interesting-houses`
 
-  ; if there are more interesting houses than the buyer's search length,
-  ;   select that number at random
-  if count interesting-houses > BuyerSearchLength [
-    set interesting-houses n-of BuyerSearchLength interesting-houses
+  if debug? or debug-go = "31 make-offer part1" [
+     user-message (word "31 make-offer part1, step 19 : find all owners who don't have a house or its house is on sale, ask each owner who has no house to make an offer on `houses-for-sale`, and those who do have a house to sell, now also get a chance to make an offer."
+                   word " to make-offer is to find interesting houses to make a price offer to the most affordable but expensive house. "
+                   word " 1. use current income, Affordability, interestPerTick to calc `new-mortgage`; "
+                   word " 2. actual `budget` for buying a house is `new-mortgage` - duty or tax we get back; "
+                   word " 3. buyer use `capital` to pay for new `deposit`, under the context of owners, if it has a house, update `deposit` with `deposit` + `sale-price` of current house - current `mortgage`; "
+                   word " 4. assign offer price `upperbound` = new mortgage - duty-back + new deposit; "
+                   word " 5. if mortgage is less than house value, update upperbound with the less between two similar values; "
+                   word " 6. if upperbound is less than 0, meaning the owner has negative equity (how it is possible?); "
+                   word " 7. pull the house back from market, and stay in the house; then this owner stop performing the rest action below. "
+                   word " 8. set lowerbound to be 70% of upperbound; get `my-house` to be `current-house` of the owner; "
+                   word " 9. from all the `houses-on-sale`, get those without offer and sale-prices bwt lower and upperbounds, and the house is not current house into `interesting-houses`" "."
+
+
+    )
+  ]
+
+
+  if count interesting-houses > BuyerSearchLength [  ;; if number of interesting-houses > BuyerSearchLength
+    set interesting-houses n-of BuyerSearchLength interesting-houses ;; then select randomly BuyerSearchLength number of interesting-houses
     ]
 
-  if any? interesting-houses [
+  if any? interesting-houses [  ;; if interesting-houses exist
     ;select the best that has not already had an offer on it
-    let property max-one-of interesting-houses [ sale-price ]
-    ; if I have found a suitable property, place an offer for it
-      if is-house? property [
-        ask property [
-          set offered-to myself
-          set offer-date ticks
+    let property max-one-of interesting-houses [ sale-price ]  ;; find the house with the maximum sale-price of interesting-houses and assigned to `property`
+
+      if is-house? property [  ;; if the `property` is a house
+        ask property [  ;; ask this house
+          set offered-to myself  ;; assign the current owner as the buyer to `offered-to` (house property)
+          set offer-date ticks   ;; set `ticks` to be `offer-date` (house property)
         ]
-        set made-offer-on property
+        set made-offer-on property  ;; assign `property` (a house ) to owner's property `made-offer-on`
         ]
      ]
+
+  if debug? or debug-go = "32 make-offer part2" [
+     user-message (word "32 make-offer part2, step 20 : choose from interesting houses and make an offer on the most expensive house. "
+                   word " 1. if number of interesting-houses > BuyerSearchLength, then select randomly BuyerSearchLength number of interesting-houses; "
+                   word " 2. if interesting-houses exist, find the house with the maximum sale-price of interesting-houses and assigned to `property`; "
+                   word " 3. if the `property` is a house, ask this house, assign the current owner as the buyer to `offered-to` (house property); "
+                   word " 4. set `ticks` to be `offer-date` (house property); "
+                   word " 5. assign `property` (a house ) to owner's property `made-offer-on`" "."
+     )
+
+  ]
+
 end
 
 to-report stamp-duty-land-tax [ cost ]
@@ -921,71 +1251,97 @@ to-report follow-chain [ first-link ]    ;;  owner procedure
  ;; continue until the seller of that house is the first buyer.
  ;;   This is a successful chain; Stop
 
-  if not is-house? made-offer-on [ report false ]
-  let seller [ my-owner ] of made-offer-on
-  if not (is-owner? seller ) [ report true ]
-  if first-link = seller [ report true ]
+;  inspect self inspect first-link
+;  user-message (word " if not is-house? made-offer-on [ report false ], and condition is  " not is-house? made-offer-on )
+
+  if not is-house? made-offer-on [ report false ]  ;; if buyer's made-offer-on is not house (meaning buyer buy nothing, no deal), report false
+
+  let seller [ my-owner ] of made-offer-on  ;; given the buyer offered on a real house, then set `my-owner` of the house being offered on to be `seller`
+
+;  user-message ( word "if not (is-owner? seller ) [ report true ], can condition is " not is-owner? seller  )
+;  stop-inspecting self stop-inspecting first-link
+  if not (is-owner? seller ) [ report true ]  ;; if the `seller` is not an `owner` (meaning the house is vacant, deal right away ), report true
+
+
+;  inspect first-link inspect seller user-message (word " check first-link with id " [who] of first-link word "check seller with id " [who] of seller )
+  if first-link = seller [ report true ]  ;; given `sell` is an owner, if the input `buyer` =  `seller`, then the flow is intact, This is confusing, but don't be. The following line solve the problem.
+
+;  stop-inspecting first-link stop-inspecting seller
   report [follow-chain first-link ] of seller
+  ;; given the buyer is not the seller (no match), now let's focus on the seller, run follow-chain under seller context, meaning we are finding the owner of house which the seller made an offer on.
+  ;; if the buyer and the seller of the house the older sell want to buy are the same owner, then both buyer and older seller match a deal. flow is intact.
 end
+
 
 to move-house                            ;; owner procedure
  ;; move me to the house I am buying
  ;; then move the seller to their new house etc.
 
-  let new-house made-offer-on
-  if not (is-house? new-house) [ stop ]
-  let seller [ my-owner ] of new-house
-  if is-owner? seller [
+  let new-house made-offer-on  ;; under context of buyer or owner, save `made-offer-on` into `new-house`;
+  if not (is-house? new-house) [ stop ] ;;if the `new-house` is not house, meaning buyer is not buying, then stop moving;
+  let seller [ my-owner ] of new-house ;; assign `my-owner` of `new-house` into `seller`
+  if is-owner? seller [ ;; if seller is an owner, calc the profit made by selling the house
     ; seller gets selling price to pay off mortgage or add to capital
-    let profit [ sale-price ] of new-house - [ mortgage ] of seller
-    ask seller [ set mortgage 0 ]
+    let profit [ sale-price ] of new-house - [ mortgage ] of seller ;; assign (sale-price - mortgage) to `profit`
+    ask seller [ set mortgage 0 ] ;; set seller's mortgage to 0
     if profit > 0 [
-      ; seller has made a profit, which is kept as capital
+      ; If sell made a profit, then add profit into seller's capital.
       ask seller [ set capital capital + profit ]
       ]
     ]
-  ask new-house [ set my-owner myself ]
-  let duty stamp-duty-land-tax [ sale-price ] of new-house
-  ifelse [ sale-price ] of new-house > capital
-    ; if the owner can't pay for the house in cash, s/he has to have a mortgage
+  ask new-house [ set my-owner myself ]  ;; since deal is made, change new-house owner to the buyer
+
+  let duty stamp-duty-land-tax [ sale-price ] of new-house  ;; calc the duty payable with the new house sale-price
+  ifelse [ sale-price ] of new-house > capital  ;;
+    ;; if the owner can't pay for the house in cash, s/he has to have a mortgage
     [
-    ; borrow as much as possible, given owner's income and value of house
+    ; borrow as much as possible, given owner's income and value of house, choose the smaller value of two calc formula
     set mortgage min (list (income * Affordability /
                                         ( interestPerTick * ticksPerYear * 100 ))
                            ([ sale-price ] of new-house * MaxLoanToValue / 100 ))
-    ; pay rest from capital
+    ;; after paying rest with capital, the remaining still kept inside capital
     set capital capital - int ([ sale-price ] of new-house - mortgage) - duty
+
+    ;; calc repayment to pay back mortgage
     set repayment mortgage * interestPerTick /
             (1 - ( 1 + interestPerTick ) ^ ( - MortgageDuration * TicksPerYear ))
     ]
-    ; or if cash buyer, don't need mortgage and use capital
+    ; or if the buyer is a cash buyer, capital pays all, mortgage, repayment both are 0, and remaining still kept in capital
     [
     set mortgage 0
     set repayment 0
     set capital capital - [ sale-price ] of new-house - duty
     ]
-  if capital < 0 [ set capital 0 ]
+
+
+  if capital < 0 [ set capital 0 ] ;; if buyer's capital is not enough for downpayment, set the negative remaining to 0.
+  ;; but this no enuogh capital for down-payment should not happen, why here?
+
   show-turtle ; new entrants are not visible until now
   move-to new-house ; move owner icon on view
-  set homeless 0
-  set my-house new-house
-  set date-of-purchase ticks
-  ask new-house [
+  set homeless 0 ;; set buyer's homeless period to 0
+  set my-house new-house ;; set buyer's `my-house` to be the `new-house`
+  set date-of-purchase ticks  ;; record the current ticks when the house is bought as `date-of-purchase`
+  ask new-house [  ;; ask each new-house to put off market and make `offered-to` as nobody
     set for-sale? false
     set offered-to nobody
   ]
-  set made-offer-on nobody
+  set made-offer-on nobody ;; under buyer's context, buyer is not making any offer now
   ;; update realtor's history with this sale price
-  hatch-records 1 [
-    hide-turtle
-    set date ticks
-    set the-house new-house
-    set selling-price [sale-price] of new-house
-    ask [ my-realtor ] of new-house [ file-record myself ]
+  hatch-records 1 [  ;; create a new record under the buyer context
+    hide-turtle  ;; make record invisible
+    set date ticks  ;; record current ticks to be the `date` of record
+    set the-house new-house  ;; assign the current `new-house` to be `the-house` of record
+    set selling-price [sale-price] of new-house  ;; assign the `sale-price` of new-house to be `selling-price` of record
+    ask [ my-realtor ] of new-house [ file-record myself ] ;; ask the new-house realtor to save record into its sales list
     ]
-  set moves moves + 1
-  if is-owner? seller [ ask seller [ move-house ] ]
+  set moves moves + 1  ;; count 1 more moving household into `moves`
+  if is-owner? seller [ ask seller [ move-house ] ]  ;; if sell as owner exist, then ask seller to move-house too
 end
+
+
+
+
 
 to file-record [ the-record ]         ;; realtor procedure
   ; push this sales record onto the list of those I keep
@@ -1002,26 +1358,27 @@ to unfile-record [ a-house ]          ;; realtor procedure
 ;                                                       inspect a-house user-message (word "inspect a-house")  ] ]  ;; debugging
 end
 
-to demolish                           ;; house procedure
-;; delete the house, but make sure all references to it are dealt with
-  ; if anyone lives here, make them homeless
-  if is-owner? my-owner [
-    ask my-owner [
+to demolish
+  if is-owner? my-owner [ ;; under the context of the house, check the household is owner or not
+    ask my-owner [ ;; if it is owner, set my-house nobody
       set my-house nobody
-      ; cancel mortgage
-      set mortgage 0
+
+      set mortgage 0  ;; set mortgage and repayment to 0
       set repayment 0
-      hide-turtle  ; owner is homeless
+      hide-turtle  ; set the owner invisible, meaning the owner is homeless
       ]
     ]
-  ; if this house is on a realtor's record, remove the record
-  ask realtors [ unfile-record myself ]
-  ; turn the land the house was built on back to grass
-  set pcolor 57
-  ; record the demolition
-  set nDemolished nDemolished + 1
-  die
+
+  ask realtors [ unfile-record myself ] ;; delete any record that mentions the house inside the sales of a realtor
+
+  set pcolor 57 ;; set the land to be muddy green
+
+  set nDemolished nDemolished + 1 ;; add 1 upon nDemolished
+
+  die  ;; make the house die
 end
+
+
 
 to-report gini-index [ lst ]
 ;; reports the gini index of the values in the given list

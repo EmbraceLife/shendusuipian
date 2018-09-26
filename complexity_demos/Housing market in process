@@ -2,7 +2,7 @@
 extensions [palette]
 ;;;
 ;;; PwC Housing Market model
-;;;
+
 ;;; Updated and heavily modified and commented by 深度碎片 EmbraceLife
 ;;; video tutorials on updating and understanding this model are available below
 ;;; Chinese version see Bilibili: https://www.bilibili.com/video/av31860025/
@@ -10,6 +10,7 @@ extensions [palette]
 
 ;;; originally written by Nigel Gilbert, n.gilbert@surrey.ac.uk
 ;;; the original model can be downloaded from http://cress.soc.surrey.ac.uk/housingmarket/ukhm.html
+
 ;;;
 ;;; Disclaimer
 ;;; This model has been prepared for general guidance on matters of interest only, and
@@ -219,9 +220,9 @@ to setup
 
   set-default-shape owners "dot"  ;; all owners are dots
 
-  let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses  ;; find those houses with owners inside
+  let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses  ;; randomly take (1 - initialVacancyRate) proportion of houses to be `occupied-houses`
 
-  ask occupied-houses [
+  ask occupied-houses [  ;; define each home-owner's properties 
 
     set for-sale? false  ;; since owners living inside, it should not for-sale now
 
@@ -614,213 +615,260 @@ to cluster
 
   ]
 
-
-
-
 end
 
-to-report local-price         ;; house procedure
-;; report the average price of houses around myself
-  let local-houses houses-on neighbors  ;; based on the current patch, looking for its eight neighbors for houses
+;; find out median price for local houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ifelse any? local-houses
-    [ report median [sale-price] of local-houses ]
-    [ report 0 ]
+to-report local-price         
+
+  let local-houses houses-on neighbors  ;; based on the current patch, looking for its eight neighbor patches, put all the houses on those patches under `local-houses`
+
+  ifelse any? local-houses  ;; if `loca-houses` is not empty
+  
+    [ report median [sale-price] of local-houses ]  ;; report median price of all neighbor houses' sale-prices to be `local-price`
+  
+    [ report 0 ] ;; if no neighbor houses, report 0 to be `local-price`
+  
 end
 
-to-report price-diff [ a-house ]  ;; house procedure
-;; report the difference between my sale price and the prices of other houses around me
-  report abs ([sale-price] of a-house - [local-price] of a-house)
+;; find out the price difference between a house and its neighbors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to-report price-diff [ a-house ]  
+  
+  report abs ([sale-price] of a-house - [local-price] of a-house) ;; Note the use [ local-price ] of a-house
+  
 end
 
 
-to go
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to go  
 
-   if debug? or debug-go = "12 go-structure" [
-     user-message (word "12 go-structure : every go procedure will do the following 1. `step` take most actions; 2. stop model under 3 conditions: over 400 iterations, or no owners left, or no houses left; 3. half way through (200 iterations) apply one of 4 scenarios." )
+   if debug? or debug-go = "s0 go-structure" [
+     user-message (word "s0 go-structure : set simulation duration, half time bring in a scenario, one step per go, 3 conditions to stop simulation. Now let's run! ")
 
   ]
 
 ;; basic loop
-   if ticks > 400 [ stop ]
+   if ticks > 400 [ user-message (word "Finished: 400 ticks reached " ) stop ]
+  
    if ticks = 200 [
      if scenario = "ltv"  [ set MaxLoanToValue 60 ]
      if scenario = "ratefall" [ set InterestRate 3 ]
      if scenario = "influx" [ set EntryRate 10 ]
      if scenario = "poorentrants" [ set MeanIncome 24000 ]
+    
+     user-message (word "We are at middle of simulation duration, a shock event coming in := " scenario )
      ]
-  ; do one time step (a quarter of a year?)
-  step
-  ; stop if no owners or houses left
-  if not any? owners [ print "Finished: no remaining people" stop ]  ;; show any? turtle-set nobody
-  if not any? houses [ print "Finished: no remaining houses" stop ]
-  ; update the plots
-  do-plots
-  ; advance the clock
-  tick
+  
+  step  ;; do one time step (a quarter of a year?)
+  
+  if not any? owners [ user-message(word "Finished: no remaining people" ) stop ] ;; stop if no owners or houses left
+  if not any? houses [ user-message(word "Finished: no remaining houses" ) stop ]
+  
+  do-plots  ;; update the plots
+  
+  tick  ;; advance the clock
 
 
 end
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to step
 ;;  each time step...
 
+  ;; count total number of owners ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   let n-owners count owners  ;; take a count of total owners at the moment
-  if debug? or debug-go = "13 count-owners" [ user-message (word "13 count-owners, step 1: count number of owners = " n-owners) ]
-
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-go = "s1 count-owners" [ user-message (word "s1 count-owners : to start, count total number of all owners = " n-owners) ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  
+  ;; calc interest per tick ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; add an exogenous cyclical interest rate, if required: varies around mean of
   ; the rate set by slider with a fixed period of 10 years
 
   set interestPerTick InterestRate / ( TicksPerYear * 100 )
-  ;; a fixed period of 10 years = *10, 100 years = *100 ? , InterestRate per year, not InterestRAte per 10 years?
-  if debug? or debug-go = "14 interestPerTick" [ user-message (
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-go = "s2 interestPerTick" [ user-message ( word "s2 interestPerTick : from interest per year to interest per tick"  ) ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-               word "14 interestPerTick, step 2: calculate `interestPerTick` with `InterestRate` and `TicksPerYear`"
-               word " Code : `set interestPerTick InterestRate / ( TicksPerYear * 100 )` "
-               word " Values : InterestRate = " InterestRate
-               word " TicksPerYear = " TicksPerYear
-               word " interestPerTick = " interestPerTick
-  ) ]
-
-
+  
+  ;; add cyclical variation to interest ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if CycleStrength > 0 [
-    set interestPerTick interestPerTick * (1 + (CycleStrength / 100 ) *
-                                            sin ( 36 * ticks / TicksPerYear ))
-    ]
-  ;; if CycleStrength is available, interestPerTick will be updated by it
-  if debug? or debug-go = "15 interest-Cycle"
-    [ user-message (word "15 interest-Cycle, step 3: if condition is met, update interestPerTick with CycleStrength and `sin (36*ticks/TickesPerYear)`. "
-                    word "Code : if CycleStrength > 0 [ set interestPerTick interestPerTick * (1 + (CycleStrength / 100 ) * sin ( 36 * ticks / TicksPerYear )) "
-                    word "; CycleStrength > 0 is " (CycleStrength > 0)
-                    word "; interestPerTick is " interestPerTick
-                    word "; CycleStrength is " CycleStrength
-
-     ) ]
+    set interestPerTick interestPerTick * (1 + (CycleStrength / 100 ) * sin ( 36 * ticks / TicksPerYear )) ]
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-go = "s3 interest-Cycle"
+    [ user-message (word "s3 interest-Cycle : add cyclical influence to interestPerTick. see the figure. " ) ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-
-
+  ;; inflation drive up income ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; add inflation to salary, at inflation rate / TicksPerYear
-  if debug? or debug-go = "16 inflation-income" [
-    inspect min-one-of owners [ who ]
-    user-message (word "16 inflation-income, step 4: inflation forces income to update, check current income = " precision [ income ] of min-one-of owners [ who ] 1
-                  word "; Code : if Inflation > 0 [ ask owners [ set income income * (1 + Inflation / ( TicksPerYear * 100 )) ]]" "."
-    )
-  ]
-
-
   if Inflation > 0 [
-    ask owners [ set income income * (1 + Inflation / ( TicksPerYear * 100 )) ]
+    
+    ask owners [ 
+      
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s4 inflation-income" [
+         inspect self 
+         user-message ( word "4 inflation-income : inflation will drive up income accordingly. " precision income 1) 
+      ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      
+      set income income * (1 + Inflation / ( TicksPerYear * 100 )) 
+    
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s4 inflation-income" [         
+         user-message ( word "s4 inflation-income : inflation will drive up income accordingly. " precision income 1) 
+         stop-inspecting self 
+      ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      
     ]
-  if debug? or debug-go = "16 inflation-income" [
-    ifelse inflation > 0 [ user-message (word "16 inflation-income, step 4: Inflation is " Inflation
-      word "; adjusted to inflation, now the new of income is " precision ([income] of one-of owners with [ who = min [who] of owners ]) 1)
-                           stop-inspecting min-one-of owners [ who ]
-    ]
-                         [ user-message (word "16 inflation-income, step 4: inflation <= 0 no need to update income") ]
   ]
 
 
+  ;; get all the owners with houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   let owner-occupiers owners with [ is-house? my-house ]
-  if debug? or debug-go = "17 owner-occupiers" [ user-message (
-    word "17 owner-occupiers, step 5: use `owner-occupiers` agentset to count owners who still got houses. count " count owner-occupiers
-    word " Code : let owner-occupiers owners with [ is-house? my-house ] " "."
-    )
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-go = "s5 owner-occupiers" [ user-message (
+    word "s5 owner-occupiers : bring all owners with houses under variable `owner-occupiers`. the count = " count owner-occupiers ) ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ]
 
-  ; some have an income shock
-  let shocked-owners n-of (Shocked * count owner-occupiers / 100) owner-occupiers ;; get Shocked% of home-owners
-  ; either a shock of 20% more income than before
-  let upshocked n-of (count shocked-owners / 2) shocked-owners ;; get half of Shocked home-owners as upshocked home-owners
-  set nUpShocked 0  ;; number of up-shock is 0
-  ask upshocked [ set income income * 1.2 ] ;; let's upshocked home-owners increase income by 20%
-   ; or a shock of 20% less income than before
-  let downshocked shocked-owners with [ not member? self upshocked ] ;; group the rest of as downshocked from shocked
-  set nDownShocked 0 ;; set nDownShocked to be 0
-  ask downshocked [ set income income * 0.8 ]  ;; make those downshocked home-owners to decrease income by 20%
-  if debug? or debug-go = "18 income-shock" [
+  ;; introduce income rise and fall shock to owners ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  let shocked-owners n-of (Shocked / 100 * count owner-occupiers ) owner-occupiers ;; gather Shocked% of `owner-occupiers` under `shocked-owners`
+  
+  let upshocked n-of (count shocked-owners / 2) shocked-owners ;; gather half of `shocked-owners` under `upshocked`
+  
+  set nUpShocked 0  ;; initialize the number of upshocked owners under `nUpShocked`
+  
+  ask upshocked [ set income income * (1 + income-shock / 100) ] ;; ask each `upshocked` to increase income by 20%
+  
+  let downshocked shocked-owners with [ not member? self upshocked ] ;; gather the non-upshocked as down shocked owners under `downshocked`
+  
+  set nDownShocked 0 ;; initialize the number of upshocked owners under `nUpShocked`
+  
+  ask downshocked [ set income income * (1 - income-shock / 100 ) ]  ;; ask each downshocked to drop income by 20%
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-go = "s6 income-shock" [   
     user-message (
-      word "18 income-shock, step 6: get `Shocked`% of home-owners = " (count shocked-owners)
-      word ", make half to be `upshocked` home-owners = " (count upshocked)
-      word ", with income rise by 20%, the other half as `downshocked` drop income by 20%, and started to count the number of up-down shocks at " 0 )
+      word "s6 income-shock : each tick, a Shocked% of home-owners got income shock = " Shocked 
+      word "; half income rise income-shock% the other drop income-shock% = " income-shock 
+    ) 
   ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-
-  ask owner-occupiers with [ not [for-sale?] of my-house ][ ;; for all home-owners whose house is not for sale
-   ; if they are now spending less than half the Affordability ratio of their
-   ; income on their mortgage repayments, they want to move up
-   let ratio repayment * TicksPerYear / income ;; calc their repayment / income ratio (TicksPerYear? later)
-   if  ratio < Affordability / 200 [  ;; if ratio < affordability / 200 (why / 200? demo income rise a lot)
-      ask my-house [ put-on-market ]  ;; put the house for sale
-      set nUpShocked nUpShocked + 1   ;; start to count the number of home-owners to sale due to income rise
-      ]
-     ; if they are now spending more than twice the Affordability ratio of
-     ; their income on their mortgage repayments, they want to move down
-   if ratio > Affordability / 50 [   ;; demo increase drop a lot or repayment is an issue now
-      ask my-house [ put-on-market ]  ;; put the house for sale
-      set nDownShocked nDownShocked + 1  ;; count one more home-owner to sell due to income drop
-      ]
-
-   if debug? or debug-go = "19 shock-sale" [
-     user-message (
-        word "19 shock-sale, step 7: ask all home-owners with houses not for-sale at the moment, calc their repayment/income ratio = " precision ratio 1
-        word "; if the ratio < Affordability / 200, meaning the home-owner can afford bigger repayment, the owner now put the house on-sale, we add 1 onto `nUpShocked`, Affordability = " Affordability
-        word "; if the ratio > Affordability / 50, meaning the home-owner now only afford a smaller repayment, the owner now put the house on-sale, we add 1 onto `nDownShocked`, given same affordability " Affordability
-      )
+  ;; income-shock intrigers some owners to sell houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; after income shock, which type of owners will sell houses due to income rise, and which type of owners sell houses due to income drop 
+  ask owner-occupiers with [ not [for-sale?] of my-house ][ ;; ask all home-owners whose house is not for sale (in setup, all home-owners don't sell houses)
+   
+   let ratio repayment * TicksPerYear / income ;; put yearly-repayment / income  under `ratio`
+    
+   if  ratio < Affordability / 200 [  ;; if ratio < half of Affordability %, meaning yearly-repayment is easy and owner is rich
+      
+      ask my-house [ put-on-market ]  ;; ask owner's house to put on the market for sale 
+      
+      set nUpShocked nUpShocked + 1   ;; add 1 to `nUpShocked`, meaning one more owner selling house due to income rise
+      
     ]
-
+    
+   if ratio > Affordability / 50 [   ;; if ratio > 2 * Affordability % , meaning yearly-repayment is way to heavy for owners to bear, owner is poor 
+      
+      ask my-house [ put-on-market ]  ;; ask owner's house to put on the market for sale 
+      
+      set nDownShocked nDownShocked + 1  ;; add 1 to `nDownShocked`, meaning one more owner selling house due to income drop
+      
+    ]   
    ]
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   if debug? or debug-go = "s7 shock-sale" [
+     user-message (
+        word "s7 shock-sale : after income-shock, only owners whose repayment < half of affordability, will put house on sale due to income rise; "
+        word " only owners whose repayment > twice of affordability,  will put house on sale due to income drop " "."
+      )]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 
-  ; some owners put their houses on the market and leave town
-  ask n-of (ExitRate * n-owners / 100) owners with [ is-house? my-house ] [
+  ;; owners gone ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; every tick, a proportion of owners put their houses on the market and leave town
+  
+  ask n-of (ExitRate * n-owners / 100) owners with [ is-house? my-house ] [  ;; ask randomly select (ExitRate% of all owners) number of home-owners to do ...
 
-    if debug? or debug-go = "20 owners-gone" [
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    if debug? or debug-go = "s8 owners-gone" [ 
        inspect self
        inspect my-house
        user-message (
-          word " 20 owners-gone, step 8: this is a owner who is to sell a house and leaving town."
-          word " this group is totalling = " round (ExitRate * n-owners / 100)
-          word " next step, we will put the house on sale and make my-owner nobody, then let the owner die " " the owner is disappeared from the world."
-      )
-    ]
+          word " s8 owners-gone : watch this owner to sell and leave. "
+          word " it is one of = " round (ExitRate * n-owners / 100)
+      )]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ask my-house [
-      put-on-market
+      
+      put-on-market  ;; put itself on market 
       set my-owner nobody
 
       ]
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    if debug? or debug-go = "s8 owners-gone" [ user-message (word " watch the changes " ) 
+        stop-inspecting self 
+        stop-inspecting my-house
+    ]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
     die
 
   ]
 
 
 
-  ; some new owners arrive
+  ;; new comers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; a fixed number of new comers enter the city 
 
   repeat EntryRate * n-owners / 100 [
-;  create-owners EntryRate * n-owners / 100 [  ;; create a lot of turtles at the same time
+;  create-owners EntryRate * n-owners / 100 [  ;; create a fixed proportion of new owners 
     create-owners 1 [
+      
       set color gray  ;; gray
-      set size 0.7
-
-      if debug? or debug-go = "21 new-comers" [
-        inspect self
-        user-message (word "21 new-comers, step 9: Let's one by one, create EntryRate * n-owners number of new owners with income and capital but without houses yet, so we hide them" )
+      set size 1 ;; to make new comers differ from other owners 
+      
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s9 new-comers" [
+        
+        inspect self  ;; inspect one of new comer
+        follow-me  ;; watch it
+        
+        user-message (word "s9 new-comers : create a new comer and watch its properties " )
       ]
-      ; set initial income and savings
-      assign-income
-      ; give them an initial capital equal to the deposit for the house they could afford
-      ; new owners are not located anywhere yet
-      hide-turtle
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      
+      set size 0.7  ;; make them visible but not too big
 
-      if debug? or debug-go = "21 new-comers" [
-        user-message (word "21 new-comers, step 9: let's the effect of hidden" )
+      assign-income  ;; initialize income and capital
+      
+      hide-turtle  ;; new comers have no houses, so they are nowhere to be seen 
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s9 new-comers" [
+        user-message (word "s9 new-comers, now it is hidden. " )
         stop-inspecting self
       ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ]
   ]
 
@@ -835,7 +883,7 @@ to step
      ]
   ]
 
-   if debug? or debug-go = "22 discouraged-move-away" [
+   if debug? or debug-go = "s10 discouraged-move-away" [
 
     ask one-of owners with [ not is-house? my-house ] [
       inspect self

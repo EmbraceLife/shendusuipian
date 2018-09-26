@@ -13,6 +13,46 @@ conda env export > environment.yml # 输出env
 conda env create -f environment.yml # build env from yml
 ```
 
+# git
+```bash
+# make my fork from official
+# copy git repo link for clone
+git clone https://github.com/EmbraceLife/mesa # from my fork to download the project into your Mac or PC
+cd my_fork
+git remote add upstream official-url-git # link to official repo
+git pull upstream master # pull from official version
+# git merge upstream/master # when necessary
+git push # update my own fork version
+git pull # pull from my own fork version
+
+git push origin --delete a_remote_branch_name # to delete a branch remote in github
+svn checkout url-folder-replace-tree/master-with-trunk # only download part of a repo
+
+git branch # check all branches
+git branch new_branch_name # create a branch from where we are
+git branch -m a_new_name # rename
+git branch -d branch_to_go # delete
+git checkout new_branch # switch to a new branch
+
+git merge new_branch # from where we are, merge new_branch into where we are.
+
+git status
+git add .
+git commit -m "comment"
+git push
+
+git reset # to undo git add .
+```
+
+# 实验代码
+```
+# https://mesa.readthedocs.io/en/latest/tutorials/intro_tutorial.html
+pip install mesa
+pip install requirements.txt # inside folder of /Users/Natsume/Desktop/mesa/examples/boltzmann_wealth_model
+# if can't run, then open this file with `nano requirement.txt` to see the libraries needed installation
+```
+
+
 # 重建工作平台
 ```bash
 # 下载安装miniconda
@@ -78,33 +118,3 @@ alias opt_param optimizer.param_groups[0]['params'][%1] # all parameters
 alias opt_grad optimizer.param_groups[0]['params'][%1].grad # all gradients of parameters
 ```
 
-# git
-```bash
-# make my fork from official
-# copy git repo link for clone
-git clone https://github.com/EmbraceLife/mesa # from my fork
-cd my_fork
-git remote add upstream official-url-git # link to official repo
-git pull upstream master # pull from official version
-# git merge upstream/master # when necessary
-git push # update my own fork version
-git pull # pull from my own fork version
-
-git push origin --delete a_remote_branch_name # to delete a branch remote in github
-svn checkout url-folder-replace-tree/master-with-trunk # only download part of a repo
-
-git branch # check all branches
-git branch new_branch_name # create a branch from where we are
-git branch -m a_new_name # rename
-git branch -d branch_to_go # delete
-git checkout new_branch # switch to a new branch
-
-git merge new_branch # from where we are, merge new_branch into where we are.
-
-git status
-git add .
-git commit -m "comment"
-git push
-
-git reset # to undo git add .
-```

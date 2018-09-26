@@ -2,7 +2,9 @@
 ```bash
 conda --version # check version:
 conda update conda # update conda: , install outside env
-conda create -n my_env_name python=3.6 anaconda # build environment
+conda create -n mesa-abm python=3.6 anaconda # build environment
+source activate mesa-abm
+source deactivate
 conda info --envs # check envs
 conda env list # all envs to view
 conda create --name new_env --clone existed_env # clone an env

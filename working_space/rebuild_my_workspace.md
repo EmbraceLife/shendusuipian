@@ -82,7 +82,7 @@ alias opt_grad optimizer.param_groups[0]['params'][%1].grad # all gradients of p
 ```bash
 # make my fork from official
 # copy git repo link for clone
-git clone paste_link# from my fork
+git clone https://github.com/EmbraceLife/mesa # from my fork
 cd my_fork
 git remote add upstream official-url-git # link to official repo
 git pull upstream master # pull from official version

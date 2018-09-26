@@ -135,6 +135,10 @@ before 2018.5
 
 ### 代码能力
 
+> [python源码能力](https://zhuanlan.zhihu.com/p/30324143)
+>
+> [搭建工作平台](https://zhuanlan.zhihu.com/p/29857256)
+>
 > 具备[深度解读pytorch源代码能力](https://zhuanlan.zhihu.com/p/29916596)
 >
 > 具备解读[chainer源码能力](https://zhuanlan.zhihu.com/p/31017975)

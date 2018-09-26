@@ -15,6 +15,15 @@ conda env create -f environment.yml # build env from yml
 
 # git
 ```bash
+# create a new repo on github
+# go to your Mac directory 
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/EmbraceLife/NetLogo-Modeling.git
+git push -u origin master
+
+
 # make my fork from official
 # copy git repo link for clone
 git clone https://github.com/EmbraceLife/mesa # from my fork to download the project into your Mac or PC

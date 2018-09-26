@@ -105,6 +105,8 @@ wk3.5 # - then use  everywhere
 ```
 
 # 构建pdbrc
+[如何构建和安装pdbrc video](https://www.bilibili.com/video/av16754002/)
+[如何使用pdbpp来实验代码](https://www.bilibili.com/video/av16753161/)
 ```python
 alias dr pp dir(%1) # 查看everything underneath the object
 alias dt pp %1.__dict__ # 查看object's dictionaries

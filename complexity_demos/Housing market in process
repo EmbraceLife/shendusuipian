@@ -6,7 +6,7 @@ extensions [palette]
 ;;; Updated and heavily modified and commented by 深度碎片 EmbraceLife
 ;;; video tutorials on updating and understanding this model are available below
 ;;; Chinese version see Bilibili: https://www.bilibili.com/video/av31860025/
-;;; English version see Youtube: https://www.youtube.com/playlist?list=PLx08F1efFq_XPiMl74IHpppb8NGqITLn2 
+;;; English version see Youtube: https://www.youtube.com/playlist?list=PLx08F1efFq_XPiMl74IHpppb8NGqITLn2
 
 ;;; originally written by Nigel Gilbert, n.gilbert@surrey.ac.uk
 ;;; the original model can be downloaded from http://cress.soc.surrey.ac.uk/housingmarket/ukhm.html
@@ -77,7 +77,7 @@ extensions [palette]
 ;;;  version 1.61 NG 24 Jan 2013       Corrected bug introduced in upgrading to NL 5.0.4
 
 globals [
-  scenario            ; to illustrate various step changes
+;  scenario            ; to illustrate various step changes
   ;; these could become sliders
   initialVacancyRate  ; proportion of empty houses at start
   nRealtors           ; number of realtors
@@ -149,7 +149,7 @@ to setup
 ;     if scenario = "poorentrants" [ set MeanIncome 24000 ]
 ;     if scenario = "clusters", continue for 400 steps
 
-  set scenario "ratefall" ;; we can create a choose in interface if we want to
+
 
 ;; initialise globals (in code, but there are globals in interface to be initialized as well )
   set initialVacancyRate 0.05
@@ -222,7 +222,7 @@ to setup
 
   let occupied-houses n-of ((1 - initialVacancyRate) * count houses) houses  ;; randomly take (1 - initialVacancyRate) proportion of houses to be `occupied-houses`
 
-  ask occupied-houses [  ;; define each home-owner's properties 
+  ask occupied-houses [  ;; define each home-owner's properties
 
     set for-sale? false  ;; since owners living inside, it should not for-sale now
 
@@ -280,10 +280,10 @@ to setup
 ;; 5 empty  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For vacant houses, without owners, those houses have no sale-prices, my-owner properties
 
-   
+
    let ln-min-price precision ln [sale-price] of min-one-of houses with [ sale-price != 0 ] [sale-price] 1   ;; copy ln-min-price from paint-houses
-   let ln-max-price precision ln [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1  
-  
+   let ln-max-price precision ln [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1
+
    let median-price median [ sale-price ] of houses with [ sale-price > 0 ] ;; median sale-prices of all houses with owners
 
    ask houses with [ sale-price = 0 ] [  ;; loop each empty house
@@ -303,10 +303,10 @@ to setup
        [ set sale-price  median [ sale-price ] of local-houses ]  ;; use local houses median price as the empty house sale-price
        [ set sale-price  median-price ]  ;; otherwise, use all occupied houses median price for the empty house sale-price
 
-     set color palette:scale-scheme "Divergent" "Spectral" 5 (ln sale-price) ln-min-price ln-max-price  ;; borrow it from paint-houses to color the empty house 
-    
+     set color palette:scale-scheme "Divergent" "Spectral" 5 (ln sale-price) ln-min-price ln-max-price  ;; borrow it from paint-houses to color the empty house
+
     if debug? or debug-setup = "5 empty" [
-      
+
       user-message (word "5 empty : No more a bare house, check my-owner, sale-price, and new color. " )
       stop-inspecting self
     ]
@@ -321,9 +321,9 @@ to setup
    set medianPriceOfHousesForSale median [sale-price] of houses  ;; get median price for all houses
 
    ask houses [
-      
+
     set quality sale-price / medianPriceOfHousesForSale  ;; quality is sale-price/median-price
-    
+
     if quality > 3 [set quality 3] if quality < 0.3 [set quality 0.3]  ;; quality is between 0.3 to 3
 
 
@@ -340,8 +340,8 @@ to setup
   ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-   
-  
+
+
 ;; 9 realtors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; initialize sales, my-houses, average-price
 
@@ -350,7 +350,7 @@ to setup
      set my-houses houses with [member? myself local-realtors ]  ;; take all houses having the realtor as one of their local-realtors to be my-houses
      set average-price median [ sale-price ] of my-houses  ;; take median price of my-houses to be average-price
      ]
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-setup = "9 realtors: my-houses, avg-price" [
     inspect max-one-of realtors [ who ]
@@ -358,39 +358,39 @@ to setup
     stop-inspecting max-one-of realtors [ who ]
   ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
-  
+
+
 ;; 10 records;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; create records     
-  
+;; create records
+
   ask houses [ ;; loop each house
-     
-     
-    
+
+
+
      let the-record nobody ;; `the-record` is nobody
-    
+
      hatch-records 1 [  ;; hatch a record from a house
-      
+
       if debug? or debug-setup = "10 records" [
-         inspect myself ;; inspect the current house 
-         inspect self ;; inspect the current record 
+         inspect myself ;; inspect the current house
+         inspect self ;; inspect the current record
          user-message (word "10 records :  initialize the-house, selling-price for current record; initialize my-realtor for current house; update sales for my-realtor. ")
       ]
        hide-turtle  ;; hide the current record
-      
-       set the-house myself   ;; take the current house to be the-house of the current record                    
-      
-       set selling-price [ sale-price ] of myself  ;; take the sale-price of the house to be selling-price of the current record 
-      
+
+       set the-house myself   ;; take the current house to be the-house of the current record
+
+       set selling-price [ sale-price ] of myself  ;; take the sale-price of the house to be selling-price of the current record
+
        set the-record self                           ;; use the-record to carry the current record outside the hatch function into the house context
        ]
-    
-     set my-realtor one-of local-realtors  ;; take one of the local-realtors to be my-realtor of the current house 
-    
+
+     set my-realtor one-of local-realtors  ;; take one of the local-realtors to be my-realtor of the current house
+
      ask my-realtor [ file-record the-record ]  ;; ask my-realtor to save the current record (the-record) into sales of my-realtor
-    
+
     if debug? or debug-setup = "10 records" [
-      
+
       inspect my-realtor
       user-message (word "10 records :  initialize the-house, selling-price for current record; initialize my-realtor for current house; update sales for my-realtor. ")
       stop-inspecting self
@@ -521,7 +521,7 @@ to paint-houses
   let ln-max-price precision ln [sale-price] of max-one-of houses with [  sale-price != 0 ] [sale-price] 1
 
   ask houses with [ sale-price != 0 ] [  ;; maybe set empty house initial 0 price to "0" ?
-    
+
     if debug? or debug-setup = "11 paint-log-price" [
       follow-me
       user-message (word " 11 paint-log-price : loop each house , paint each house with divergent colors based on log sale-prices " )
@@ -537,15 +537,15 @@ to paint-houses
 
 
     set color lput house-alpha color  ;; add transparency to color
-    
+
     if debug? or debug-setup = "11 paint-log-price" [
-      
+
       user-message (word " 11 paint-log-price : loop each house , paint each house with divergent colors based on log sale-prices " )
     ]
 
   ]
 
-  
+
 
 end
 
@@ -619,30 +619,30 @@ end
 
 ;; find out median price for local houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to-report local-price         
+to-report local-price
 
   let local-houses houses-on neighbors  ;; based on the current patch, looking for its eight neighbor patches, put all the houses on those patches under `local-houses`
 
   ifelse any? local-houses  ;; if `loca-houses` is not empty
-  
+
     [ report median [sale-price] of local-houses ]  ;; report median price of all neighbor houses' sale-prices to be `local-price`
-  
+
     [ report 0 ] ;; if no neighbor houses, report 0 to be `local-price`
-  
+
 end
 
 ;; find out the price difference between a house and its neighbors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to-report price-diff [ a-house ]  
-  
+to-report price-diff [ a-house ]
+
   report abs ([sale-price] of a-house - [local-price] of a-house) ;; Note the use [ local-price ] of a-house
-  
+
 end
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-to go  
+to go
 
    if debug? or debug-go = "s0 go-structure" [
      user-message (word "s0 go-structure : set simulation duration, half time bring in a scenario, one step per go, 3 conditions to stop simulation. Now let's run! ")
@@ -650,24 +650,31 @@ to go
   ]
 
 ;; basic loop
-   if ticks > 400 [ user-message (word "Finished: 400 ticks reached " ) stop ]
-  
+   if ticks > 400 [
+
+    print "Finished: 400 ticks reached "
+
+    stop ]
+
    if ticks = 200 [
      if scenario = "ltv"  [ set MaxLoanToValue 60 ]
-     if scenario = "ratefall" [ set InterestRate 3 ]
+     if scenario = "raterise 3" [ set InterestRate 3 ]
+     if scenario = "raterise 7" [ set InterestRate 7 ]
+     if scenario = "raterise 9" [ set InterestRate 9 ]
      if scenario = "influx" [ set EntryRate 10 ]
      if scenario = "poorentrants" [ set MeanIncome 24000 ]
-    
-     user-message (word "We are at middle of simulation duration, a shock event coming in := " scenario )
+
+     type "We are at middle of simulation duration, ticks = " type ticks type ", a shock event coming in := " type scenario  print ";"
+
      ]
-  
+
   step  ;; do one time step (a quarter of a year?)
-  
+
   if not any? owners [ user-message(word "Finished: no remaining people" ) stop ] ;; stop if no owners or houses left
   if not any? houses [ user-message(word "Finished: no remaining houses" ) stop ]
-  
+
   do-plots  ;; update the plots
-  
+
   tick  ;; advance the clock
 
 
@@ -682,27 +689,27 @@ to step
 
   ;; count total number of owners ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   let n-owners count owners  ;; take a count of total owners at the moment
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-go = "s1 count-owners" [ user-message (word "s1 count-owners : to start, count total number of all owners = " n-owners) ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
-  
+
+
   ;; calc interest per tick ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; add an exogenous cyclical interest rate, if required: varies around mean of
   ; the rate set by slider with a fixed period of 10 years
 
   set interestPerTick InterestRate / ( TicksPerYear * 100 )
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-go = "s2 interestPerTick" [ user-message ( word "s2 interestPerTick : from interest per year to interest per tick"  ) ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  
+
   ;; add cyclical variation to interest ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if CycleStrength > 0 [
     set interestPerTick interestPerTick * (1 + (CycleStrength / 100 ) * sin ( 36 * ticks / TicksPerYear )) ]
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-go = "s3 interest-Cycle"
     [ user-message (word "s3 interest-Cycle : add cyclical influence to interestPerTick. see the figure. " ) ]
@@ -712,32 +719,32 @@ to step
   ;; inflation drive up income ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; add inflation to salary, at inflation rate / TicksPerYear
   if Inflation > 0 [
-    
-    ask owners [ 
-      
+
+    ask owners [
+
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       if debug? or debug-go = "s4 inflation-income" [
-         inspect self 
-         user-message ( word "4 inflation-income : inflation will drive up income accordingly. " precision income 1) 
+         inspect self
+         user-message ( word "4 inflation-income : inflation will drive up income accordingly. " precision income 1)
       ]
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      
-      set income income * (1 + Inflation / ( TicksPerYear * 100 )) 
-    
+
+      set income income * (1 + Inflation / ( TicksPerYear * 100 )) ;; every tick, income stay the same or varied by inflation
+
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      if debug? or debug-go = "s4 inflation-income" [         
-         user-message ( word "s4 inflation-income : inflation will drive up income accordingly. " precision income 1) 
-         stop-inspecting self 
+      if debug? or debug-go = "s4 inflation-income" [
+         user-message ( word "s4 inflation-income : inflation will drive up income accordingly. " precision income 1)
+         stop-inspecting self
       ]
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      
+
     ]
   ]
 
 
   ;; get all the owners with houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   let owner-occupiers owners with [ is-house? my-house ]
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-go = "s5 owner-occupiers" [ user-message (
     word "s5 owner-occupiers : bring all owners with houses under variable `owner-occupiers`. the count = " count owner-occupiers ) ]
@@ -745,52 +752,52 @@ to step
 
 
   ;; introduce income rise and fall shock to owners ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
+
   let shocked-owners n-of (Shocked / 100 * count owner-occupiers ) owner-occupiers ;; gather Shocked% of `owner-occupiers` under `shocked-owners`
-  
+
   let upshocked n-of (count shocked-owners / 2) shocked-owners ;; gather half of `shocked-owners` under `upshocked`
-  
+
   set nUpShocked 0  ;; initialize the number of upshocked owners under `nUpShocked`
-  
+
   ask upshocked [ set income income * (1 + income-shock / 100) ] ;; ask each `upshocked` to increase income by 20%
-  
+
   let downshocked shocked-owners with [ not member? self upshocked ] ;; gather the non-upshocked as down shocked owners under `downshocked`
-  
+
   set nDownShocked 0 ;; initialize the number of upshocked owners under `nUpShocked`
-  
+
   ask downshocked [ set income income * (1 - income-shock / 100 ) ]  ;; ask each downshocked to drop income by 20%
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  if debug? or debug-go = "s6 income-shock" [   
+  if debug? or debug-go = "s6 income-shock" [
     user-message (
-      word "s6 income-shock : each tick, a Shocked% of home-owners got income shock = " Shocked 
-      word "; half income rise income-shock% the other drop income-shock% = " income-shock 
-    ) 
+      word "s6 income-shock : each tick, a Shocked% of home-owners got income shock = " Shocked
+      word "; half income rise income-shock% the other drop income-shock% = " income-shock
+    )
   ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
   ;; income-shock intrigers some owners to sell houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; after income shock, which type of owners will sell houses due to income rise, and which type of owners sell houses due to income drop 
+  ;; after income shock, which type of owners will sell houses due to income rise, and which type of owners sell houses due to income drop
   ask owner-occupiers with [ not [for-sale?] of my-house ][ ;; ask all home-owners whose house is not for sale (in setup, all home-owners don't sell houses)
-   
+
    let ratio repayment * TicksPerYear / income ;; put yearly-repayment / income  under `ratio`
-    
+
    if  ratio < Affordability / 200 [  ;; if ratio < half of Affordability %, meaning yearly-repayment is easy and owner is rich
-      
-      ask my-house [ put-on-market ]  ;; ask owner's house to put on the market for sale 
-      
+
+      ask my-house [ put-on-market ]  ;; ask owner's house to put on the market for sale
+
       set nUpShocked nUpShocked + 1   ;; add 1 to `nUpShocked`, meaning one more owner selling house due to income rise
-      
+
     ]
-    
-   if ratio > Affordability / 50 [   ;; if ratio > 2 * Affordability % , meaning yearly-repayment is way to heavy for owners to bear, owner is poor 
-      
-      ask my-house [ put-on-market ]  ;; ask owner's house to put on the market for sale 
-      
+
+   if ratio > Affordability / 50 [   ;; if ratio > 2 * Affordability % , meaning yearly-repayment is way to heavy for owners to bear, owner is poor
+
+      ask my-house [ put-on-market ]  ;; ask owner's house to put on the market for sale
+
       set nDownShocked nDownShocked + 1  ;; add 1 to `nDownShocked`, meaning one more owner selling house due to income drop
-      
-    ]   
+
+    ]
    ]
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    if debug? or debug-go = "s7 shock-sale" [
@@ -804,11 +811,11 @@ to step
 
   ;; owners gone ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; every tick, a proportion of owners put their houses on the market and leave town
-  
+
   ask n-of (ExitRate * n-owners / 100) owners with [ is-house? my-house ] [  ;; ask randomly select (ExitRate% of all owners) number of home-owners to do ...
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    if debug? or debug-go = "s8 owners-gone" [ 
+    if debug? or debug-go = "s8 owners-gone" [
        inspect self
        inspect my-house
        user-message (
@@ -818,19 +825,19 @@ to step
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ask my-house [
-      
-      put-on-market  ;; put itself on market 
+
+      put-on-market  ;; put itself on market
       set my-owner nobody
 
       ]
-    
+
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    if debug? or debug-go = "s8 owners-gone" [ user-message (word " watch the changes " ) 
-        stop-inspecting self 
+    if debug? or debug-go = "s8 owners-gone" [ user-message (word " watch the changes " )
+        stop-inspecting self
         stop-inspecting my-house
     ]
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    
+
     die
 
   ]
@@ -838,30 +845,30 @@ to step
 
 
   ;; new comers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; a fixed number of new comers enter the city 
+  ;; a fixed number of new comers enter the city
 
   repeat EntryRate * n-owners / 100 [
-;  create-owners EntryRate * n-owners / 100 [  ;; create a fixed proportion of new owners 
+;  create-owners EntryRate * n-owners / 100 [  ;; create a fixed proportion of new owners
     create-owners 1 [
-      
+
       set color gray  ;; gray
-      set size 1 ;; to make new comers differ from other owners 
-      
+      set size 1 ;; to make new comers differ from other owners
+
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       if debug? or debug-go = "s9 new-comers" [
-        
+
         inspect self  ;; inspect one of new comer
         follow-me  ;; watch it
-        
+
         user-message (word "s9 new-comers : create a new comer and watch its properties " )
       ]
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      
+
       set size 0.7  ;; make them visible but not too big
 
       assign-income  ;; initialize income and capital
-      
-      hide-turtle  ;; new comers have no houses, so they are nowhere to be seen 
+
+      hide-turtle  ;; new comers have no houses, so they are nowhere to be seen
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       if debug? or debug-go = "s9 new-comers" [
@@ -872,123 +879,192 @@ to step
     ]
   ]
 
-  ; note that those without houses are homeless for another period, and remove those who
-  ; have given up waiting for a house
+
+  ;; discouraged-leave ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; if an owner without home for too long, it will move out of city
 
   if MaxHomelessPeriod  > 0 [ ; meaning if this value is set
-       ask owners with [ not is-house? my-house ] [  ;; for every owner without a house
-         set homeless homeless + 1  ;; record the ticks during which this owner has no house
-         if homeless > maxHomelessPeriod [ die ] ;; if over the max duration without a house, this owner will emigrate elsewhere
 
+       ask owners with [ not is-house? my-house ] [  ;; ask each owner without a house
+
+         set homeless homeless + 1  ;; count the owner's homeless duration
+
+         if homeless > maxHomelessPeriod [ ;; if homeless duration is beyond limit, this owner will move out of the city (agent die)
+
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            if debug? or debug-go = "s10 discouraged-move-away" [
+               inspect self
+               user-message ( word " this owner's homeless duration is " homeless )
+            ]
+            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+            die
+          ]
      ]
   ]
 
-   if debug? or debug-go = "s10 discouraged-move-away" [
 
-    ask one-of owners with [ not is-house? my-house ] [
-      inspect self
-      user-message (word "22 discouraged-move-away, step 10 : homeless is a owner property track how long an owner has been without a house. The current owner's homeless = " homeless
-                  word ". The owner will be discouraged and leave the town, after maximum period without having a house = " maxHomelessPeriod
-      )
-      stop-inspecting self
-    ]
-  ]
 
-  ; those who are paying mortgages greater than their income, are forced to move out
-  ; of the housing market and their house is put up for sale
+
+
+  ;; income < repayment, house taken, and owner force leave ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   let total-drop-sale count owner-occupiers with [ [for-sale?] of my-house and repayment * TicksPerYear > income ]
-  ask owner-occupiers with [ [for-sale?] of my-house and
-                              repayment * TicksPerYear > income ] [
-    ask my-house [ set my-owner nobody ]
+  ;; get all home-owners whose houses are on-sale and whose yearly-repayment is larger than income, and count the number `total-drop-sale`
 
-    die
+
+  ask owner-occupiers with [ [for-sale?] of my-house and ;; get all home-owners whose houses are on-sale and
+
+                              repayment * TicksPerYear > income ] [  ;; whose yearly-repayment is larger than income
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    if debug? or debug-go = "s11 drop-sale" [
+        user-message (word "s11 drop-sale : this owner's yearly repayment = " (repayment * 4 )
+                      word ", the owner's income is only " income
+                      word ", this owner can't repay mortgage, forced out" ". "
+      )
     ]
-  if debug? or debug-go = "23 drop-sale" [
-        user-message (word "23 drop-sale, step 11 : for owners who put house on sale, and their income can't afford "
-                      word "mortgage, will have to move out and stop being an owner. but why have to `die` not hide? "
-                      word "die, probably mean moving out to cheaper city" "?"
-    )
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ask my-house [ set my-owner nobody ]  ;; ask its house to set owner to be nobody
+
+    die  ;; ask the owner to die
+
+    ]
+
+
+  ;; some new houses are built, and put up for sale ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  repeat count houses * HouseConstructionRate / 100 [  ;; build a fixed proportion of new houses
+
+    if any? patches with [ not any? houses-here ]  [ ;; patches with [ not any? houses-here ] = patches where there are no houses on them
+                                                     ;; any? patches with  = do these patches exist or not
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s12 new-houses" [
+
+        user-message (word "s12 new-houses : as long as there is an empty land, build a house, until the number is met. " floor (count houses * HouseConstructionRate / 100)
+      ) ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+      build-house   ;; this function will automatically find an empty land to build a house on
+
+    ]
+
   ]
 
-  ; some new houses are built, and put up for sale
 
-  repeat count houses * HouseConstructionRate / 100 [
-  ; ensure that there are vacant patches before building a house
-  ; if there are not, no more houses are built
-    if any? patches with [ not any? houses-here ]  [ build-house ]
-    ]
-  if debug? or debug-go = "24 new-houses" [
-      user-message (word "24 new-houses, step 12 : each iteration, the city builds some new houses with number = " floor (count houses * HouseConstructionRate / 100)
-                    word " Meanwhile there are total-empty-land = " count patches with [ not any? houses-here ]
-    )
-  ]
+  ;; update 0-quality houses to [0.3, 3] ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ask houses with [ quality = 0 ] [ ;; ask each house with quality = 0
 
-  ask houses with [ quality = 0 ] [ ; these are the new houses
-      ; calculate quality index as the mean of the qualities of those in the locality
-      ; or set to 1 if there aren't any houses around here
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s13 remove-0-quality" [
+         inspect self
+      user-message (word "s13 remove-0-quality : see the quality changes. In total 0-quality houses number = " count houses with [ quality = 0 ] )]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
       let houses-around-here other houses in-radius Locality
-      set quality ifelse-value any? houses-around-here
-        [ mean [ quality ] of houses-around-here ]
-        [ 1 ]
-      if quality > 3 [set quality 3] if quality < 0.3 [set quality 0.3]
-      ]
-  if debug? or debug-go = "25 remove-0-quality" [
-     user-message (word "25 remove-0-quality, step 13 : ask each house with quality = 0, to find its local houses with distance `Locality`" Locality
-      word " Then set each house's quality to the mean quality of local houses; if no neighbor houses, set as 1."
-      word " If the new quality > 3 make it 3, if the quality < 0.3, make it 0.3" "."
-    )
+      ;; put ( the other houses which are within the radius circle where the current house is the center ) under `houses-around-here`
 
+      set quality ifelse-value any? houses-around-here ;; if `houses-around-here` exist, then return first value to `quality`
+
+        [ mean [ quality ] of houses-around-here ]
+
+        [ 1 ]                                          ;; if `houses-around-here` exist, then return second value to `quality`
+
+
+      if quality > 3 [set quality 3]  ;; quality has upper limit to be 3
+
+      if quality < 0.3 [set quality 0.3]  ;; quality has lower limit to be 0.3
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    if debug? or debug-go = "s13 remove-0-quality" [
+      user-message (word "s13 remove-0-quality : see the quality changes. ")
+      stop-inspecting self
+    ]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ]
 
-  ; for houses that are newly for sale, get the sale price, which is the highest
-  ; valuation offered by local realtors. (Houses that remain for sale,
-  ; not having been sold in the previous round, already have a sale price)
-  ; Colour the house accordingly.
 
-  let houses-for-sale houses with [ for-sale? ] ;; find all the houses for sale at the moment
+
+
+
+  ;; value-houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; initially, house sale-price is added up by mortgage and deposit in setup
+  ;; once a house put on sale, sale-price, my-realtor (house) , average-price (realtor), median price for all houses on sale, are to be updated.
+
+  let houses-for-sale houses with [ for-sale? ] ;; find all the houses for sale
+
   if any? houses-for-sale [  ;; if these houses exist
-    ask houses-for-sale with [ date-for-sale = ticks ] [  ;; ask each of those houses just on sale from now on
-      set my-realtor max-one-of local-realtors [ valuation myself ]  ;; find the realtor gives me the highest valuation
-      set sale-price [ valuation myself ] of my-realtor ;; take the highest value as sale-price
-      ]
 
-    ; update the average selling price of houses in each realtor's territory
+    ask houses-for-sale with [ date-for-sale = ticks ] [  ;; ask each of those houses which are just on sale from now on
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s14 value-houses" [
+
+        inspect self
+
+        user-message (word "s14 value-houses : valuation current house, compare changes of house and realtor properties. ")]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+      set my-realtor max-one-of local-realtors [ valuation myself ]  ;; set the realtor gives the current house the highest valuation to be my-realtor
+
+      set sale-price [ valuation myself ] of my-realtor ;; take the highest value valuation price as sale-price of the current house
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s14 value-houses" [
+
+         user-message (word "s14 value-houses : sale-price, my-realtor are updated. ")
+
+        stop-inspecting self ]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ]
+
+
+    ; update the average-price of each realtor
     ask realtors [ ;; ask each realtor
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s15 realtor-average-price" [
+
+        inspect self
+
+        user-message (word "s15 realtor-average-price : update realtor's average-price. " )]
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
       let my-houses-for-sale houses-for-sale with [ member? myself local-realtors ];; get all houses under this realtor
+
       if any? my-houses-for-sale [ set average-price median [ sale-price ] of my-houses-for-sale ]
       ;; if these houses exist, take their median price as the realtor's average-price for its all houses
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      if debug? or debug-go = "s15 realtor-average-price" [
+
+        user-message (word "s15 realtor-average-price : average-price is updated. ")
+
+        stop-inspecting self
       ]
-
-    set medianPriceOfHousesForSale median [sale-price] of houses-for-sale
-    ;; store the median price of all houses-for-sale's sale-price
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ]
-  if debug? or debug-go = "26 value-houses" [
-     user-message (word "26 value-houses, step 14 : 1. find all the houses for sale; "
-                   word "2. if these houses exist, ask each of those houses just on sale from now on, "
-                   word "to find the realtor gives the house the highest valuation, take the highest value as sale-price for the house."
-                   word "3. ask each realtor to get all houses under this realtor, "
-                   word "if these houses exist, take their median price as the realtor's average-price for its all houses. "
-                   word "4. take all houses on sale and get their median price as `medianPriceOfHousesForSale`" ".")
+
+    set medianPriceOfHousesForSale median [sale-price] of houses-for-sale  ;; update median price of all houses on sale
   ]
 
-  paint-houses
-  if debug? or debug-go = "27 paint-house" [
-     user-message (word "27 paint-house, step 15 : pain houses for their price difference to its neighbors" )
-  ]
+  paint-houses  ;; update colors after prices are updated
 
-  ;; find all owners who don't have a house or house on sale
-  let buyers owners with [ not (is-house? my-house) or ([ for-sale? ] of my-house) ]
 
-  ;; ask each owner who has no house to make an offer on `houses-for-sale`
-  ask owners with [ not (is-house? my-house) ] [
+  ;; make an offer ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; owners without houses or whose houses are on-sale, can make offers to other houses on sale
+
+  let buyers owners with [ not (is-house? my-house) or ([ for-sale? ] of my-house) ]  ;; put all owners who don't have a house or whose houses on sale under `buyers`
+
+  ask owners with [ not (is-house? my-house) ] [ ;; ask each owner who has no house to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
 
-  ; and now those who do have a house to sell get a chance to make an offer
-
-  ask owners with [ (is-house? my-house) and ([ for-sale? ] of my-house) ] [
+  ask owners with [ (is-house? my-house) and ([ for-sale? ] of my-house) ] [ ; and now those who do have a house to sell get a chance to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
 
@@ -1137,23 +1213,18 @@ to-report valuation [ property ]    ;; realtor procedure
  ;;  median price of all the sale prices of local houses, or if there are
  ;;  none of those either, on the avergae price of all houses in the
  ;;  realtor's territory.
-  let normalization 1
-  let multiplier [ quality ] of property *
-                  (1 + RealtorOptimism / 100) * normalization
- ;; create a multiplier for valuation with quality, optimism, normalization
 
+  let normalization 1  ;; create a local variable normalization
 
-
-;  ask sales [ if [ who ] of self = 2156  [ inspect self user-message (word "let's have a look") ]  ]
-;  foreach sales [ x -> if [ who ] of x = 5558 [ inspect x
-;                                              user-message (word "let inspect records with 2156") ]  ]  ;; debugging and inspecting
-
-
+  let multiplier [ quality ] of property *          ;; create a multiplier for final finish of valuation price
+                  (1 + RealtorOptimism / 100) * normalization  ;; component of multiplier include quality, optimism, normalization
 
 ;    let local-sales (turtle-set sales) with [ ( [distance property ] of the-house ) < Locality ]  ;; old-version
   let local-sales (turtle-set sales) with [ the-house != nobody and ( [distance property ] of the-house ) < Locality ]  ;; new-version
 ;; under realtor context, sales is a list of records, use `turtle-set` force list into an agentset to use with, each record has property of the-house
-;; under `local-sales` get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house
+;; get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house under `local-sales`
+  
+  
   if debug? or debug-go = "28 valuation-part1-multiplier" [
     ask one-of local-sales [ user-message (
                   word "28 valuation-part1-multiplier, step 16 : valuation of houses depend on neighboring sold houses or just neighboring houses "
@@ -1162,21 +1233,6 @@ to-report valuation [ property ]    ;; realtor procedure
                   word "3. under `local-sales` get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house. "
                   word "4. learning a usage: get distance between property and the-house using [distance property ] of the-house ) < Locality is " ([distance property ] of the-house  < Locality ) )]
   ]
-;  set inspect-object local-sales                                      ;; debugging and inspection on local-sales
-
-;  user-message ( word "local-sales is created, let's inspect inspect-object " ticks )
-;  ask inspect-object [ show who ]
-;  user-message ( word "we are reading all records ids")
-;  ask inspect-object [
-;                      inspect self
-;                      user-message (word "take a look at " [ breed ] of self " with ID " [ who ] of self )
-;                      inspect [the-house ] of self
-;                      user-message (word "what breed is the-house " [ breed ] of [the-house] of self )
-;                      stop-inspecting [the-house] of self
-;                      stop-inspecting self
-;  ]
-
-
 
   let old-price [sale-price] of property  ;; set the input house's sale-price as old price
   let new-price 0  ;; create a new price variable with 0 value
@@ -1461,7 +1517,7 @@ to demolish
 
   ask realtors [ unfile-record myself ] ;; delete any record that mentions the house inside the sales of a realtor
 
-  set pcolor 57 ;; set the land to be muddy green
+;  set pcolor 57 ;; set the land to be muddy green
 
   set nDemolished nDemolished + 1 ;; add 1 upon nDemolished
 
@@ -1542,8 +1598,8 @@ to do-plots
 
   if any? owners [
      set-current-plot "Income distribution"  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     set-plot-pen-interval 1000
-     set-plot-x-range 0 ifelse-value (max [income] of owners > 1E+5) [ 1E+6 ] [ 1E+5 ]
+     set-plot-pen-interval 30000
+     set-plot-x-range 1000 ifelse-value (max [income] of owners > 1E+5) [ 1E+6 ] [ 1E+5 ]
      histogram [ income ] of owners   ;; histogram of all owerns income
     ]
 

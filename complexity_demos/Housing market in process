@@ -1200,19 +1200,11 @@ to step
 
 end
 
+
+;; valuation house price by realtor ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 to-report valuation [ property ]    ;; realtor procedure
- ;; A realtor values a property by looking in its records for sales
- ;; that it has made of houses in the locality to use as a guide to the
- ;; value of this property.
- ;; The value of the property is then:
- ;;   the median of the selling prices of these local houses,
- ;;   multiplied by this house's quality index
- ;;   multiplied by an optimism factor
- ;;   multiplied by a normalisation factor.
- ;; If the realtor has no sales in the locality, it bases the price on the
- ;;  median price of all the sale prices of local houses, or if there are
- ;;  none of those either, on the avergae price of all houses in the
- ;;  realtor's territory.
+ 
 
   let normalization 1  ;; create a local variable normalization
 
@@ -1223,65 +1215,42 @@ to-report valuation [ property ]    ;; realtor procedure
   let local-sales (turtle-set sales) with [ the-house != nobody and ( [distance property ] of the-house ) < Locality ]  ;; new-version
 ;; under realtor context, sales is a list of records, use `turtle-set` force list into an agentset to use with, each record has property of the-house
 ;; get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house under `local-sales`
-  
-  
-  if debug? or debug-go = "28 valuation-part1-multiplier" [
-    ask one-of local-sales [ user-message (
-                  word "28 valuation-part1-multiplier, step 16 : valuation of houses depend on neighboring sold houses or just neighboring houses "
-                  word "1. create a multiplier for valuation with quality, optimism, normalization. "
-                  word "2. under realtor context, sales is a list of records, use `turtle-set` force list into an agentset of records (can now use `with`). Each record has property of the-house."
-                  word "3. under `local-sales` get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house. "
-                  word "4. learning a usage: get distance between property and the-house using [distance property ] of the-house ) < Locality is " ([distance property ] of the-house  < Locality ) )]
-  ]
+
 
   let old-price [sale-price] of property  ;; set the input house's sale-price as old price
+  
   let new-price 0  ;; create a new price variable with 0 value
+  
   ifelse any? local-sales  ;; if the local-sales exist
+  
     [ set new-price median [ selling-price ] of local-sales ] ;; assign the median price of all record houses to new-price
-    [ let local-houses houses with [ distance myself <= Locality  ];;
+  
+    [ let local-houses houses with [ distance myself <= Locality  ];; if no local-sales exist, take neighboring houses around the current realtor under `local-houses`
 
       ifelse any? local-houses  ;; if local-houses exist
+    
         [set new-price median [sale-price] of local-houses ] ;; set the median price of all local-houses to be new-price
-        [set new-price average-price ] ;; otherwise set average-price of the realtor to be new-price
-
-      if debug? or debug-go = "29 valuation-part2-locals" [
-      ask max-one-of local-houses [who] [ inspect myself user-message (
-            word "29 valuation-part2-locals, step 17 : 1. set the input house's sale-price as old price "
-            word " 2. create a new price variable with 0 value. if the local-sales exist, assign the median price of all record houses to `new-price`"
-            word " 3. if local-sales not exist, then create `local-houses` instead. Assign all the houses neighboring to the realtor to `local-houses`. "
-            word " 4. if local-houses exist, set the median price of all local-houses to be `new-price`, otherwise set `average-price` of the realtor to be `new-price`"
-            word " 5. inspect to see who is myself in `let local-houses houses with [ distance myself <= Locality ]`"  (distance myself <= Locality)
-            )
-            stop-inspecting myself
-          ]
-       ]
-
+    
+        [set new-price average-price ] ;; otherwise set average-price of the realtor to be new-price (is realtor's average-price updated every tick?)
   ]
 
+  
+  if old-price < 5000 [ report multiplier * new-price ]  ;; if current sale-price is too low, just accept multiplier * new-price  as valuation price 
+  
+  let ratio new-price / old-price  ;; compare calc ratio between new-price and old-price 
+  
+  let threshold 2  ;; a base line for ratio
+  
+  ifelse ratio > threshold  ;; 
+  
+    [ set new-price threshold * old-price ] ;; if new-price is more than twice old-price,  make new-price twice of old-price. "
+  
+    [ if ratio < 1 / threshold [  set new-price old-price / threshold ] ]  ;;  if new-price is less than half of old-price, make new-price half of old-price. 
 
-
-  ; if this is a new valuation, return it
-  if old-price < 5000 [ report multiplier * new-price ]
-  ; otherwise prevent wild changes in price
-  let ratio new-price / old-price
-  let threshold 2
-  ifelse ratio > threshold
-    [ set new-price threshold * old-price ]
-    [ if ratio < 1 / threshold [  set new-price old-price / threshold ] ]
-
-   if debug? or debug-go = "30 valuation-part3" [
-     user-message (word "30 valuation-part3, step 18 : 1. if old-price < 5000, report multiplier * new-price. "
-      word "2. get ratio = new-price/old-price, threshold = 2. "
-      word "3. if new-price is more than twice old-price,  make new-price twice of old-price. "
-      word "4. if new-price is less than half of old-price, make new-price half of old-price. "
-      word "5. finally report multiplier * new-price" "."
-    )
-  ]
-
-  report  multiplier * new-price
-
+  report  multiplier * new-price  ;; finally report multiplier * new-price" "."
 
 end
+
 
 to make-offer [ houses-for-sale ]      ;; owner procedure
  ;;  Search for properties that:

@@ -1204,7 +1204,7 @@ end
 ;; valuation house price by realtor ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to-report valuation [ property ]    ;; realtor procedure
- 
+
 
   let normalization 1  ;; create a local variable normalization
 
@@ -1216,135 +1216,148 @@ to-report valuation [ property ]    ;; realtor procedure
 ;; under realtor context, sales is a list of records, use `turtle-set` force list into an agentset to use with, each record has property of the-house
 ;; get all the sales (lists of records) whose houses are sold and those sold-houses are neighboring to the input house under `local-sales`
 
-
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if any? local-sales and ( debug? or debug-go = "s18 valuation 1" ) [
+    ask property [ set size 2 ]
+    ask local-sales [ ask the-house [ set pcolor pink ] ]
+    user-message (word "s18 valuation 1 : identify neighboring and sold houses. Enlarge them. ")  
+  ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  
   let old-price [sale-price] of property  ;; set the input house's sale-price as old price
-  
+
   let new-price 0  ;; create a new price variable with 0 value
-  
+
   ifelse any? local-sales  ;; if the local-sales exist
-  
+
     [ set new-price median [ selling-price ] of local-sales ] ;; assign the median price of all record houses to new-price
-  
+
     [ let local-houses houses with [ distance myself <= Locality  ];; if no local-sales exist, take neighboring houses around the current realtor under `local-houses`
 
       ifelse any? local-houses  ;; if local-houses exist
-    
-        [set new-price median [sale-price] of local-houses ] ;; set the median price of all local-houses to be new-price
-    
+
+        [set new-price median [sale-price] of local-houses  ;; set the median price of all local-houses to be new-price
+       
+      
+         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+         if debug? or debug-go = "s19 valuation 2"  [
+             ask property [ set size 3 ]
+             ask self [ set color red ]
+             ask local-houses [ set pcolor pink ] 
+             user-message (word "s19 valuation 2 : identify neighboring houses to the realtor. Display them. ") 
+           ]
+         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+      
+      
+    ]
+
         [set new-price average-price ] ;; otherwise set average-price of the realtor to be new-price (is realtor's average-price updated every tick?)
+    
+    
+      
   ]
 
-  
-  if old-price < 5000 [ report multiplier * new-price ]  ;; if current sale-price is too low, just accept multiplier * new-price  as valuation price 
-  
-  let ratio new-price / old-price  ;; compare calc ratio between new-price and old-price 
-  
+
+  if old-price < 5000 [ report multiplier * new-price ]  ;; if current sale-price is too low, just accept multiplier * new-price  as valuation price
+
+  let ratio new-price / old-price  ;; compare calc ratio between new-price and old-price
+
   let threshold 2  ;; a base line for ratio
-  
-  ifelse ratio > threshold  ;; 
-  
+
+  ifelse ratio > threshold  ;;
+
     [ set new-price threshold * old-price ] ;; if new-price is more than twice old-price,  make new-price twice of old-price. "
-  
-    [ if ratio < 1 / threshold [  set new-price old-price / threshold ] ]  ;;  if new-price is less than half of old-price, make new-price half of old-price. 
+
+    [ if ratio < 1 / threshold [  set new-price old-price / threshold ] ]  ;;  if new-price is less than half of old-price, make new-price half of old-price.
 
   report  multiplier * new-price  ;; finally report multiplier * new-price" "."
 
 end
 
 
-to make-offer [ houses-for-sale ]      ;; owner procedure
- ;;  Search for properties that:
- ;;    is for sale
- ;;    is not already under offer
- ;;    costs no more than my budget
- ;;    is not the house I am already occupying
- ;;  but look at only buyer-search-length number of properties
- ;;  and make an offer on the most expensive of these.
- ;;  My budget is the sum of:
- ;;   the value of the mortgage I can get on the new house = affordability * income / interest rate
- ;;   plus the (projected) sale price of my current house
- ;;   minus the amount I need to pay back to the lender for my current mortgage,
- ;;   plus the amount of accumulated capital I have
- ;;   minus any stamp duty payable
- ;;  But I must have a sufficiently large cash deposit available
- ;;  The realtor notes the interest shown in each of the houses in this subset
+to make-offer [ houses-for-sale ]      
 
-  let new-mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 )
-  ;; use current income, Affordability, interestPerTick to calc new-mortgage
-
-  let budget new-mortgage - stamp-duty-land-tax new-mortgage
-  ;; actual budget for buying a house is new-mortgage - duty or tax we get back
-
+  let new-mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 );; use current income, Affordability, interestPerTick to calc new-mortgage
+  
+  let budget new-mortgage - stamp-duty-land-tax new-mortgage  ;; actual budget for buying a house == new-mortgage - duty or tax we get back
+  
   let deposit capital  ;; buyer use capital to pay for new deposit
+  
   if is-house? my-house [ set deposit deposit + ([ sale-price ] of my-house - mortgage) ]
   ;; under the context of owners, if it has a house, update new deposit with new deposit + sale-price of current house - current mortgage
 
-  let upperbound budget + deposit  ;; upperbound total = new mortgage - duty-back + new deposit
-  if MaxLoanToValue < 100 [  ;; if mortgage is less than house value, update upperbound with the less between two similar values
-    set upperbound min ( list (budget + deposit ) ( deposit / ( 1 - MaxLoanToValue / 100 )))
+  let upperbound budget + deposit  ;; upperbound = the maximum amount afford to offer on a house = new mortgage - duty-back + new deposit
+  
+  if MaxLoanToValue < 100 [  ;; if mortgage is less than house value => (MaxLoanToValue/100 < 100/100 )
+    
+    set upperbound min ( list (budget + deposit ) ( deposit / ( 1 - MaxLoanToValue / 100 )))  ;; update upperbound with the less between two similar values
+    
     ]
 
-  ; if I am in negative equity, I cannot afford to buy a house and
-  ;  will have to remain where I am
+  
   if upperbound < 0 [  ;; if upperbound is less than 0, meaning the owner has negative equity (how it is possible?)
+    
     ask my-house [ set for-sale? false ] ;; pull the house back from market, and stay in the house
+    
     stop ;; this owner stop performing the rest action below
     ]
 
   let lowerbound upperbound * 0.7  ;; set lowerbound to be 70% of upperbound
-  let current-house my-house  ;; get the current house of the owner
+  
+  let current-house my-house  ;; get the current owner's my-house under `current-house`
+  
   let interesting-houses houses-for-sale with [ ;; from all the houses on sale, get those
+    
                             not is-owner? offered-to and ;; without offer
+    
                             sale-price <= upperbound and ;; and sale-prices within upperbound
+    
                             sale-price > lowerbound and  ;; and sale-prices greater than lowerbound
-                            self != current-house ]  ;; and the house is not current house into `interesting-houses`
-
-  if debug? or debug-go = "31 make-offer part1" [
-     user-message (word "31 make-offer part1, step 19 : find all owners who don't have a house or its house is on sale, ask each owner who has no house to make an offer on `houses-for-sale`, and those who do have a house to sell, now also get a chance to make an offer."
-                   word " to make-offer is to find interesting houses to make a price offer to the most affordable but expensive house. "
-                   word " 1. use current income, Affordability, interestPerTick to calc `new-mortgage`; "
-                   word " 2. actual `budget` for buying a house is `new-mortgage` - duty or tax we get back; "
-                   word " 3. buyer use `capital` to pay for new `deposit`, under the context of owners, if it has a house, update `deposit` with `deposit` + `sale-price` of current house - current `mortgage`; "
-                   word " 4. assign offer price `upperbound` = new mortgage - duty-back + new deposit; "
-                   word " 5. if mortgage is less than house value, update upperbound with the less between two similar values; "
-                   word " 6. if upperbound is less than 0, meaning the owner has negative equity (how it is possible?); "
-                   word " 7. pull the house back from market, and stay in the house; then this owner stop performing the rest action below. "
-                   word " 8. set lowerbound to be 70% of upperbound; get `my-house` to be `current-house` of the owner; "
-                   word " 9. from all the `houses-on-sale`, get those without offer and sale-prices bwt lower and upperbounds, and the house is not current house into `interesting-houses`" "."
-
-
-    )
+    
+                            self != current-house ]  ;; and the house is not current house,            --->  into `interesting-houses`
+   
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  if debug? or debug-go = "s20 make-offer part1" [
+    ask interesting-houses [ set size 2 ]
+    user-message (word "s20 make-offer part1, identify the interesting houses buyers may make an offer. See the enlarged houses. " )
+    ask interesting-houses [ set size 1 ]
   ]
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-  if count interesting-houses > BuyerSearchLength [  ;; if number of interesting-houses > BuyerSearchLength
+  if count interesting-houses > BuyerSearchLength [  ;; if number of interesting-houses > BuyerSearchLength (number of houses buyers willing to see)
+    
     set interesting-houses n-of BuyerSearchLength interesting-houses ;; then select randomly BuyerSearchLength number of interesting-houses
     ]
 
   if any? interesting-houses [  ;; if interesting-houses exist
-    ;select the best that has not already had an offer on it
-    let property max-one-of interesting-houses [ sale-price ]  ;; find the house with the maximum sale-price of interesting-houses and assigned to `property`
+    
+    let property max-one-of interesting-houses [ sale-price ]  ;; find the house with the maximum sale-price of interesting-houses and assigned to `property` a local-var
 
       if is-house? property [  ;; if the `property` is a house
+      
         ask property [  ;; ask this house
-          set offered-to myself  ;; assign the current owner as the buyer to `offered-to` (house property)
+        
+          set offered-to myself  ;; assign the current owner as `offered-to` under the context of `property`
+        
           set offer-date ticks   ;; set `ticks` to be `offer-date` (house property)
         ]
         set made-offer-on property  ;; assign `property` (a house ) to owner's property `made-offer-on`
         ]
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    if debug? or debug-go = "s21 make-offer part2" [ 
+      ask property [ follow-me ]
+    
+      user-message (word "s21 make-offer part2 : choose from interesting houses and make an offer on the most expensive house, and update its `offered-to` and `offer-date`." )
+  ]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
      ]
 
-  if debug? or debug-go = "32 make-offer part2" [
-     user-message (word "32 make-offer part2, step 20 : choose from interesting houses and make an offer on the most expensive house. "
-                   word " 1. if number of interesting-houses > BuyerSearchLength, then select randomly BuyerSearchLength number of interesting-houses; "
-                   word " 2. if interesting-houses exist, find the house with the maximum sale-price of interesting-houses and assigned to `property`; "
-                   word " 3. if the `property` is a house, ask this house, assign the current owner as the buyer to `offered-to` (house property); "
-                   word " 4. set `ticks` to be `offer-date` (house property); "
-                   word " 5. assign `property` (a house ) to owner's property `made-offer-on`" "."
-     )
-
-  ]
-
+  
+  
 end
 
 to-report stamp-duty-land-tax [ cost ]
@@ -1519,7 +1532,21 @@ end
 
 to do-plots
 ;; draw a range of plots
+  
+  set-current-plot "income averages"
+  set-current-plot-pen "mean" 
+  plot mean [income] of owners with [ any? owners and income > 0] / 10000
+  set-current-plot-pen "median"
+  plot median [income] of owners with [any? owners and income > 0] / 10000
 
+  set-current-plot "owners, buyers, negative"
+  set-current-plot-pen "owners"
+  plot count owners with [any? owners and income > 0 ] 
+  set-current-plot-pen "buyers"
+  plot count owners with [any? owners and made-offer-on != nobody ] 
+  set-current-plot-pen "negative"
+  plot count owners with [any? owners and income < 0 ] 
+  
   let houses-for-sale houses with [ for-sale?  and sale-price > 0 ]
   let houses-sold records  ;; make all records under temporary variable
 

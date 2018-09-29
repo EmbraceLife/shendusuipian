@@ -95,6 +95,7 @@ globals [
   nEntry              ;; number of owners who naturally enter or born into the city 
   nForceOut           ;; number of owners whose repayment is greater than income and force to leave
   nOriginalOwners     ;; original number of owners at beginning 
+  nOwnersOffered      ;; number of owners who made an offer on a house (have enough money and have target to buy)
   ]
 
 breed [houses house ]      ; a house, may be occupied and may be for sale
@@ -166,6 +167,7 @@ to setup
   set nEntry 0
   set nForceOut 0
   set nOriginalOwners 0 
+  set nOwnersOffered 0
 
 ;  no-display  ;; to make setup run faster, avoid display in process (given continous mode rather than tick mode)
 
@@ -679,6 +681,7 @@ to go
 
      ]
 
+  set nOwnersOffered 0 
   step  ;; do one time step (a quarter of a year?)
 
   if not any? owners [ user-message(word "Finished: no remaining people" ) stop ] ;; stop if no owners or houses left
@@ -689,7 +692,9 @@ to go
   
   ;; Problem solving on owner drop ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; find out major contributors for dropping of owner population ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  type "nOriginalOwners: " type nOriginalOwners type " owner without house: " type count owners with [not is-house? my-house ] type " owners now: " type (count owners) type " exit: " type nExit 
+  type "nOriginalOwners: " type nOriginalOwners type " owner without house: " type count owners with [not is-house? my-house ] 
+  type " nOwnersOffered: " type nOwnersOffered  ;; each tick how many owners can afford a targeted house to buy
+  type " owners now: " type (count owners) type " exit: " type nExit 
   type " entry: " type nEntry type " nDiscouraged: " type nDiscouraged type " nForceOut: " type nForceOut 
   type " nOriginal - nDiscouraged - nForceout: " type nOriginalOwners - nDiscouraged - nForceout print ""
 
@@ -1086,11 +1091,14 @@ to step
   ask owners with [ not (is-house? my-house) ] [ ;; ask each owner who has no house to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
-
+  
+  
+  
   ask owners with [ (is-house? my-house) and ([ for-sale? ] of my-house) ] [ ; and now those who do have a house to sell get a chance to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
 
+  set nOwnersOffered count owners with [is-house? made-offer-on ] ;; count the number of owners who has an affordable house to buy
 
 
 
@@ -1299,6 +1307,8 @@ to-report valuation [ property ]    ;; realtor procedure
 end
 
 
+;; make offer on houses on sale ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 to make-offer [ houses-for-sale ]
 
   let new-mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 );; use current income, Affordability, interestPerTick to calc new-mortgage
@@ -1366,8 +1376,10 @@ to make-offer [ houses-for-sale ]
 
           set offer-date ticks   ;; set `ticks` to be `offer-date` (house property)
         ]
+      
         set made-offer-on property  ;; assign `property` (a house ) to owner's property `made-offer-on`
-        ]
+      
+    ]
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     if debug? or debug-go = "s21 make-offer part2" [

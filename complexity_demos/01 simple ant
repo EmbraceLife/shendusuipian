@@ -11,26 +11,25 @@
 ;  When other ants “sniff” the chemical, they follow the chemical toward the food.
 ;  As more ants carry food to the nest, they reinforce the chemical trail.
 
-patches-own [  ;; patches as land, we offer two new properties for each piece of land: pheromone (value) or food (amount)
-  pheromone            ;; amount of pheromone on this patch of land
-  food                 ;; amount of food on this patch of land (0, 1, or 2),
+
+;; define patch properties  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+patches-own [  ;; patches as land, has 2 properties
+  pheromone            ;; amount of pheromone
+  food                 ;; amount of food
 
 ]
 
-turtles-own [  ;; turtles as ants, we offer one new property for all ants : carry-food? (true or false)
+turtles-own [  ;; turle or ant has one property
 
-  carrying-food?  ;; a boolean variable
+  carrying-food?  ;; true or false
 
 ]
 
 globals [ count-a-pile  ;; count the original number of food in one pile of food
 
-          max-pheromone ;; maximum number of pheromone
+          max-pheromone ;; maximum number of pheromone at any piece of land
 
-          stop-switch ;; switch off once finished
-
-          finish-time  ;; when food and pheromone finished
-
+          finish-time  ;; a constant to make model stop at a long time later
 
           ]
 
@@ -53,9 +52,7 @@ to setup  ;; setup the world
 
   setup-patches  ;; setup the world for ants
 
-  set finish-time 10000000  ;; set default time for auto stop
-
-  set stop-switch true  ;; set switch true for user specified time to stop
+  set finish-time 1000000 ;; a constant to make model stop at a long time latera constant to make model stop at a long time later
 
   reset-ticks  ;; put clock back to 0
 
@@ -92,16 +89,18 @@ to go  ;; make iterations
   set max-pheromone max [ pheromone ] of patches ;; find out the max pheromone on any patch in the world  (stats)
 
 
-                                                              ;; 6. how to make model stop automatically ( auto stop and tick stop )
-
-                                                                     ;; auto stop: when both food and pheromone gone and another 100 ticks later
 
   ;; if food is gone, if pherome is gone, and if stop-switch = true, then track the finish-time and put off stop-switch
-  if sum [ food ] of patches = 0 [ if sum [ pheromone ] of patches = 0 and stop-switch = true  [ set finish-time ticks set stop-switch false ] ]
+  if sum [ food ] of patches = 0 and sum [ pheromone ] of patches = 0 and auto-stop?  [
+
+      set finish-time ticks
+
+      set auto-stop? false ]  ;; to make sure it only happen once
+
   if ticks > finish-time + 100  [ stop ]   ;; after both food and pheromone is gone, let model run 100 ticks, then stop the simulation
 
                                                                      ;; tick stop: stop model at specified ticks
-  if stop-by-ticks-switch = true and ticks = user-ticks [ stop ]
+  if stop-ticks? and ticks = user-ticks [ stop ]
 
   tick  ;; update the iteration clock or ticks, without it we can't see updating in graphics
 
@@ -109,48 +108,7 @@ to go  ;; make iterations
 end
 
 
-;; for experiment ;;;;;;;;;;;;;;;;;;;
-to setup-behavior  ;; setup the world for other experiment
 
-  clear-all  ;; wipe out the world first
-
-  set-default-shape turtles "bug"  ;; make all turtles' shape to be "bug"
-
-  setup-patches  ;; setup the world for ants
-
-  setup-large-food ;; overwrite to create large food area
-
-  reset-ticks  ;; put clock back to 0
-
-end
-
-to setup-large-food  ;; paint 3 food areas
-
-  ;; setup a food source on the right to the center
-  ask patch (0.6 * max-pxcor) (0.6 * max-pycor) [  ;; find a patch of land at (0.6 x 35, 0.6 x 35) coordinates; make it same distance to second food pile
-
-    make-food-source 20 cyan  ;; paint this patch surround area with cyan
-  ]
-  ;; setup a food source on the lower-left
-  ask patch (-0.6 * max-pxcor) (-0.6 * max-pycor) [  ;; find a patch of land at (-0.6 x 35, -0.6 x 35), try observer: show max-pxcor
-
-    make-food-source 20 sky  ;; paint this patch surrounding area with sky color
-  ]
-  ;; setup a food source on the upper-left
-  ask patch (-0.8 * max-pxcor) (0.8 * max-pycor) [  ;; find a patch of land at (-0.8 x 35, 0.8 x 35), try observer: show max-pxcor
-
-    make-food-source 20 blue  ;; paint this patch surround area with blue
-  ]
-  ;; setup a food source on the lower-left
-  ask patch (0.8 * max-pxcor) (-0.8 * max-pycor) [  ;; find a patch of land at (-0.8 x 35, 0.8 x 35), try observer: show max-pxcor
-
-    make-food-source 20 gray  ;; paint this patch surround area with blue
-  ]
-
-
-
-end
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 to setup-patches  ;; setup the world for ants
@@ -402,126 +360,7 @@ to-report nest?   ;; report a property like value for all patches or turtles
   report distancexy 0 0 < 5
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Thinking process ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to Ant-model-ABM
-;  How to understand ABM in terms of Ant colony model?
-;
-;  1. we code up single ant behavior rules into the ant model
-;
-;  2. the ant model can simulate ant colony dynamics
-
-end
-
-to simple-ant-behavior
-;  What are the simple ant behavior rules we are trying to code up?
-;
-;  1. wander: how ants walk
-;  2. look-for-food: use pheromone to sniff food direction, and if sniff pheromone then wander towards food direction
-;  3. move-towards-nest: when found food, turn back, leaving pheromone, wander towards home
-;  4. pheromone behaivor: it can evaporate and diffuse with some rate
-
-;  Let's see the behavior in the simulation
-
-end
-
-to ant-colony-dynamics
-;  What is ant colony dynamics? or the complex pattern in general (using ant colony dynamics as example to explain)?
-
-;  how to understand complex patterns:
-;  the effects of the whole is greater than the sum effect of individuals,
-;  pattern are real world patterns that are not easily foreseeable,
-;  and are too difficult to perceive in codes
-
-;  Examples
-;  Eg 1: food gathering ability of ant colony as a whole (100 ants) is greater than individual ant's ability multiplied 100 times
-;  Eg 2: for food piles with equal distance and amount:
-;  - we intuitively hypothesize ants will take them at the same time approximately, but it is not true in reality
-;  - In reality, biologist observed that any colony will finish one pile after another even they have same amount and distance.
-
-
-end
-
-to design-detailed-ant-behavior
-;  how to design or code up each behavior rule of ant
-;  1. get as much detailed behavior descriptions from biologists as possible
-;  2. make sensible and reasonable assumptions for the remaining and necessary details for coding
-;  3. we will deal with the details of ant behaviors in the coding section/videos
-;
-end
-
-to validate-model
-;  How do we know our model is valid or practically useful in simulating the real ant colony dynamics?
-;  it validates if -
-;  1. our model should generate complex patterns
-;  2. the patterns are similar to those in real world
-;
-;  examples:
-;  1. the whole is greater than the sum of individuals in terms of food gathering efficiency
-;  2. how ant colony (model) react to food piles of same distance and amount.
-;  3. ants move in large trails when they found and transport food between food source and nest
-;
-;  when new complex patterns observed by biologist, our model's parameters need to update to reproduce the new
-;  1. we can experiment the effects of different parameters
-;  2. search for the more appropriate parameters values of the model to reproduce all complex patterns old and new
-;  3. in the process we can code up measures to count the appearances of old and new complex patterns
-
-
-end
-
-to code-initial-states
-
-;  build a nest,
-;  build many ants at nest,
-;  build 3 piles of food scatters located with different distance
-
-end
-
-to code-behavior-search-wonder-randomly
-
-;  sniff around its 8 neighboring places for pheromone
-;
-;  if sniff no pheromone around [
-;
-;            randomly turn its directions and move forward at certain speed
-;  ]
-
-end
-
-
-to code-behavior-follow-pheromone-towards-food
-
-;  sniff around its 8 neighboring places for pheromone
-;
-;  if sniff pheromone around [
-;
-;            compare which neighbor has the highest pheromone
-;
-;            move to that neighbor's position
-;
-;  ]
-;
-;  sniff around its 8 neighboring places for food
-;
-;  if sniff food around [
-;
-;            take food (change its color)
-;
-;             code-behavior-foodhome-leave-pheromone
-;  ]
-
-end
-
-to code-behavior-foodhome-leave-pheromone
-
-
-;      going back to nest (but how? randomly wonder to home? follow pheromone? )
-;
-;      leaving pheromone at each step = change pheromone's value for the patch where the ant stand
-;
-;      make sure the value weaker and weaker at each step = pheromone's value is decreasing at each step
-
-end
 
 ; Copyright 1997 Uri Wilensky.
 ; See Info tab for full copyright and license.

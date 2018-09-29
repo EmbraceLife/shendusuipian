@@ -90,7 +90,11 @@ globals [
   nDownshocked        ; number of owners putting their house for sale because their income has dropped
   nDemolished         ; number of houses demolished in this step
   medianPriceOfHousesForSale ; guess!
-
+  nDiscouraged        ;; number of owners who discouraged by homeless and leave the city
+  nExit               ;; number of owners who naturally leave the city or cease to exist
+  nEntry              ;; number of owners who naturally enter or born into the city 
+  nForceOut           ;; number of owners whose repayment is greater than income and force to leave
+  nOriginalOwners     ;; original number of owners at beginning 
   ]
 
 breed [houses house ]      ; a house, may be occupied and may be for sale
@@ -157,6 +161,11 @@ to setup
   set maxHomelessPeriod 5
   set interestPerTick InterestRate / ( TicksPerYear * 100 ) ;; meaning clarified in note
   set min-price-fraction 0.1
+  set nDiscouraged 0
+  set nExit 0
+  set nEntry 0
+  set nForceOut 0
+  set nOriginalOwners 0 
 
 ;  no-display  ;; to make setup run faster, avoid display in process (given continous mode rather than tick mode)
 
@@ -273,6 +282,8 @@ to setup
 
     ]
   ]
+  
+  set nOriginalOwners count owners 
   paint-houses  ;; since houses got prices, let's paint houses
 
 
@@ -564,7 +575,7 @@ to cluster
 
     foreach houses-to-move [  ;; loop each house
 
-      x -> if price-diff x >= price-difference [  ;; if current house price is way to different from its surroundign houses
+      x -> if price-diff x >= price-difference [  ;; if current house price is way too different from its surroundign houses
 
         let vacant-plot one-of patches with [  ;; get one of many empty patches, where
 
@@ -674,6 +685,13 @@ to go
   if not any? houses [ user-message(word "Finished: no remaining houses" ) stop ]
 
   do-plots  ;; update the plots
+  
+  
+  ;; Problem solving on owner drop ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; find out major contributors for dropping of owner population ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  type "nOriginalOwners: " type nOriginalOwners type " owner without house: " type count owners with [not is-house? my-house ] type " owners now: " type (count owners) type " exit: " type nExit 
+  type " entry: " type nEntry type " nDiscouraged: " type nDiscouraged type " nForceOut: " type nForceOut 
+  type " nOriginal - nDiscouraged - nForceout: " type nOriginalOwners - nDiscouraged - nForceout print ""
 
   tick  ;; advance the clock
 
@@ -809,7 +827,7 @@ to step
 
 
 
-  ;; owners gone ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; owners die or leave naturally ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; every tick, a proportion of owners put their houses on the market and leave town
 
   ask n-of (ExitRate * n-owners / 100) owners with [ is-house? my-house ] [  ;; ask randomly select (ExitRate% of all owners) number of home-owners to do ...
@@ -837,7 +855,8 @@ to step
         stop-inspecting my-house
     ]
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+    set nExit nExit + 1  
+    
     die
 
   ]
@@ -876,6 +895,8 @@ to step
         stop-inspecting self
       ]
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      
+      set nEntry nEntry + 1
     ]
   ]
 
@@ -898,6 +919,7 @@ to step
             ]
             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+            set nDiscouraged nDiscouraged + 1
             die
           ]
      ]
@@ -928,6 +950,7 @@ to step
 
     ask my-house [ set my-owner nobody ]  ;; ask its house to set owner to be nobody
 
+    set nForceOut nForceOut + 1
     die  ;; ask the owner to die
 
     ]
@@ -1220,11 +1243,11 @@ to-report valuation [ property ]    ;; realtor procedure
   if any? local-sales and ( debug? or debug-go = "s18 valuation 1" ) [
     ask property [ set size 2 ]
     ask local-sales [ ask the-house [ set pcolor pink ] ]
-    user-message (word "s18 valuation 1 : identify neighboring and sold houses. Enlarge them. ")  
+    user-message (word "s18 valuation 1 : identify neighboring and sold houses. Enlarge them. ")
   ]
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
-  
+
+
   let old-price [sale-price] of property  ;; set the input house's sale-price as old price
 
   let new-price 0  ;; create a new price variable with 0 value
@@ -1238,24 +1261,24 @@ to-report valuation [ property ]    ;; realtor procedure
       ifelse any? local-houses  ;; if local-houses exist
 
         [set new-price median [sale-price] of local-houses  ;; set the median price of all local-houses to be new-price
-       
-      
+
+
          ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
          if debug? or debug-go = "s19 valuation 2"  [
              ask property [ set size 3 ]
              ask self [ set color red ]
-             ask local-houses [ set pcolor pink ] 
-             user-message (word "s19 valuation 2 : identify neighboring houses to the realtor. Display them. ") 
+             ask local-houses [ set pcolor pink ]
+             user-message (word "s19 valuation 2 : identify neighboring houses to the realtor. Display them. ")
            ]
-         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-      
-      
+         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
     ]
 
         [set new-price average-price ] ;; otherwise set average-price of the realtor to be new-price (is realtor's average-price updated every tick?)
-    
-    
-      
+
+
+
   ]
 
 
@@ -1276,47 +1299,47 @@ to-report valuation [ property ]    ;; realtor procedure
 end
 
 
-to make-offer [ houses-for-sale ]      
+to make-offer [ houses-for-sale ]
 
   let new-mortgage income * Affordability / ( interestPerTick * ticksPerYear * 100 );; use current income, Affordability, interestPerTick to calc new-mortgage
-  
+
   let budget new-mortgage - stamp-duty-land-tax new-mortgage  ;; actual budget for buying a house == new-mortgage - duty or tax we get back
-  
+
   let deposit capital  ;; buyer use capital to pay for new deposit
-  
+
   if is-house? my-house [ set deposit deposit + ([ sale-price ] of my-house - mortgage) ]
   ;; under the context of owners, if it has a house, update new deposit with new deposit + sale-price of current house - current mortgage
 
   let upperbound budget + deposit  ;; upperbound = the maximum amount afford to offer on a house = new mortgage - duty-back + new deposit
-  
+
   if MaxLoanToValue < 100 [  ;; if mortgage is less than house value => (MaxLoanToValue/100 < 100/100 )
-    
+
     set upperbound min ( list (budget + deposit ) ( deposit / ( 1 - MaxLoanToValue / 100 )))  ;; update upperbound with the less between two similar values
-    
+
     ]
 
-  
+
   if upperbound < 0 [  ;; if upperbound is less than 0, meaning the owner has negative equity (how it is possible?)
-    
+
     ask my-house [ set for-sale? false ] ;; pull the house back from market, and stay in the house
-    
+
     stop ;; this owner stop performing the rest action below
     ]
 
   let lowerbound upperbound * 0.7  ;; set lowerbound to be 70% of upperbound
-  
+
   let current-house my-house  ;; get the current owner's my-house under `current-house`
-  
+
   let interesting-houses houses-for-sale with [ ;; from all the houses on sale, get those
-    
+
                             not is-owner? offered-to and ;; without offer
-    
+
                             sale-price <= upperbound and ;; and sale-prices within upperbound
-    
+
                             sale-price > lowerbound and  ;; and sale-prices greater than lowerbound
-    
+
                             self != current-house ]  ;; and the house is not current house,            --->  into `interesting-houses`
-   
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   if debug? or debug-go = "s20 make-offer part1" [
     ask interesting-houses [ set size 2 ]
@@ -1327,37 +1350,37 @@ to make-offer [ houses-for-sale ]
 
 
   if count interesting-houses > BuyerSearchLength [  ;; if number of interesting-houses > BuyerSearchLength (number of houses buyers willing to see)
-    
+
     set interesting-houses n-of BuyerSearchLength interesting-houses ;; then select randomly BuyerSearchLength number of interesting-houses
     ]
 
   if any? interesting-houses [  ;; if interesting-houses exist
-    
+
     let property max-one-of interesting-houses [ sale-price ]  ;; find the house with the maximum sale-price of interesting-houses and assigned to `property` a local-var
 
       if is-house? property [  ;; if the `property` is a house
-      
+
         ask property [  ;; ask this house
-        
+
           set offered-to myself  ;; assign the current owner as `offered-to` under the context of `property`
-        
+
           set offer-date ticks   ;; set `ticks` to be `offer-date` (house property)
         ]
         set made-offer-on property  ;; assign `property` (a house ) to owner's property `made-offer-on`
         ]
-    
+
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    if debug? or debug-go = "s21 make-offer part2" [ 
+    if debug? or debug-go = "s21 make-offer part2" [
       ask property [ follow-me ]
-    
+
       user-message (word "s21 make-offer part2 : choose from interesting houses and make an offer on the most expensive house, and update its `offered-to` and `offer-date`." )
   ]
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    
+
      ]
 
-  
-  
+
+
 end
 
 to-report stamp-duty-land-tax [ cost ]
@@ -1532,21 +1555,21 @@ end
 
 to do-plots
 ;; draw a range of plots
-  
+
   set-current-plot "income averages"
-  set-current-plot-pen "mean" 
+  set-current-plot-pen "mean"
   plot mean [income] of owners with [ any? owners and income > 0] / 10000
   set-current-plot-pen "median"
   plot median [income] of owners with [any? owners and income > 0] / 10000
 
-  set-current-plot "owners, buyers, negative"
-  set-current-plot-pen "owners"
-  plot count owners with [any? owners and income > 0 ] 
-  set-current-plot-pen "buyers"
-  plot count owners with [any? owners and made-offer-on != nobody ] 
-  set-current-plot-pen "negative"
-  plot count owners with [any? owners and income < 0 ] 
-  
+;  set-current-plot "owners, buyers, negative"
+;  set-current-plot-pen "owners"
+;  plot count owners with [any? owners and income > 0 ]
+;  set-current-plot-pen "buyers"
+;  plot count owners with [any? owners and made-offer-on != nobody ]
+;  set-current-plot-pen "negative"
+;  plot count owners with [any? owners and income < 0 ]
+
   let houses-for-sale houses with [ for-sale?  and sale-price > 0 ]
   let houses-sold records  ;; make all records under temporary variable
 
@@ -1609,7 +1632,7 @@ to do-plots
   set-current-plot-pen "Sold"
   let medianSellingPriceOfHouses 0
   if any? houses-sold [ set medianSellingPriceOfHouses median [ selling-price ] of houses-sold ]
-  plot medianSellingPriceOfHouses  ;; plot the median sale-price for all houses-sold
+  plot medianSellingPriceOfHouses  ;; plot the median sold prices for all houses-sold
 
 
   set-current-plot "Gini index"  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

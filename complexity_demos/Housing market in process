@@ -92,9 +92,9 @@ globals [
   medianPriceOfHousesForSale ; guess!
   nDiscouraged        ;; number of owners who discouraged by homeless and leave the city
   nExit               ;; number of owners who naturally leave the city or cease to exist
-  nEntry              ;; number of owners who naturally enter or born into the city 
+  nEntry              ;; number of owners who naturally enter or born into the city
   nForceOut           ;; number of owners whose repayment is greater than income and force to leave
-  nOriginalOwners     ;; original number of owners at beginning 
+  nOriginalOwners     ;; original number of owners at beginning
   nOwnersOffered      ;; number of owners who made an offer on a house (have enough money and have target to buy)
   ]
 
@@ -166,7 +166,7 @@ to setup
   set nExit 0
   set nEntry 0
   set nForceOut 0
-  set nOriginalOwners 0 
+  set nOriginalOwners 0
   set nOwnersOffered 0
 
 ;  no-display  ;; to make setup run faster, avoid display in process (given continous mode rather than tick mode)
@@ -284,8 +284,8 @@ to setup
 
     ]
   ]
-  
-  set nOriginalOwners count owners 
+
+  set nOriginalOwners count owners
   paint-houses  ;; since houses got prices, let's paint houses
 
 
@@ -675,27 +675,28 @@ to go
      if scenario = "raterise 7" [ set InterestRate 7 ]
      if scenario = "raterise 9" [ set InterestRate 9 ]
      if scenario = "influx" [ set EntryRate 10 ]
+     if scenario = "influx-rev" [ set EntryRate 5 ]
      if scenario = "poorentrants" [ set MeanIncome 24000 ]
 
      type "We are at middle of simulation duration, ticks = " type ticks type ", a shock event coming in := " type scenario  print ";"
 
      ]
 
-  set nOwnersOffered 0 
+  set nOwnersOffered 0
   step  ;; do one time step (a quarter of a year?)
 
   if not any? owners [ user-message(word "Finished: no remaining people" ) stop ] ;; stop if no owners or houses left
   if not any? houses [ user-message(word "Finished: no remaining houses" ) stop ]
 
   do-plots  ;; update the plots
-  
-  
+
+
   ;; Problem solving on owner drop ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; find out major contributors for dropping of owner population ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  type "nOriginalOwners: " type nOriginalOwners type " owner without house: " type count owners with [not is-house? my-house ] 
+  type "nOriginalOwners: " type nOriginalOwners type " owner without house: " type count owners with [not is-house? my-house ]
   type " nOwnersOffered: " type nOwnersOffered  ;; each tick how many owners can afford a targeted house to buy
-  type " owners now: " type (count owners) type " exit: " type nExit 
-  type " entry: " type nEntry type " nDiscouraged: " type nDiscouraged type " nForceOut: " type nForceOut 
+  type " owners now: " type (count owners) type " exit: " type nExit
+  type " entry: " type nEntry type " nDiscouraged: " type nDiscouraged type " nForceOut: " type nForceOut
   type " nOriginal - nDiscouraged - nForceout: " type nOriginalOwners - nDiscouraged - nForceout print ""
 
   tick  ;; advance the clock
@@ -860,8 +861,8 @@ to step
         stop-inspecting my-house
     ]
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    set nExit nExit + 1  
-    
+    set nExit nExit + 1
+
     die
 
   ]
@@ -900,7 +901,7 @@ to step
         stop-inspecting self
       ]
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      
+
       set nEntry nEntry + 1
     ]
   ]
@@ -1091,9 +1092,9 @@ to step
   ask owners with [ not (is-house? my-house) ] [ ;; ask each owner who has no house to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
-  
-  
-  
+
+
+
   ask owners with [ (is-house? my-house) and ([ for-sale? ] of my-house) ] [ ; and now those who do have a house to sell get a chance to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
@@ -1376,9 +1377,9 @@ to make-offer [ houses-for-sale ]
 
           set offer-date ticks   ;; set `ticks` to be `offer-date` (house property)
         ]
-      
+
         set made-offer-on property  ;; assign `property` (a house ) to owner's property `made-offer-on`
-      
+
     ]
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

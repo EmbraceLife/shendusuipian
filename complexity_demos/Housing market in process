@@ -1094,7 +1094,6 @@ to step
     ]
 
 
-
   ask owners with [ (is-house? my-house) and ([ for-sale? ] of my-house) ] [ ; and now those who do have a house to sell get a chance to make an offer on `houses-for-sale`
     make-offer houses-for-sale
     ]
@@ -1102,133 +1101,144 @@ to step
   set nOwnersOffered count owners with [is-house? made-offer-on ] ;; count the number of owners who has an affordable house to buy
 
 
-
+  ;; move into new houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; if a deal is made, then households will move in and out of houses
    set moves 0  ;; the number of households moving in this step
+  
    ask buyers with [ not is-house? my-house and is-house? made-offer-on ] [ ;; ask buyers who have no houses and made offer on a house
+    
      if follow-chain self [  ;; self is buyer, and check whether the buy-sell chain is intact or not
+      
        move-house  ;; if intact, deal is made, and households move out and into houses, count the number of moves
      ]
    ]
-  if debug? or debug-go = "33 deal-move" [
-     user-message (word "33 deal-move, step 21 : if a deal is made, then households will move in and out of houses. "
-                   word "1. create `moves` to record the number of households moving in this step; "
-                   word "2. ask buyers who have no houses and made offer on a house, and ask each of them to check whether the buy-sell chain is intact or not; "
-                   word "3. if intact, deal is made, and households move out and into houses, count the number of moves" "."
+  
 
-    )
-  ]
+;  if debug? or debug-go = "34 follow-chain" [
+;   user-message (word "34 follow-chain, step 22 : check whether the buy-sell houses mechanism is intact or not. "
+;                 word "1. if buyer's `made-offer-on` is not house (meaning buyer buy nothing, no deal), report false; "
+;                 word "2. given the buyer offered on a real house, then set `my-owner` of the house being offered on to be `seller`; "
+;                 word "3. if the `seller` is not an `owner` (meaning the house is vacant, deal right away ), report true; "
+;                 word "4. given `sell` is an owner, if the input `buyer` =  `seller`, then the flow is intact, This is confusing, but don't be. The following line solve the problem. "
+;                 word "5. given the buyer is not the seller (no match), now let's focus on the seller, run follow-chain under seller context, meaning we are finding the owner of house which the seller made an offer on; "
+;                 word "if the buyer and the seller of the house the older sell want to buy are the same owner, then both buyer and older seller match a deal." "so the flow is intact. "
+;   )
+;]
 
-  if debug? or debug-go = "34 follow-chain" [
-   user-message (word "34 follow-chain, step 22 : check whether the buy-sell houses mechanism is intact or not. "
-                 word "1. if buyer's `made-offer-on` is not house (meaning buyer buy nothing, no deal), report false; "
-                 word "2. given the buyer offered on a real house, then set `my-owner` of the house being offered on to be `seller`; "
-                 word "3. if the `seller` is not an `owner` (meaning the house is vacant, deal right away ), report true; "
-                 word "4. given `sell` is an owner, if the input `buyer` =  `seller`, then the flow is intact, This is confusing, but don't be. The following line solve the problem. "
-                 word "5. given the buyer is not the seller (no match), now let's focus on the seller, run follow-chain under seller context, meaning we are finding the owner of house which the seller made an offer on; "
-                 word "if the buyer and the seller of the house the older sell want to buy are the same owner, then both buyer and older seller match a deal." "so the flow is intact. "
-   )
-]
-
-  if debug? or debug-go = "35 move-house" [
-      user-message (word "35 move-house, step 23 : move me to the house I am buying, then move the seller to their new house etc. "
-                    word "1. under context of buyer or owner, save `made-offer-on` into `new-house`; "
-                    word "2. if the `new-house` is not house, meaning buyer is not buying, then stop moving; "
-                    word "3. assign `my-owner` of `new-house` into `seller`; "
-                    word "4. if seller is an owner, calc the profit made by selling the house: "
-                    word "assign (sale-price - mortgage) to `profit`, and set seller's mortgage to 0; "
-                    word "If sell made a profit, then add profit into seller's capital. "
-                    word "5. since deal is made, change new-house owner to the buyer; "
-                    word "6. calc the duty payable with the new house sale-price; "
-                    word "7. if the owner can't pay for the house in cash, s/he has to have a mortgage, "
-                    word "borrow as much as possible, given owner's income and value of house, choose the smaller value of two calc formula; "
-                    word "8. after paying rest with capital, the remaining still kept inside capital. "
-                    word "9. calc repayment to pay back mortgage; "
-                    word "10. or if the buyer is a cash buyer, capital pays all, mortgage, repayment both are 0; the remaining still kept in capital "
-                    word "11. if buyer's capital is not enough for downpayment, set the negative remaining to 0; but this no enuogh capital for down-payment should not happen, why here? "
-                    word "12. new entrants are now made visible, and move buyer to its new house, set buyer's homeless period to 0; "
-                    word "13. set buyer's `my-house` to be the `new-house`, record the current ticks when the house is bought as `date-of-purchase`; "
-                    word "14. ask each new-house to put off market and make `offered-to` as nobody; "
-                    word "15. under buyer's context, buyer is not making any offer now; create a new record under the buyer context; "
-                    word "16. make record invisible, record current ticks to be the `date` of record, assign the current `new-house` to be `the-house` of record; "
-                    word "17. assign the `sale-price` of new-house to be `selling-price` of record; ask the new-house realtor to save record into its sales list; "
-                    word "18. count 1 more moving household into `moves`; if sell as owner exist, then ask seller to move-house too" "."
-     )
-  ]
+;  if debug? or debug-go = "35 move-house" [
+;      user-message (word "35 move-house, step 23 : move me to the house I am buying, then move the seller to their new house etc. "
+;                    word "1. under context of buyer or owner, save `made-offer-on` into `new-house`; "
+;                    word "2. if the `new-house` is not house, meaning buyer is not buying, then stop moving; "
+;                    word "3. assign `my-owner` of `new-house` into `seller`; "
+;                    word "4. if seller is an owner, calc the profit made by selling the house: "
+;                    word "assign (sale-price - mortgage) to `profit`, and set seller's mortgage to 0; "
+;                    word "If sell made a profit, then add profit into seller's capital. "
+;                    word "5. since deal is made, change new-house owner to the buyer; "
+;                    word "6. calc the duty payable with the new house sale-price; "
+;                    word "7. if the owner can't pay for the house in cash, s/he has to have a mortgage, "
+;                    word "borrow as much as possible, given owner's income and value of house, choose the smaller value of two calc formula; "
+;                    word "8. after paying rest with capital, the remaining still kept inside capital. "
+;                    word "9. calc repayment to pay back mortgage; "
+;                    word "10. or if the buyer is a cash buyer, capital pays all, mortgage, repayment both are 0; the remaining still kept in capital "
+;                    word "11. if buyer's capital is not enough for downpayment, set the negative remaining to 0; but this no enuogh capital for down-payment should not happen, why here? "
+;                    word "12. new entrants are now made visible, and move buyer to its new house, set buyer's homeless period to 0; "
+;                    word "13. set buyer's `my-house` to be the `new-house`, record the current ticks when the house is bought as `date-of-purchase`; "
+;                    word "14. ask each new-house to put off market and make `offered-to` as nobody; "
+;                    word "15. under buyer's context, buyer is not making any offer now; create a new record under the buyer context; "
+;                    word "16. make record invisible, record current ticks to be the `date` of record, assign the current `new-house` to be `the-house` of record; "
+;                    word "17. assign the `sale-price` of new-house to be `selling-price` of record; ask the new-house realtor to save record into its sales list; "
+;                    word "18. count 1 more moving household into `moves`; if sell as owner exist, then ask seller to move-house too" "."
+;     )
+;  ]
 
 
 
 
+   ;; remove old record ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ; after certain period, all old records should be removed, realtors will remove all their sales
-   ask records [ if date < (ticks - RealtorMemory) [ die ] ] ;; since the record is created, after RealtorMemory duration (update is needed now), ask all records to die
+   ask records [ if date < (ticks - RealtorMemory) [ die ] ] ;; for each record, after RealtorMemory duration, it has to be removed
+  
    ask realtors [ set sales remove nobody sales ] ;; ask realtors to remove dead records from the sales list
 
 
-   ; remove the offers to houses
+   ;; remove offers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ; remove the offer information upon a house
    ask houses with [ is-owner? offered-to ] [  ;; for each of the houses which have owners/buyer to make offer on
+    
      ask offered-to [ set made-offer-on nobody ] ;; ask each buyer to set property `made-offer-on` as nobody
+    
      set offered-to nobody  ;; set the house's buyer property `offered-to` to be nobody
+    
      set offer-date 0  ;; set house property `offer-date` to 0
      ]
 
+  ;; demolish houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;demolish old houses or houses with below minimum price
-   set nDemolished 0  ;; use this variable to record the number of houses demolished
+   set nDemolished 0  ;; record the number of demolished houses at each tick 
+  
    if any? records [  ;; if there are records left
+    
      let minimum-price min-price-fraction * medianPriceOfHousesForSale ;; set minimum-price to be 10% of all sold-houses median price
 
      ask houses with [ (ticks > end-of-life) or  ;; ask all houses, if its life is over its life limit or
+      
                        (for-sale? and sale-price <  minimum-price )] ;; if the house is for sale and sale-price < minimum-price
+    
          [ demolish ]  ;; let's demolish the house
     ]
 
-  if debug? or debug-go = "36 remove-records-offers-houses" [
-      user-message (word "36 remove-records-offers-houses, step 24 : after certain period, all old records should be removed, realtors will remove all their sales: "
-                    word "1. since the record is created, after RealtorMemory duration (update is needed now), ask all records to die; "
-                    word "2. ask realtors to remove dead records from the sales list. "
-                    word "Next, remove the offers to houses : 1. for each of the houses which have owners/buyer to make offer on, "
-                    word "ask each buyer to set property `made-offer-on` as nobody, set the house's buyer property `offered-to` to be nobody, "
-                    word "set house property `offer-date` to 0. Finally, demolish old houses or houses with below minimum price. "
-                    word "1. use this variable to record the number of houses demolished; if there are records left, set minimum-price to be 10% of all sold-houses median price; "
-                    word "2. ask all houses, if its life is over its life limit or if the house is for sale and sale-price < minimum-price, let's demolish the house" "."
-    )
-  ]
+;  if debug? or debug-go = "36 remove-records-offers-houses" [
+;      user-message (word "36 remove-records-offers-houses, step 24 : after certain period, all old records should be removed, realtors will remove all their sales: "
+;                    word "1. since the record is created, after RealtorMemory duration (update is needed now), ask all records to die; "
+;                    word "2. ask realtors to remove dead records from the sales list. "
+;                    word "Next, remove the offers to houses : 1. for each of the houses which have owners/buyer to make offer on, "
+;                    word "ask each buyer to set property `made-offer-on` as nobody, set the house's buyer property `offered-to` to be nobody, "
+;                    word "set house property `offer-date` to 0. Finally, demolish old houses or houses with below minimum price. "
+;                    word "1. use this variable to record the number of houses demolished; if there are records left, set minimum-price to be 10% of all sold-houses median price; "
+;                    word "2. ask all houses, if its life is over its life limit or if the house is for sale and sale-price < minimum-price, let's demolish the house" "."
+;    )
+;  ]
 
 
 
-  ; update houses sale-price
+  ;; reduce or update sale-prices of unsold houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; reduce sale-price is a house is not sold in each tick 
   ask houses with [ for-sale? ] [  ;; ask all houses which still are for sale
+    
      set sale-price sale-price * (1 - PriceDropRate / 100 );; to reduce its sale-price by certain amount
      ]
+  
+  
 
-  ; update owners' mortgage and repayment
+  ;; update owners' mortgage and repayment in each tick  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ask owners with [ is-house? my-house and mortgage > 0 ] [  ;; ask all owners who do have houses and mortgage to pay
+    
     set mortgage mortgage - ( repayment - interestPerTick * mortgage );; mortgage will be reduced due to repayment
 
     if mortgage <= 0 [  ;; if mortgage is fully repaid, then set both mortgage and repayment to 0
+      
       set mortgage 0
       set repayment 0
       ]
     ]
 
-  if debug? or debug-go = "37 update-house-owner" [
-     user-message( word "37 update-house-owner, step 25 : update houses sale-price 1. ask all houses which still are for sale, "
-                   word "to reduce its sale-price by certain amount. Now, update owners' mortgage and repayment : "
-                   word "1. ask all owners who do have houses and mortgage to pay, mortgage will be reduced due to repayment; "
-                   word "2. if mortgage is fully repaid, then set both mortgage and repayment to 0" "."
+;  if debug? or debug-go = "37 update-house-owner" [
+;     user-message( word "37 update-house-owner, step 25 : update houses sale-price 1. ask all houses which still are for sale, "
+;                   word "to reduce its sale-price by certain amount. Now, update owners' mortgage and repayment : "
+;                   word "1. ask all owners who do have houses and mortgage to pay, mortgage will be reduced due to repayment; "
+;                   word "2. if mortgage is fully repaid, then set both mortgage and repayment to 0" "."
+;     )
+;  ]
 
-     )
-  ]
 
-
-  if debug? or debug-go = "38 demolish" [
-   user-message (word "38 demolish, step 26 : let demolish the house and everything associate it. "
-                 word "1. under the context of the house, check the household is owner or not, if it is owner, set my-house nobody, "
-                 word "set mortgage and repayment to 0, set the owner invisible, meaning the owner is homeless; "
-                 word "2. delete any record that mentions the house inside the sales of a realtor, set the land to be muddy green, "
-                 word " add 1 upon nDemolished, make the house die" "."
-
-   )
-]
+;  if debug? or debug-go = "38 demolish" [
+;   user-message (word "38 demolish, step 26 : let demolish the house and everything associate it. "
+;                 word "1. under the context of the house, check the household is owner or not, if it is owner, set my-house nobody, "
+;                 word "set mortgage and repayment to 0, set the owner invisible, meaning the owner is homeless; "
+;                 word "2. delete any record that mentions the house inside the sales of a realtor, set the land to be muddy green, "
+;                 word " add 1 upon nDemolished, make the house die" "."
+;   )
+;]
 
 end
 
@@ -1396,24 +1406,26 @@ to make-offer [ houses-for-sale ]
 
 end
 
+
+;; set three duty return thresholds ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report stamp-duty-land-tax [ cost ]
-  ;; stamp duty land tax ('stamp duty') is 1% for sales over �150K, 3% over �250K, 4% over
-  ;;  �500K,  (see http://www.hmrc.gov.uk/so/rates/index.htm )
+  ;; stamp duty land tax ('stamp duty') is 1% for sales over $150K, 3% over $250K, 4% over $500K,  (see http://www.hmrc.gov.uk/so/rates/index.htm )
   if StampDuty [
+    
     if cost > 500000 [ report 0.04 * cost ]
+    
     if cost > 250000 [ report 0.02 * cost ]
+    
     if cost > 150000 [ report 0.01 * cost ]
     ]
+  
   report 0
 end
 
-to-report follow-chain [ first-link ]    ;;  owner procedure
- ;; Find the end of the chain which has my house as a link:
- ;;   find the house I have made an offer for (If none, this chain fails; Stop)
- ;;   find the current owner of that house (If none, this is a successful chain; Stop )
- ;;   find the house they made an offer for ...
- ;; continue until the seller of that house is the first buyer.
- ;;   This is a successful chain; Stop
+
+;; whether buy-sell flow is intact or not ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to-report follow-chain [ first-link ]    ;;  first-link is an owner too
 
 ;  inspect self inspect first-link
 ;  user-message (word " if not is-house? made-offer-on [ report false ], and condition is  " not is-house? made-offer-on )
@@ -1428,48 +1440,58 @@ to-report follow-chain [ first-link ]    ;;  owner procedure
 
 
 ;  inspect first-link inspect seller user-message (word " check first-link with id " [who] of first-link word "check seller with id " [who] of seller )
-  if first-link = seller [ report true ]  ;; given `sell` is an owner, if the input `buyer` =  `seller`, then the flow is intact, This is confusing, but don't be. The following line solve the problem.
+  if first-link = seller [ report true ]  ;; given `sell` is an owner, if `first-link`  and  `seller` are the same owner, then the flow is intact.
+                                          ;; This is confusing, but don't be. The following line solve the problem.
 
 ;  stop-inspecting first-link stop-inspecting seller
   report [follow-chain first-link ] of seller
-  ;; given the buyer is not the seller (no match), now let's focus on the seller, run follow-chain under seller context, meaning we are finding the owner of house which the seller made an offer on.
-  ;; if the buyer and the seller of the house the older sell want to buy are the same owner, then both buyer and older seller match a deal. flow is intact.
+  ;; given the buyer is not the seller (no match), now let's focus on the seller, run follow-chain under seller context, 
+  ;; meaning we are finding the owner of house which the seller made an offer on.
+  ;; if the buyer and the seller of the house the older sell want to buy, are the same owner, then both buyer and older seller match a deal. flow is intact.
+  
 end
 
-
-to move-house                            ;; owner procedure
+;; buyers are moving into new houses ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to move-house                         
  ;; move me to the house I am buying
  ;; then move the seller to their new house etc.
 
   let new-house made-offer-on  ;; under context of buyer or owner, save `made-offer-on` into `new-house`;
+  
   if not (is-house? new-house) [ stop ] ;;if the `new-house` is not house, meaning buyer is not buying, then stop moving;
+  
   let seller [ my-owner ] of new-house ;; assign `my-owner` of `new-house` into `seller`
+  
   if is-owner? seller [ ;; if seller is an owner, calc the profit made by selling the house
     ; seller gets selling price to pay off mortgage or add to capital
     let profit [ sale-price ] of new-house - [ mortgage ] of seller ;; assign (sale-price - mortgage) to `profit`
+    
     ask seller [ set mortgage 0 ] ;; set seller's mortgage to 0
+    
     if profit > 0 [
       ; If sell made a profit, then add profit into seller's capital.
       ask seller [ set capital capital + profit ]
+      
       ]
     ]
+  
   ask new-house [ set my-owner myself ]  ;; since deal is made, change new-house owner to the buyer
 
   let duty stamp-duty-land-tax [ sale-price ] of new-house  ;; calc the duty payable with the new house sale-price
-  ifelse [ sale-price ] of new-house > capital  ;;
-    ;; if the owner can't pay for the house in cash, s/he has to have a mortgage
+  
+  ifelse [ sale-price ] of new-house > capital  ;; if the owner can't pay for the house in cash, s/he has to have a mortgage
     [
     ; borrow as much as possible, given owner's income and value of house, choose the smaller value of two calc formula
     set mortgage min (list (income * Affordability /
                                         ( interestPerTick * ticksPerYear * 100 ))
                            ([ sale-price ] of new-house * MaxLoanToValue / 100 ))
-    ;; after paying rest with capital, the remaining still kept inside capital
-    set capital capital - int ([ sale-price ] of new-house - mortgage) - duty
+      
+    set capital capital - int ([ sale-price ] of new-house - mortgage) - duty  ;; after paying rest with capital, the remaining still kept inside capital
 
-    ;; calc repayment to pay back mortgage
     set repayment mortgage * interestPerTick /
-            (1 - ( 1 + interestPerTick ) ^ ( - MortgageDuration * TicksPerYear ))
+            (1 - ( 1 + interestPerTick ) ^ ( - MortgageDuration * TicksPerYear ))  ;; calc repayment to pay back mortgage
     ]
+  
     ; or if the buyer is a cash buyer, capital pays all, mortgage, repayment both are 0, and remaining still kept in capital
     [
     set mortgage 0
@@ -1482,25 +1504,41 @@ to move-house                            ;; owner procedure
   ;; but this no enuogh capital for down-payment should not happen, why here?
 
   show-turtle ; new entrants are not visible until now
-  move-to new-house ; move owner icon on view
+  
+  move-to new-house ;; move owner to where the new-house is
+  
   set homeless 0 ;; set buyer's homeless period to 0
+  
   set my-house new-house ;; set buyer's `my-house` to be the `new-house`
+  
   set date-of-purchase ticks  ;; record the current ticks when the house is bought as `date-of-purchase`
+  
   ask new-house [  ;; ask each new-house to put off market and make `offered-to` as nobody
+    
     set for-sale? false
     set offered-to nobody
   ]
+  
   set made-offer-on nobody ;; under buyer's context, buyer is not making any offer now
+  
   ;; update realtor's history with this sale price
   hatch-records 1 [  ;; create a new record under the buyer context
+    
     hide-turtle  ;; make record invisible
+    
     set date ticks  ;; record current ticks to be the `date` of record
+    
     set the-house new-house  ;; assign the current `new-house` to be `the-house` of record
+    
     set selling-price [sale-price] of new-house  ;; assign the `sale-price` of new-house to be `selling-price` of record
+    
     ask [ my-realtor ] of new-house [ file-record myself ] ;; ask the new-house realtor to save record into its sales list
+    
     ]
   set moves moves + 1  ;; count 1 more moving household into `moves`
+  
   if is-owner? seller [ ask seller [ move-house ] ]  ;; if sell as owner exist, then ask seller to move-house too
+
 end
 
 

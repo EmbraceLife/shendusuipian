@@ -1,6 +1,17 @@
 # 深度碎片的学习历程，方向与特质
 
+current（2018.9 onward)
+## 专注方向
+数学建模，Agent-based modeling, Netlogo Programming
 
+### 自制视频
+NetLogo建模课程初探
+- 蚁群行为建模全流程解读 [video](https://www.bilibili.com/video/av31450231/)
+- 财富分布建模解读 [video](https://www.bilibili.com/video/av31828973/)
+- 英雄与懦夫游戏建模解读 [video](https://www.bilibili.com/video/av31920819/)
+- 英国房地产模型论文复现升级全流程解读 [video](https://www.bilibili.com/video/av31860025/)
+- 英国房地产模型导读 [video](https://www.bilibili.com/video/av32944949/)
+- 用ABM再造经济学原理-需求与供给曲线 [video](https://www.bilibili.com/video/av33590414/)
 
 current (2018.7 onward) 
 

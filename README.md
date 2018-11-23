@@ -1,5 +1,7 @@
 # 深度碎片的学习历程，方向与特质
 
+2018.11 机器学习和深度学习方向的学习和问答暂停了，这里有一个[Farewell小总结](https://github.com/EmbraceLife/shendusuipian/blob/master/my%20Farewell%20to%20AI%20studies.pdf)
+
 current（2018.9 onward)
 ## 专注方向
 数学建模，Agent-based modeling, Netlogo Programming

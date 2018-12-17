@@ -1,7 +1,16 @@
 # 深度碎片的学习历程，方向与特质
 
-2018.11 机器学习和深度学习方向的学习和问答暂停了，这里有一个[Farewell小总结](https://github.com/EmbraceLife/shendusuipian/blob/master/my%20Farewell%20to%20AI%20studies.pdf)
+---
+Dec 17 2018 onward（走出彷徨）
 
+经过2个月的纠结摸索，重新将主要精力定位于Money and Banking和AI(ML, DL, RL) 两个方向的学习积累。因为缺乏制作视频笔记的条件，学习方式将以文字问答+原视频剪辑模式为主。
+
+---
+2018.10-11 (彷徨期） 
+
+机器学习和深度学习方向的学习和问答暂停了，这里有一个[Farewell小总结](https://github.com/EmbraceLife/shendusuipian/blob/master/my%20Farewell%20to%20AI%20studies.pdf)
+
+---
 current（2018.9 onward)
 ## 专注方向
 数学建模，Agent-based modeling, Netlogo Programming
@@ -15,6 +24,7 @@ NetLogo建模课程初探
 - 英国房地产模型导读 [video](https://www.bilibili.com/video/av32944949/)
 - 用ABM再造经济学原理-需求与供给曲线 [video](https://www.bilibili.com/video/av33590414/)
 
+---
 current (2018.7 onward) 
 
 ## 如何一起学习

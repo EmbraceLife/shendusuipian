@@ -1,7 +1,8 @@
 # 深度碎片的学习历程，方向与特质
 
 ---
-Dec 17 2018 onward
+**Dec 17 2018 开始**
+
 ## 研究方向
 - 人工智能：机器学习，深度学习，强化学习    
 - 金融：货币银行经济学，金融学
@@ -47,12 +48,13 @@ Dec 17 2018 onward
 **更多视频作品和文字整理，可在下文历史记录中查看**
 
 ---
-2018.10-11 (彷徨期） 
+**2018.10-11 (迷茫期）**
 
 机器学习和深度学习方向的学习和问答暂停了，这里有一个[Farewell小总结](https://github.com/EmbraceLife/shendusuipian/blob/master/my%20Farewell%20to%20AI%20studies.pdf)
 
 ---
-current（2018.9 onward)
+**2018.9以前**    
+
 ## 专注方向
 数学建模，Agent-based modeling, Netlogo Programming
 
@@ -66,7 +68,7 @@ NetLogo建模课程初探
 - 用ABM再造经济学原理-需求与供给曲线 [video](https://www.bilibili.com/video/av33590414/)
 
 ---
-current (2018.7 onward) 
+**2018.7以前**
 
 ## 如何一起学习
 
@@ -106,7 +108,7 @@ current (2018.7 onward)
 
 ---
 
-before 2018.5
+**2018.5 以前**
 
 ### 持续学习的原动力
 

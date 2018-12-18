@@ -1,9 +1,50 @@
 # 深度碎片的学习历程，方向与特质
 
 ---
-Dec 17 2018 onward（走出彷徨）
+Dec 17 2018 onward
+## 研究方向
+- 人工智能：机器学习，深度学习，强化学习    
+- 金融：货币银行经济学，金融学
 
-经过2个月的纠结摸索，重新将主要精力定位于Money and Banking和AI(ML, DL, RL) 两个方向的外海精品课程的学习积累。因为缺乏制作视频笔记的条件，新的学习方式还在摸索中，目前来看包含文字问答+原视频剪辑的内容。
+## 学习方法
+- 寻找海外优质课程
+- 自制图解视频剖析课程核心内容，使之更直观直觉（有时间和条件做视频时）
+- 分解剖析原课程视频，构建小视频+问答的知识脉络体系（没有时间和条件做视频时）
+
+## 当前积极推进的项目
+- David Silver 强化学习课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38356048)
+- Perry Mehrling 货币银行经济学课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38322465)
+
+## 以下是2018.6之前完成的一些有代表性的视频作品
+
+### 较受欢迎的视频专辑作品
+[图解机器学习的数学基础（线性代数，微积分，PCA）](https://www.bilibili.com/video/av21562345/)   
+[图解CNN系列论文（第二轮）](https://www.bilibili.com/video/av22822657)   
+[吴恩达机器学习(全)](https://zhuanlan.zhihu.com/p/34726093)   
+[吴恩达深度学习课程（5课全完结）：掰开揉碎版](https://zhuanlan.zhihu.com/p/31645196)   
+[一句话的机器学习深度学习](https://zhuanlan.zhihu.com/c_183710782) （复习深度学习核心概念）    
+
+### 前沿论文深度剖析（2017年,对这篇论文刚刚”出炉“，做了细致学习）
+[读论文：AlignedReID (更新了Q&A）视频专辑](https://zhuanlan.zhihu.com/p/31401390)      
+
+### 探索公众普及型视频作品
+[讲给路人听的深度学习](https://zhuanlan.zhihu.com/c_164834731)     
+[算法的人生启示](https://zhuanlan.zhihu.com/c_186658192)     
+[机器是如何获得人类的能力的](https://www.bilibili.com/video/av23972551/)    
+
+
+### 中断的项目
+**分析原因**:     
+- 大部头教材，牵涉精力时间太大，难以为续；
+- 尝试消化每个知识点（多涉及CS研究生博士生阶段知识）在转化为图解视频，野心太大，能力不足    
+
+[图解Bishop的模式识别和机器学习](https://www.bilibili.com/video/av23315701/?spm_id_from=333.23.home_video_list.2)    
+[图解Murphy的概率机器学习](https://www.bilibili.com/video/av23323837/?spm_id_from=333.23.home_video_list.1)    
+[图解Sutton的强化学习](https://www.bilibili.com/video/av22165205/)    
+[图解深度学习花书](https://zhuanlan.zhihu.com/c_172262754)     
+
+
+**更多视频作品和文字整理，可在下文历史记录中查看**
 
 ---
 2018.10-11 (彷徨期） 

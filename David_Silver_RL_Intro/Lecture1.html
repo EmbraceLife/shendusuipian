@@ -1,0 +1,230 @@
+<h1>David Silver’s RL Intro （分解版）</h1>
+<p>by 深度碎片</p>
+<br>
+<p>早期版本都会是英文，全部完结后，会在英文版基础上做中文版；</p>
+<p>现在就想一起学的小伙伴可以带着文字版的问题和回答去看分解视频；</p>
+<p>PDF文字版本，可在这里下载；</p>
+<br>
+<p><a href="https://www.youtube.com/playlist?list=PLx08F1efFq_WTK8PkY7NkrHVRN9qIIMl0&disable_polymer=true">David Silver Reinforcement learning (study use) - YouTube</a>     </p>
+<p><a href="https://www.bilibili.com/video/av38356048">David Silver Reinforcement learning (study use) - Bilibili</a></p>
+<br>
+<h2>Why study this course?</h2>
+<ul><li>	This is a short introduction course to RL
+</li><li>	David Silver is a great lecturer to beginners
+</li></ul>
+<br>
+<h2>How do I study this course?</h2>
+<ul><li>	break videos into small questions
+</li><li>	each video is to address an important question to me
+</li><li>	provide one line answer to each question
+</li></ul>
+<br>
+<h2>Lecture 1</h2>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=1">P1 1.1 admin textbook lecture notes</a>         </p>
+<p>Lecture 1 tries to answer 3 questions:               </p>
+<ol start="1"><li>What does a RL problem look like?
+</li><li>How to solve a RL problem?
+</li><li>What are the challenges to RL?
+</li></ol>
+<p>Sutton’s book is comprehensive, but second book is shorter and mathematical         </p>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=2">P2 1.2 RL lays at the core of many sciences</a>         </p>
+<ul><li>	RL are crucial and fundamental to many key sciences         
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=3">P3 1.3 what special about RL</a>         </p>
+<ol start="1"><li>No supervisor, just trial and error with reward signal
+</li><li>Feedback is delayed, but reward is instantaneous, I guess
+</li><li>time data is sequential and dynamic vs (wholesale, fixed) iid data
+</li><li>sequential data is affected by agent action at each time step
+</li></ol>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=4">P4 1.4 RL examples and demos</a></p>
+<p>apply above unique differences to the following examples      </p>
+<ul><li>	fly stunt maneuver in helicopter
+</li><li>	fight backgammon
+</li><li>	investment portfolio
+</li><li>	control power station
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=5">P5 1.5 define Reward in RL problem</a></p>
+<p>How to understand reward at each step and goal in the end?      </p>
+<ul><li>	all goals can be defined with maximization of all rewards at each time
+</li><li>	“no intermediate reward” can be resolved with this hypothesis above
+</li><li>	goal in terms of speed can also be resolved as well
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=6">P6 1.6 reward examples</a></p>
+<p>How to understand the reward and goal in real world examples?     </p>
+<ul><li>	+ve = positive, -ve = negative
+</li><li>	helicopter: +ve reward each step, large -ve reward at the end if crashed
+</li><li>	Backgammon:  no intermediate reward, just end game reward
+</li><li>	power station: +ve reward as power increase, -ve reward if exceeding saftey threshold
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=7">P7 1.7 maximizing reward can be tricky</a></p>
+<p>Why maximize reward is not as straightforward as one might think?</p>
+<ul><li>	maximizing by adding rewards incrementally at each time step
+</li><li>	maximizing by taking strategic moves sacrifice reward now for bigger reward later
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=8">P8 1.8 define agent and environment why reward scalar</a></p>
+<p>What are the training data for RL in terms of agent and environment?</p>
+<ul><li>	Agent is the core of RL model, which receive observation and reward and take an action at each time step
+</li><li>	Environment, RL model has no control, which is influenced by action and emit reward and observation for agent
+</li></ul>
+<p>Why reward can be a scalar when facing conflicting needs?</p>
+<ul><li>	no matter what, as long as an action to be taken, scalar can do the job
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=9">P9 1.9 define history and state in RL problem</a></p>
+<p>What is history? </p>
+<ul><li>	all (a stream of) observations, rewards and actions up to this moment
+</li><li>	agent and environment act depend on history
+</li></ul>
+<p>What is state?</p>
+<ul><li>	state is a function (representation) of history
+</li><li>	it is more efficient to use state than history for running models
+</li><li>	there are 3 popular representations of history (state)
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=10">P10 1.10 what is environment state</a></p>
+<p>What should we know about environment state?</p>
+<ul><li>	env state is env’s private representation of the world it perceives
+</li><li>	such representation (number or data) will determine its emission of observations and rewards
+</li><li>	but env state is usually invisible to agent, and probably much irrelevant if visible
+</li><li>	not really useful to help us build agent model
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=11">P11 1.11 what is agent state</a></p>
+<p>What to understand about agent state?</p>
+<ul><li>	agent state is what agent take in from history for algorithms to produce an action
+</li><li>	agent state, again, is a function or representation of history, a particular kind history filtered by agent
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=12">P12 1.12 what is information or Markov state</a></p>
+<p>What to know about information or Markov state?</p>
+<ul><li>	Markov state is a state or representation of history which captures the key aspect of history which help determine the future
+</li><li>	Markov state has the equivalent effect of the whole history in predicting the future
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=13">P13 1.13 example of agent state for prediction</a></p>
+<p>How does the rate predict the future with state?</p>
+<ul><li>	it depends on how rate define the state it receives
+</li><li>	if state = last three items, the rat predict electricity hit
+</li><li>	if state = count of items, the rat predict cheese
+</li><li>	if state = entire history, the rat won’t know
+</li></ul>
+<p>State, is what data agent select for algorithm processing</p>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=14">P14 1.14 fully observable environment or Markov decision process</a></p>
+<p>What is fully observable env or Markov decision process?</p>
+<ul><li>	env state = all useful info produced by env to determine the observations and rewards
+</li><li>	agent can see all env state, therefore, agent state = env state = Markov state
+</li><li>	another name for this above = Markov decision process
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=15">P15 1.15 partial observability env</a></p>
+<p>What to know about partial obs env or partial observable Markov Decision Process POMDP?</p>
+<ul><li>	env state is partially observable, so how to build agent state? 
+</li><li>	version 1: take all history available to be agent state
+</li><li>	version 2: take a vector of different probability of env state to be agent state
+</li><li>	version 3: use recurrent neural net to construct agent state with previous agent state and current observations
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=16">P16 1.16 major components of RL agent</a></p>
+<p>What are the three key components of RL agent?</p>
+<ul><li>	policy: agent use it to transform state to action
+</li><li>	value: agent evaluate how good is the state or how much reward expected to get
+</li><li>	model: agent’s representation of the environment 
+</li><li>	they are not always required for defining an agent 
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=17">P17 1.17 what is policy</a></p>
+<p>What to know about policy?</p>
+<ul><li>	policy : a map from state to action
+</li><li>	deterministic policy: a = F ( s ) , use a clearly define function to generate action from state
+</li><li>	stochastic policy: a = F (a | s) = P(A = a | S = s), action from the state does not have to be fixed, randomness can be introduced too
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=18">P18 1.18 value function and example</a></p>
+<p>What to know about value function?</p>
+<ul><li>	it is to predict the total future reward at current state
+</li><li>	i.e., to evaluate how good is the current state
+</li><li>	according to different state and reward prediction, agent choose actions accordingly
+</li></ul>
+<p>What is the formula of value function?</p>
+<ul><li>	<img src='images/72E5D449-1485-449D-B103-60A407254B9E.png'>
+</li><li>	100 steps to anticipate into the future, e.g., t, t+1, … t + 99
+</li></ul>
+<p>What to note in Atari game?</p>
+<ul><li>	note how value changes and how different actions chosen
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=19">P19 1.19 what are model transition reward</a> *</p>
+<p>What does model, transitions do?</p>
+<ul><li>	a model predicts what environment would do next (observations, reward)
+</li><li>	transitions predict the next state given previous state and action
+</li><li>	then to predict next step reward as expected reward based on previous state and action
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=20">P20 1.20 maze example on policy value function model</a></p>
+<p>What does policy look like in maze example?</p>
+<p>What does value function look like in maze example?</p>
+<p>What does model look like in maze example?</p>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=21">P21 1.21 value based agent categorization</a></p>
+<p>What does it mean by categorizing agent with value?</p>
+<ul><li>	agent’s action can be fully determined by value calculated 
+</li><li>	policy, as actions,  kind of implicitly contained by value function
+</li><li>	see this in Maze example
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=22">P22 1.22 policy based actor critic agent categorization</a></p>
+<p>What is Agent based on policy? </p>
+<ul><li>	agent defined by its actions (maze example)
+</li></ul>
+<p>what is agent of actor critic </p>
+<ul><li>	agents use both policy and value 
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=23">P23 1.23 model free and model based agents</a></p>
+<p>What is model free agent?</p>
+<ul><li>	agent only uses policy and value
+</li><li>	agent does not attempt to figure out how env works
+</li></ul>
+<p>What is model based agent?</p>
+<ul><li>	agent use both policy and value
+</li><li>	agent also tries to figure out how env works
+</li></ul>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=24">P24 1.24 differentiat learning and planning</a></p>
+<p>How RL sees the world and solves world problems?</p>
+<p>How planning sees the world solves world problems?</p>
+<p>They are also linked </p>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=25">P25 1.25 atari example on planning and learning</a></p>
+<p>How to see and solve atari problem with RL approach?</p>
+<p>How to see and solve atari problem with planning?</p>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=26">P26 1.26 balance exploitation and exploration</a></p>
+<p>RL is a sort of trial and error learning</p>
+<p>Exploration is to sacrifice some reward for more information of env</p>
+<p>Exploitation is to exploit known info to maximize reward </p>
+<p>see many example of balancing exploitation and exploration</p>
+<br>
+<p><a href="https://www.bilibili.com/video/av38356048/?p=27">P27 1.27 prediction and control with course outline</a> *</p>
+<p>What is prediction?</p>
+<ul><li>	the expected reward for the given policy
+</li></ul>
+<p>What is control?</p>
+<ul><li>	to find the best policy by comparing all policies and their rewards 
+</li></ul>
+<p>Course Outlines</p>
+<p><img src='images/AF8A8700-BC8D-4D36-B852-33F3F16C090C.png'></p>
+<br>
+<hr>
+<br>
+<h2>Lecture 2  Markov Decision Process</h2>
+<br>
+<p> </p>

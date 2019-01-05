@@ -20,6 +20,7 @@
 ## 当前积极推进的项目
 - David Silver 强化学习课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38356048)
 - Perry Mehrling 货币银行经济学课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38322465)
+- [吴恩达机器学习笔记视频专辑（2019年直觉版)](https://www.bilibili.com/video/av39711506/) （优先推进中） [课程及多笔记版本纲要PDF](https://github.com/EmbraceLife/shendusuipian/tree/master/great_course_notes)
 
 ## 以下是2018.6之前完成的一些有代表性的视频作品
 
@@ -38,6 +39,9 @@
 [算法的人生启示](https://zhuanlan.zhihu.com/c_186658192)     
 [机器是如何获得人类的能力的](https://www.bilibili.com/video/av23972551/)    
 
+### [受欢迎的知乎回答](https://www.zhihu.com/people/shendusuipian/answers/by_votes)
+[如何看懂深度学习论文里的数学原理部分?](https://www.zhihu.com/question/266533669/answer/377229055)    
+[为什么说regularization是缓解overfitting的好办法?](https://www.zhihu.com/question/274502949/answer/376013602)
 
 ### 中断的项目
 **分析原因**:     

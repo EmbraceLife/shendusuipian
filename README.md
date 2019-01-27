@@ -18,9 +18,13 @@
 - 分解剖析原课程视频，构建小视频+问答的知识脉络体系（没有时间和条件做视频时）
 
 ## 当前积极推进的项目
+- 读透卡耐基梅隆大学，机器学习学院主任的机器学习课程（优先推进中）
+- Fast.ai课程（优先推进中）
 - David Silver 强化学习课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38356048)
 - Perry Mehrling 货币银行经济学课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38322465)
-- [吴恩达机器学习笔记视频专辑（2019年直觉版)](https://www.bilibili.com/video/av39711506/) （优先推进中） [课程及多笔记版本纲要PDF](https://github.com/EmbraceLife/shendusuipian/tree/master/great_course_notes)
+
+## 已完成项目
+- [读透吴恩达机器学习](https://zhuanlan.zhihu.com/p/55510889)，[吴恩达机器学习有问必答](https://zhuanlan.zhihu.com/p/55824011)
 
 ## 以下是2018.6之前完成的一些有代表性的视频作品
 

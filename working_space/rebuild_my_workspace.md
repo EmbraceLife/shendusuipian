@@ -1,5 +1,6 @@
 # Conda
 ```bash
+# download miniconda https://docs.conda.io/en/latest/miniconda.html
 conda --version # check version:
 conda update conda # update conda: , install outside env
 conda create -n mesa-abm python=3.6 anaconda # build environment
@@ -11,6 +12,16 @@ conda create --name new_env --clone existed_env # clone an env
 conda remove --name old_env --all # delete an env
 conda env export > environment.yml # 输出env
 conda env create -f environment.yml # build env from yml
+```
+
+# Jupyter notebook
+```
+# If you have Python 3 installed (which is recommended):
+
+python3 -m pip install --upgrade pip
+python3 -m pip install jupyter
+
+jupyter notebook # to start 
 ```
 
 # git

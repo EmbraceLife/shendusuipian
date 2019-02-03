@@ -145,6 +145,8 @@ source .bash_profile # source to activate:
 [如何构建和安装pdbrc video](https://www.bilibili.com/video/av16754002/)
 [如何使用pdbpp来实验代码](https://www.bilibili.com/video/av16753161/)
 ```python
+## located at ~ directory, named .pdbrc, no need for source, just save it
+
 alias dr pp dir(%1) # 查看everything underneath the object
 alias dt pp %1.__dict__ # 查看object's dictionaries
 alias pdt for k, v in %1.items(): print(k, ": ", v) # 查看一个纯 python dictionary

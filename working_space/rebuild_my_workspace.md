@@ -118,10 +118,27 @@ pp variable_name # 友好打印 该变量
 ```bash
 cd # go to home directory
 nano .bash_profile # go inside .bash_profile:
-alias wk3.5='cd ~/.Downloads; source activate experiment3.5' # add alias
+
+################# code content
+alias v3='cd /Users/Natsume/Documents/course-v3/nbs/dl1; conda activate fastai'
+alias sfastai='cd /Users/Natsume/miniconda3/envs/fastai/lib/python3.7/site-pack$
+alias pdbpp='python -m pdb'
+alias de='conda deactivate'
+alias xcode="open -a Xcode"
+
+
+function lazygit() {
+    git add .
+    git commit -a -m "$1"
+    git push
+}
+
+export PS1="\w " ## show full address at cursor
+
+###################
 ctrl + x, y, enter # save and exit:
 source .bash_profile # source to activate:
-wk3.5 # - then use  everywhere
+
 ```
 
 # 构建pdbrc

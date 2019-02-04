@@ -173,3 +173,21 @@ pip install jupyterthemes
 jt -t onedork 
 #| grade3 | oceans16 | chesterish | monokai | solarizedl | solarizedd
 ```
+
+[youtube-dl](https://github.com/rg3/youtube-dl/blob/master/README.md#readme)
+
+```
+--write-sub                      Write subtitle file
+--write-auto-sub                 Write automatic subtitle file (YouTube only)
+--all-subs                       Download all the available subtitles of the video
+--list-subs                      List all available subtitles for the video
+--sub-format FORMAT              Subtitle format, accepts formats preference, for example: "srt" or "ass/srt/best"
+--sub-lang LANGS                 Languages of the subtitles to download (optional) separated by commas, use IETF language tags like 'en
+
+youtube-dl --write-auto-sub  --sub-lang en  --sub-format srt https://youtu.be/1ZhtwInuOD0
+
+youtube-dl -f 'best[ext=mp4]'  --write-auto-sub  --sub-lang en  --sub-format srt https://www.youtube.com/playlist?list=PLfYUBJiXbdtSIJb-Qd3pw0cqCbkGeS0xn
+
+
+```
+[transcript transform](https://subtitletools.com/convert-to-srt-online)

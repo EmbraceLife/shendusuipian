@@ -159,3 +159,11 @@ alias opt_param optimizer.param_groups[0]['params'][%1] # all parameters
 alias opt_grad optimizer.param_groups[0]['params'][%1].grad # all gradients of parameters
 ```
 
+# Jupyter notebook extensions
+3 steps to install
+```
+pip install jupyter_contrib_nbextensions
+jupyter contrib nbextension install --user
+jupyter nbextension enable toc2/main  # in terminal or notebook cell, both are fine
+# edit/notebook_config (at bottom of the droplist)
+```

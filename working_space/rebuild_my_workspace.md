@@ -167,3 +167,9 @@ jupyter contrib nbextension install --user
 jupyter nbextension enable toc2/main  # in terminal or notebook cell, both are fine
 # edit/notebook_config (at bottom of the droplist)
 ```
+# jn color theme 
+```
+pip install jupyterthemes
+jt -t onedork 
+#| grade3 | oceans16 | chesterish | monokai | solarizedl | solarizedd
+```

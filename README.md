@@ -1,4 +1,7 @@
 # 深度碎片的学习历程，方向与特质
+**Jan 22 2019 开始**
+## 学习焦点：fast.ai
+- [吃透fast.ai v3 part1 2019](https://forums.fast.ai/t/fast-ai-v3-2019/39325?u=daniel)
 
 ---
 **Dec 17 2018 开始**
@@ -24,6 +27,7 @@
 - Perry Mehrling 货币银行经济学课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38322465)
 
 ## 已完成项目
+- [图解吴恩达机器学习（2019直觉版）视频专辑](https://www.bilibili.com/video/av39711506/) 按需定制
 - [读透吴恩达机器学习](https://zhuanlan.zhihu.com/p/55510889)，[吴恩达机器学习有问必答](https://zhuanlan.zhihu.com/p/55824011)
 
 ## 以下是2018.6之前完成的一些有代表性的视频作品

@@ -1,7 +1,8 @@
 # 深度碎片的学习历程，方向与特质
 **Jan 22 2019 开始**
 ## 学习焦点：fast.ai
-- [吃透fast.ai v3 part1 2019](https://forums.fast.ai/t/fast-ai-v3-2019/39325?u=daniel)
+- [fast.ai v3 2019中文笔记 fastai forum版](https://forums.fast.ai/t/fast-ai-v3-2019/39325?u=daniel)
+- [fast.ai v3 2019中文笔记 github 版](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md) 更新速度更快一点
 
 ---
 **Dec 17 2018 开始**

@@ -2,7 +2,7 @@
 ### 是什么
 
 * 课程知识点分解+梳理+中文讲解     
-* 所有笔记将源于[论坛英文笔记](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748) @PoonamV 和 @Daniel 的线下笔记和fastai论坛上大家的分享
+
 
 
 ### 目标
@@ -41,10 +41,18 @@ Kaggle [官网](https://www.kaggle.com/)
 
 ## 课程知识点分解汇总     
 
-如何开启你的第一个GPU [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/7?u=daniel)     
-如何更新课程notebook与fastai库 [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/9?u=daniel)     
-[为什么用Jupyter Notebook](https://forums.fast.ai/t/fast-ai-v3-2019/39325/10?u=daniel)     
-[如何更新notebook与fastai?](#60)
+### 第一课笔记汇总
+**笔记源泉**     
+  - [@PoonamV](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748), 
+  - [@hiromi](https://github.com/hiromis/notes/blob/master/Lesson1.md) 和 
+  - @Daniel 的线下笔记和
+  - [fastai论坛](https://forums.fast.ai/c/part1-v3)上大家的无私分享   
+  ---
+**知识点分解**    
+* 如何开启你的第一个GPU [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/7?u=daniel)     
+* 如何更新课程notebook与fastai库 [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/9?u=daniel)     
+* [为什么用Jupyter Notebook](https://forums.fast.ai/t/fast-ai-v3-2019/39325/10?u=daniel)     
+* [如何更新notebook与fastai?](https://github.com/EmbraceLife/shendusuipian/issues/60)
 
 
 ## 当前问题     

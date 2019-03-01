@@ -44,10 +44,10 @@ Kaggle [官网](https://www.kaggle.com/)
 
 ### 第一课笔记汇总
 **笔记源泉**     
-  - [@PoonamV](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748), 
-  - [@hiromi](https://github.com/hiromis/notes/blob/master/Lesson1.md) 和 
-  - @Daniel 的线下笔记和
-  - [fastai论坛](https://forums.fast.ai/c/part1-v3)上大家的无私分享   
+  - [@PoonamV](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748)全面详尽+大家共建
+  - [@hiromi](https://github.com/hiromis/notes/blob/master/Lesson1.md) 精美细致+英文transcript
+  - @Daniel 的线下笔记
+  - [fastai论坛](https://forums.fast.ai/c/part1-v3)上大家的无私分享宝贵资源   
   ---
 **知识点分解**    
 * 如何开启你的第一个GPU [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/7?u=daniel)     

@@ -41,14 +41,20 @@ Kaggle [官网](https://www.kaggle.com/)
 **笔记源泉**     
   - @PoonamV [笔记wiki](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748)全面详尽+大家共建
   - @hiromi [github笔记](https://github.com/hiromis/notes/blob/master/Lesson1.md) 精美细致+英文transcript
-  - @Daniel 现在看到的就是（[github版本](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md)比[forum版](https://forums.fast.ai/t/fast-ai-v3-2019/39325)更新稍快一点）
+  - @Daniel [bear笔记PDF](https://github.com/EmbraceLife/shendusuipian/blob/master/%E6%B7%B1%E5%BA%A6%E7%A2%8E%E7%89%87fastai%202019%20Notes.pdf) 对课程视频做视频知识点切分+要点总结
   - [fastai论坛](https://forums.fast.ai/c/part1-v3)上大家的无私分享宝贵资源   
+  - 现在看到的是尝试对上述所有笔记的融合梳理（[github版本](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md)比[forum版](https://forums.fast.ai/t/fast-ai-v3-2019/39325)更新稍快一点
+  
   ---
+  
 **知识点分解**    
 * 如何开启你的第一个GPU [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/7?u=daniel)     
 * 如何更新课程notebook与fastai库 [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/9?u=daniel)     
-* [为什么用Jupyter Notebook [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/10?u=daniel)     
+* 为什么用Jupyter Notebook [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/10?u=daniel)     
 * 如何更新notebook与fastai? [笔记](https://github.com/EmbraceLife/shendusuipian/issues/60)
+* 如何使用Jupyter Notebook? 
+  * (EN)原课程指南[notebook](https://www.kaggle.com/danielliao/fastai-guide-to-jupyter-notebook?scriptVersionId=11034461) 
+  * (中)应用技巧更新汇总[notebook](https://www.kaggle.com/danielliao/jupypter-notebook?scriptVersionId=11035740) 
 
 [返回](#lesson1toc)     
 

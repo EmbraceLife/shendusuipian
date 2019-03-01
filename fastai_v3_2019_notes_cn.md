@@ -43,7 +43,7 @@ Kaggle [官网](https://www.kaggle.com/)
   - @hiromi [github笔记](https://github.com/hiromis/notes/blob/master/Lesson1.md) 精美细致+英文transcript
   - @Daniel [bear笔记PDF](https://github.com/EmbraceLife/shendusuipian/blob/master/%E6%B7%B1%E5%BA%A6%E7%A2%8E%E7%89%87fastai%202019%20Notes.pdf) 对课程视频做视频知识点切分+要点总结
   - [fastai论坛](https://forums.fast.ai/c/part1-v3)上大家的无私分享宝贵资源   
-  - 现在看到的是尝试对上述所有笔记的融合梳理（[github版本](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md)比[forum版](https://forums.fast.ai/t/fast-ai-v3-2019/39325)更新稍快一点
+  - 现在看到的是尝试对上述所有笔记的融合梳理（[github版本](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md)比[forum版](https://forums.fast.ai/t/fast-ai-v3-2019/39325)更新稍快一点)
   
   ---
   

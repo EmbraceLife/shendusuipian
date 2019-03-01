@@ -55,6 +55,8 @@ Kaggle [官网](https://www.kaggle.com/)
 * 如何使用Jupyter Notebook? 
   * (EN)原课程指南[notebook](https://www.kaggle.com/danielliao/fastai-guide-to-jupyter-notebook) 
   * (中)应用技巧更新汇总[notebook](https://www.kaggle.com/danielliao/jupypter-notebook) 
+* `/([^/]+)_\d+.jpg$`是如何提取标注label的？ [笔记](https://github.com/EmbraceLife/shendusuipian/issues/62)
+
 
 [返回](#lesson1toc)     
 

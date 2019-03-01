@@ -1,7 +1,7 @@
 # fastai part1 2019 中文版
 ### 是什么
 
-* 汇总fastai学员们的课程学习分享，进行知识点分解，梳理，并转为中文
+* 汇总fastai学员们的课程学习分享，进行知识点分解，梳理，并转为中文 [如何融合?](https://github.com/EmbraceLife/shendusuipian/issues/61)
 * 如果条件允许，未来会将笔记知识点做Notebooks, 甚至是短小精悍的中文视频
 
 ### 目标

@@ -53,8 +53,8 @@ Kaggle [官网](https://www.kaggle.com/)
 * 为什么用Jupyter Notebook [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/10?u=daniel)     
 * 如何更新notebook与fastai? [笔记](https://github.com/EmbraceLife/shendusuipian/issues/60)
 * 如何使用Jupyter Notebook? 
-  * (EN)原课程指南[notebook](https://www.kaggle.com/danielliao/fastai-guide-to-jupyter-notebook?scriptVersionId=11034461) 
-  * (中)应用技巧更新汇总[notebook](https://www.kaggle.com/danielliao/jupypter-notebook?scriptVersionId=11035740) 
+  * (EN)原课程指南[notebook](https://www.kaggle.com/danielliao/fastai-guide-to-jupyter-notebook) 
+  * (中)应用技巧更新汇总[notebook](https://www.kaggle.com/danielliao/jupypter-notebook) 
 
 [返回](#lesson1toc)     
 

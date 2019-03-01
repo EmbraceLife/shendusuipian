@@ -51,7 +51,7 @@ Kaggle [官网](https://www.kaggle.com/)
 * 如何更新notebook与fastai? [笔记](https://github.com/EmbraceLife/shendusuipian/issues/60)
 
 [返回 forum](#lesson1toc)     
-[返回 github](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md#%E7%AC%AC%E4%B8%80%E8%AF%BE%E7%AC%94%E8%AE%B0%E6%B1%87%E6%80%BB)
+
 
 ## 当前问题     
 Kaggle 和 Colab上的fastai何时会更新？     

@@ -50,7 +50,7 @@ Kaggle [官网](https://www.kaggle.com/)
 * [为什么用Jupyter Notebook [笔记](https://forums.fast.ai/t/fast-ai-v3-2019/39325/10?u=daniel)     
 * 如何更新notebook与fastai? [笔记](https://github.com/EmbraceLife/shendusuipian/issues/60)
 
-[返回 forum](#lesson1toc)     
+[返回](#lesson1toc)     
 
 
 ## 当前问题     

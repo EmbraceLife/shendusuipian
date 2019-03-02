@@ -1,8 +1,9 @@
 # fastai part1 2019 中文版
 ### 是什么
 
-* 汇总fastai学员们的课程学习分享，进行知识点分解，梳理，并转为中文 [如何融合?](https://github.com/EmbraceLife/shendusuipian/issues/61)
+* 汇总fastai学员们的课程学习分享，进行知识点分解，梳理，并转为中文    
 * 如果条件允许，未来会将笔记知识点做Notebooks, 甚至是短小精悍的中文视频
+
 
 ### 目标
 
@@ -19,6 +20,11 @@
 * 目前有信心必答的问题，仅限定视频理解，因此只需做到标准中的前两条即可     
 * 只要是fast.ai学习问题，欢迎积极提问，共同探讨     
 
+### 共建
+* 欢迎大家在[论坛回复中](https://forums.fast.ai/t/fast-ai-v3-2019/39325)或[github issues 里](https://github.com/EmbraceLife/shendusuipian/issues/new)协助翻译，提问，回答
+* 回复与issues能直接看出直接贡献者，无需为credit归属担忧
+* 我会将你的内容贡献的链接植入此页面和合适位置，大家只用专心分享即可
+
 ## 天天必看
 fast.ai v3 2019 [课程官网](https://course.fast.ai/) ✅     
 fastai [文档官网](https://docs.fast.ai/) ✅     
@@ -32,9 +38,9 @@ Kaggle [官网](https://www.kaggle.com/)
 
 
 ## 笔记源泉    
-  - @PoonamV [笔记wiki](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748)全面详尽+大家共建
+  - @PoonamV [笔记wiki](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748)全面详尽+大家共建（英文）
   - @hiromi [github笔记](https://github.com/hiromis/notes/blob/master/Lesson1.md) 精美细致+英文transcript
-  - @Daniel [bear笔记PDF](https://github.com/EmbraceLife/shendusuipian/blob/master/%E6%B7%B1%E5%BA%A6%E7%A2%8E%E7%89%87fastai%202019%20Notes.pdf) 对课程视频做视频知识点切分+要点总结
+  - @Daniel [bear笔记PDF](https://github.com/EmbraceLife/shendusuipian/blob/master/%E6%B7%B1%E5%BA%A6%E7%A2%8E%E7%89%87fastai%202019%20Notes.pdf) 对课程视频做视频知识点切分+要点总结（英文）
   - [fastai论坛](https://forums.fast.ai/c/part1-v3)上大家的无私分享宝贵资源   
   - 现在看到的是尝试对上述所有笔记的融合梳理（[github版本](https://github.com/EmbraceLife/shendusuipian/blob/master/fastai_v3_2019_notes_cn.md)比[forum版](https://forums.fast.ai/t/fast-ai-v3-2019/39325)更新稍快一点)
 
@@ -46,8 +52,8 @@ Kaggle [官网](https://www.kaggle.com/)
  
 
 ### 第一课笔记源泉
-@hiromi [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/70)    
-@Daniel [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/63)    
+@hiromi [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/70)，逐步做中文转化    
+@Daniel [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/63)，逐步做中文转化    
 
   ---
   

@@ -46,7 +46,8 @@ Kaggle [官网](https://www.kaggle.com/)
  
 
 ### 第一课笔记源泉
-[@Daniel第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/63)
+@hiromi [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/70)    
+@Daniel [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/63)    
 
   ---
   

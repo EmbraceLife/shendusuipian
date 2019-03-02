@@ -52,9 +52,9 @@ Kaggle [官网](https://www.kaggle.com/)
  
 
 ### 第一课笔记源泉
-@hiromi [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/70)，逐步做中文转化    
-@Daniel [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/63)，逐步做中文转化    
+@hiromi [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/70)，逐步做中文转化      
 @PoonamV [第一课笔记汇总](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748)，从中文目录开始整理    
+@Daniel [第一课笔记汇总](https://github.com/EmbraceLife/shendusuipian/issues/63)，逐步做中文转化     
 
   ---
   

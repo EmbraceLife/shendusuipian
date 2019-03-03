@@ -35,7 +35,7 @@ Kaggle [官网](https://www.kaggle.com/)
 * [官方github最新版](https://github.com/fastai/course-v3/tree/master/nbs/dl1) ✅      
 * [Kaggle 版本](https://forums.fast.ai/t/platform-kaggle-kernels/32569)     
 * [Colab 版本](https://colab.research.google.com/notebooks/welcome.ipynb#recent=true) click 'Github' and search 'fastai v3'     
-
+* [Kaggle 中文版](https://forums.fast.ai/t/fast-ai-v3-2019-notebook-kaggle-kernel/39722) :heartpulse:
 
 ## 笔记源泉    
   - @PoonamV [笔记wiki](https://forums.fast.ai/t/deep-learning-lesson-1-notes/27748)全面详尽+大家共建（英文）

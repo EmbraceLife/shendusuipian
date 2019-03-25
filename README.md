@@ -34,6 +34,8 @@ Living with fast.ai, and strive to become an excellent DL educator like Jeremy a
 - Perry Mehrling 货币银行经济学课程分解剖析 [文本框架][视频专辑](https://www.bilibili.com/video/av38322465)
 
 ## 已完成项目
+- [吴恩达AI for everyone笔记视频](https://www.bilibili.com/video/av46137769/) 每日更新
+- [fastai笔记中文视频](https://www.bilibili.com/video/av46130852/) 按需定制
 - [图解吴恩达机器学习（2019直觉版）视频专辑](https://www.bilibili.com/video/av39711506/) 按需定制
 - [读透吴恩达机器学习](https://zhuanlan.zhihu.com/p/55510889)，[吴恩达机器学习有问必答](https://zhuanlan.zhihu.com/p/55824011)
 

@@ -1,7 +1,7 @@
 # 深度碎片的学习历程，方向与特质
 
 坚持深耕fast.ai，以Jeremy Howard, Rachel Thomas为榜样，致力成为优秀的深度学习教育者      
-Living with fast.ai, and strive to become an excellent DL educator like Jeremy and Rachel!
+Rooted with fast.ai, and strive to become an excellent DL educator like Jeremy and Rachel!
 
 ---
 

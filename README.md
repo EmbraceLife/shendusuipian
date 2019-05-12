@@ -7,7 +7,9 @@ Rooted with fast.ai, and strive to become an excellent DL educator like Jeremy a
 
 **Jan 22 2019 开始**
 ## 学习焦点：fast.ai
-- 专注建设fast.ai v3 2019 [中文版](https://forums.fast.ai/t/fast-ai-v3-2019/39325?u=daniel)
+- 专注建设fast.ai v3 2019 论坛[中文版](https://forums.fast.ai/t/fast-ai-v3-2019/39325?u=daniel)，以及GitHub上的[on-going version](https://github.com/EmbraceLife/fastai_treasures#table-of-contents)
+- 欢迎大家来论坛页面，就课程视频和notebooks内容欢迎提问和分享
+
 - 但仍旧接受吴恩达机器学习和深度学习课程知识点提问，提问要求不变。
 
 ---
